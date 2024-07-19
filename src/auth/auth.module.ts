@@ -4,6 +4,7 @@ import { AuthService } from "./auth.service";
 import { JwtModule } from "@nestjs/jwt";
 import { JwtStrategy } from "./strategy";
 import { GoogleStrategy } from "./strategy";
+import { SessionSerializer } from "./serializer/serializer";
 
 @Module({
   imports: [JwtModule.register({})],
@@ -12,6 +13,11 @@ import { GoogleStrategy } from "./strategy";
     AuthService,
     JwtStrategy,
     GoogleStrategy,
+    SessionSerializer,
+    {
+      provide: "AUTH_SERVICE",
+      useClass: AuthService,
+    },
   ],
 })
 export class AuthModule {}

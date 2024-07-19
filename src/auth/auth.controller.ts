@@ -8,7 +8,7 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { AuthDto } from "./dto";
+import { AuthDto, GoogleAuthDto } from "./dto";
 import { GoogleGuard } from "./guard";
 
 @Controller("auth")
@@ -27,16 +27,19 @@ export class AuthController {
   }
 
   @UseGuards(GoogleGuard)
-  @HttpCode(HttpStatus.OK)
   @Get("google/signin")
   googleSignin() {
-    return "Google Signin";
+    return { msg: "Google Signin" };
   }
 
   @UseGuards(GoogleGuard)
-  @HttpCode(HttpStatus.OK)
   @Get("google/redirect")
   googleRedirect() {
-    return "OK";
+    return { msg: "OK" };
+  }
+
+  @Post("google/validate")
+  googleValidate(@Body() dto: GoogleAuthDto) {
+    return this.authService.googleValidate(dto);
   }
 }

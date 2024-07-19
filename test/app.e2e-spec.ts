@@ -117,5 +117,14 @@ describe("App e2e", () => {
           .stores("userAt", "access_token");
       });
     });
+
+    describe("Google Signin", () => {
+      it("Should Signin with Google", () => {
+        return pactum
+          .spec()
+          .get("/auth/google/signin")
+          .expectStatus(200);
+      });
+    });
   });
 });
