@@ -6,7 +6,10 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { GetUser } from "../auth/decorator";
-import { JwtGuard } from "../auth/guard";
+import {
+  GoogleGuard,
+  JwtGuard,
+} from "../auth/guard";
 import { User } from "@prisma/client";
 
 @UseGuards(JwtGuard)

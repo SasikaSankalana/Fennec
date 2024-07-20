@@ -1,6 +1,7 @@
 import {
   ForbiddenException,
   Injectable,
+  Req,
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { AuthDto } from "./dto";
@@ -96,5 +97,81 @@ export class AuthService {
     return {
       access_token: token,
     };
+  }
+
+  async googleCallback(Request, Response) {
+    const jwt = await this.signToken(
+      Request.user.id,
+      Request.user.username
+    );
+    const jwtToken = jwt;
+    Response.set(
+      "authorization",
+      jwt.access_token
+    );
+    Response.status(200);
+    return Response.json(Request.user);
+  }
+
+  async Onboarding(dto) {
+    try {
+      const userAccount =
+        await this.prisma.userAccount.findUnique({
+          where: { username: dto.username },
+        });
+
+      const existingOnboarding =
+        await this.prisma.onboarding.findFirst({
+          where: {
+            userAccountId: userAccount.id,
+          },
+        });
+
+      if (existingOnboarding) {
+        throw new Error(
+          `Onboarding record already exists`
+        );
+        return "Onboarding record already exists";
+      }
+      if (!userAccount) {
+        throw new Error(
+          `UserAccount with username ${dto.username} not found`
+        );
+      }
+
+      const onboarding =
+        await this.prisma.onboarding.create({
+          data: {
+            residence: dto.residence,
+            vancouverArea: dto.vancouverArea,
+            nightlifeType: dto.nightlifeType,
+            outingFreequency:
+              dto.outingFreequency,
+            favouriteInstrument:
+              dto.favouriteInstrument,
+            drinkOfChoice: dto.drinkOfChoice,
+            groupOrAlone: dto.groupOrAlone,
+            arrivalTime: dto.arrivalTime,
+            appealingPromotion:
+              dto.appealingPromotion,
+            notificationPreference:
+              dto.notificationPreference,
+            nighlifeEnvironment:
+              dto.nighlifeEnvironment,
+            foodImportance: dto.foodImportance,
+            drinkPreference: dto.drinkPreference,
+            reasonForNightlife:
+              dto.reasonForNightlife,
+            userAccount: {
+              connect: {
+                username: dto.username,
+              },
+            },
+          },
+        });
+      return onboarding;
+    } catch (error) {
+      throw error;
+    }
   }
 }

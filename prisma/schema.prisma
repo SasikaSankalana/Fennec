@@ -35,7 +35,33 @@ model UserAccount{
   username String @unique
   password String
 
-  userAccout User[]
+  User User[]
+  Onboarding Onboarding[]
 
   @@map("user_accounts")
+}
+
+model Onboarding{
+  id       String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  residence String
+  vancouverArea String
+  nightlifeType String
+  outingFreequency String
+  favouriteInstrument String
+  drinkOfChoice String
+  groupOrAlone String
+  arrivalTime String
+  appealingPromotion String
+  notificationPreference String
+  nighlifeEnvironment String
+  foodImportance String
+  drinkPreference String
+  reasonForNightlife String
+
+  userAccount UserAccount @relation(fields: [userAccountId], references: [id])
+  userAccountId String
+
+  @@map("onboardings")
 }

@@ -28,6 +28,11 @@ export class JwtStrategy extends PassportStrategy(
     sub: string;
     username: string;
   }) {
+    if (!payload) {
+      throw new Error(
+        "Payload is undefined or null"
+      );
+    }
     const user =
       await this.prisma.userAccount.findUnique({
         where: { id: payload.sub },
