@@ -10,9 +10,10 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { AuthDto } from "./dto";
+import { AuthDto, OtpDto } from "./dto";
 import { Response } from "express";
 import { GoogleGuard, JwtGuard } from "./guard";
+import { dot } from "node:test/reporters";
 
 @Controller("auth")
 export class AuthController {
@@ -47,9 +48,19 @@ export class AuthController {
     );
   }
 
-  // not working
-  @Get("twilio")
-  otpValidate() {
-    return this.authService.otpValidate();
+  @Post("verification")
+  otpVerification(
+    @Body("telephone") telephone: string
+  ) {
+    return this.authService.otpVerification(
+      telephone
+    );
+  }
+
+  @Post("verification/check")
+  otpVerificationCheck(@Body() dto: OtpDto) {
+    return this.authService.otpVerificationCheck(
+      dto
+    );
   }
 }

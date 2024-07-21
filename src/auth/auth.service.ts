@@ -4,12 +4,11 @@ import {
   Req,
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { AuthDto } from "./dto";
+import { AuthDto, OtpDto } from "./dto";
 import * as argon from "argon2";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
-import { channel } from "node:diagnostics_channel";
 
 @Injectable()
 export class AuthService {
@@ -115,8 +114,7 @@ export class AuthService {
     return Response.json(Request.user);
   }
 
-  //not working
-  async otpValidate() {
+  async otpVerification(telephone: string) {
     try {
       const accountSid = this.config.get(
         "TWILIO_ACCOUNT_SID"
@@ -136,8 +134,7 @@ export class AuthService {
       const verification = await client.verify.v2
         .services(serviceId)
         .verifications.create({
-          body: "Hello from twilio-node",
-          to: "+94715476969", // Text your number
+          to: telephone,
           channel: "sms",
         });
       console.log(
@@ -148,17 +145,42 @@ export class AuthService {
         "Error during OTP validation:",
         error
       );
-      if (error.code === 21608) {
-        console.error(
-          "The phone number is unverified. Please verify it at https://www.twilio.com/console/phone-numbers/verified"
-        );
-      } else {
-        console.error("Error code:", error.code);
-        console.error(
-          "More info:",
-          error.moreInfo
-        );
-      }
+    }
+  }
+
+  async otpVerificationCheck(dto: OtpDto) {
+    try {
+      const accountSid = this.config.get(
+        "TWILIO_ACCOUNT_SID"
+      );
+      const authToken = this.config.get(
+        "TWILIO_AUTH_TOKEN"
+      );
+      const serviceId = this.config.get(
+        "TWILIO_SERVICE_ID"
+      );
+
+      const client = require("twilio")(
+        accountSid,
+        authToken
+      );
+
+      const verificationCheck =
+        await client.verify
+          .services(serviceId)
+          .verificationChecks.create({
+            to: dto.telephone,
+            code: dto.code,
+          });
+
+      console.log(
+        `Verification status: ${verificationCheck.status}`
+      );
+    } catch (error) {
+      console.error(
+        "Error during OTP validation check:",
+        error
+      );
     }
   }
 }
