@@ -1,19 +1,11 @@
 import {
   Body,
   Controller,
-  Get,
-  Patch,
   Post,
   Put,
-  Req,
   UseGuards,
 } from "@nestjs/common";
-import { GetUser } from "../auth/decorator";
-import {
-  GoogleGuard,
-  JwtGuard,
-} from "../auth/guard";
-import { User } from "@prisma/client";
+import { JwtGuard } from "../auth/guard";
 import { UserService } from "./user.service";
 import {
   locationDto,
@@ -45,12 +37,6 @@ export class UserController {
   async addLocation(@Body() dto: locationDto) {
     return this.userService.changeLocation(dto);
   }
-
-  // @UseGuards(JwtGuard)
-  // @Put("location")
-  // async updateLocation(@Body() dto: locationDto) {
-  //   return this.userService.changeLocation(dto);
-  // }
 
   @UseGuards(JwtGuard)
   @Put("telephone")

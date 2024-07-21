@@ -1,12 +1,9 @@
 import {
   Body,
   Controller,
-  Get,
   HttpCode,
   HttpStatus,
   Post,
-  Req,
-  Res,
   UseGuards,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
@@ -15,9 +12,7 @@ import {
   GoogleAuthDto,
   OtpDto,
 } from "./dto";
-import { Response } from "express";
-import { GoogleGuard, JwtGuard } from "./guard";
-import { dot } from "node:test/reporters";
+import { JwtGuard } from "./guard";
 
 @Controller("auth")
 export class AuthController {
@@ -49,6 +44,7 @@ export class AuthController {
     );
   }
 
+  @UseGuards(JwtGuard)
   @Post("verification")
   otpVerification(
     @Body("telephone") telephone: string
@@ -58,6 +54,7 @@ export class AuthController {
     );
   }
 
+  @UseGuards(JwtGuard)
   @Post("verification/check")
   otpVerificationCheck(@Body() dto: OtpDto) {
     return this.authService.otpVerificationCheck(

@@ -13,8 +13,6 @@ import * as argon from "argon2";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
-import { UserService } from "src/user/user.service";
-import { access } from "fs";
 
 @Injectable()
 export class AuthService {
@@ -285,15 +283,15 @@ export class AuthService {
         `Verification status: ${verificationCheck.status}`
       );
 
-      // const user = await this.prisma.user.update({
-      //   where: {
-      //     id: dto.id,
-      //   },
-      //   data: {
-      //     telephoneNumber: dto.telephone,
-      //   },
-      // });
-      // return user;
+      const user = await this.prisma.user.update({
+        where: {
+          id: dto.id,
+        },
+        data: {
+          telephoneNumber: dto.telephone,
+        },
+      });
+      return user;
     } catch (error) {
       console.error(
         "Error during OTP validation check:",

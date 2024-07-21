@@ -7,7 +7,6 @@ import {
 } from "./dto";
 import * as argon from "argon2";
 import { validate } from "class-validator";
-import { use } from "passport";
 
 @Injectable()
 export class UserService {
