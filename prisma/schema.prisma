@@ -25,7 +25,20 @@ model User {
   userAccount UserAccount @relation(fields: [userAccountId], references: [id])
   userAccountId String
 
+  
+
   @@map("users")
+}
+
+model UserLocation{
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  latitude Float
+  longitude Float
+
+  userAccount UserAccount @relation(fields: [userAccountId], references: [id])
+  userAccountId String
 }
 
 model UserAccount{
@@ -37,6 +50,8 @@ model UserAccount{
 
   User User[]
   Onboarding Onboarding[]
+  paymentDetails PaymentDetails[]
+  UserLocation UserLocation[]
 
   @@map("user_accounts")
 }
@@ -63,5 +78,22 @@ model Onboarding{
   userAccount UserAccount @relation(fields: [userAccountId], references: [id])
   userAccountId String
 
+
   @@map("onboardings")
+}
+
+model PaymentDetails{
+  id       String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  paymentMethod String
+  cardNumber String
+  expiryDate DateTime
+  cardHolderName String
+  cvc String
+
+  userAccount UserAccount @relation(fields: [userAccountId], references: [id])
+  userAccountId String
+
+  @@map("payment_details")
 }

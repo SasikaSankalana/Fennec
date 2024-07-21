@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "prisma:dev:deploy": "prisma migrate deploy",
+    "prisma:dev:deploy": "prisma migrate dev",
     "db:dev:rm": "docker compose rm dev-db -s -f -v",
     "db:dev:up": "docker compose up -d dev-db",
     "db:dev:restart": "npm run db:dev:rm && npm run db:dev:up && powershell -Command \"Start-Sleep -Seconds 1\"  && npm run prisma:dev:deploy",
@@ -44,7 +44,8 @@
     "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
     "reflect-metadata": "^0.2.0",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "twilio": "^5.2.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

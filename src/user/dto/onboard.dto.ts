@@ -49,5 +49,5 @@ export class OnboardDto {
 
   @IsString()
   @IsNotEmpty()
-  username: string;
+  userAccountId: string;
 }

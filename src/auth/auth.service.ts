@@ -9,6 +9,7 @@ import * as argon from "argon2";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
+import { channel } from "node:diagnostics_channel";
 
 @Injectable()
 export class AuthService {
@@ -89,7 +90,7 @@ export class AuthService {
     const token = await this.jwt.signAsync(
       payload,
       {
-        expiresIn: "15m",
+        expiresIn: "60m",
         secret: secret,
       }
     );
@@ -99,6 +100,7 @@ export class AuthService {
     };
   }
 
+  //not working properly
   async googleCallback(Request, Response) {
     const jwt = await this.signToken(
       Request.user.id,
@@ -113,65 +115,50 @@ export class AuthService {
     return Response.json(Request.user);
   }
 
-  async Onboarding(dto) {
+  //not working
+  async otpValidate() {
     try {
-      const userAccount =
-        await this.prisma.userAccount.findUnique({
-          where: { username: dto.username },
-        });
+      const accountSid = this.config.get(
+        "TWILIO_ACCOUNT_SID"
+      );
+      const authToken = this.config.get(
+        "TWILIO_AUTH_TOKEN"
+      );
+      const serviceId = this.config.get(
+        "TWILIO_SERVICE_ID"
+      );
 
-      const existingOnboarding =
-        await this.prisma.onboarding.findFirst({
-          where: {
-            userAccountId: userAccount.id,
-          },
-        });
+      const client = require("twilio")(
+        accountSid,
+        authToken
+      );
 
-      if (existingOnboarding) {
-        throw new Error(
-          `Onboarding record already exists`
-        );
-        return "Onboarding record already exists";
-      }
-      if (!userAccount) {
-        throw new Error(
-          `UserAccount with username ${dto.username} not found`
-        );
-      }
-
-      const onboarding =
-        await this.prisma.onboarding.create({
-          data: {
-            residence: dto.residence,
-            vancouverArea: dto.vancouverArea,
-            nightlifeType: dto.nightlifeType,
-            outingFreequency:
-              dto.outingFreequency,
-            favouriteInstrument:
-              dto.favouriteInstrument,
-            drinkOfChoice: dto.drinkOfChoice,
-            groupOrAlone: dto.groupOrAlone,
-            arrivalTime: dto.arrivalTime,
-            appealingPromotion:
-              dto.appealingPromotion,
-            notificationPreference:
-              dto.notificationPreference,
-            nighlifeEnvironment:
-              dto.nighlifeEnvironment,
-            foodImportance: dto.foodImportance,
-            drinkPreference: dto.drinkPreference,
-            reasonForNightlife:
-              dto.reasonForNightlife,
-            userAccount: {
-              connect: {
-                username: dto.username,
-              },
-            },
-          },
+      const verification = await client.verify.v2
+        .services(serviceId)
+        .verifications.create({
+          body: "Hello from twilio-node",
+          to: "+94715476969", // Text your number
+          channel: "sms",
         });
-      return onboarding;
+      console.log(
+        `Verification status: ${verification.status}`
+      );
     } catch (error) {
-      throw error;
+      console.error(
+        "Error during OTP validation:",
+        error
+      );
+      if (error.code === 21608) {
+        console.error(
+          "The phone number is unverified. Please verify it at https://www.twilio.com/console/phone-numbers/verified"
+        );
+      } else {
+        console.error("Error code:", error.code);
+        console.error(
+          "More info:",
+          error.moreInfo
+        );
+      }
     }
   }
 }

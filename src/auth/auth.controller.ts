@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { AuthDto, OnboardDto } from "./dto";
+import { AuthDto } from "./dto";
 import { Response } from "express";
 import { GoogleGuard, JwtGuard } from "./guard";
 
@@ -47,9 +47,9 @@ export class AuthController {
     );
   }
 
-  // @UseGuards(JwtGuard)
-  @Post("onboarding")
-  Onboarding(@Body() dto: OnboardDto) {
-    return this.authService.Onboarding(dto);
+  // not working
+  @Get("twilio")
+  otpValidate() {
+    return this.authService.otpValidate();
   }
 }
