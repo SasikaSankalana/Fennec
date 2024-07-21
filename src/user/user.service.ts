@@ -1,14 +1,19 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
-import { paymentDetailsDto } from "./dto";
+import {
+  locationDto,
+  OnboardDto,
+  paymentDetailsDto,
+} from "./dto";
 import * as argon from "argon2";
 import { validate } from "class-validator";
+import { use } from "passport";
 
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async Onboarding(dto) {
+  async Onboarding(dto: OnboardDto) {
     try {
       const existingOnboarding =
         await this.prisma.onboarding.findMany({
@@ -29,8 +34,7 @@ export class UserService {
             residence: dto.residence,
             vancouverArea: dto.vancouverArea,
             nightlifeType: dto.nightlifeType,
-            outingFreequency:
-              dto.outingFreequency,
+            outingFrequency: dto.outingFrequency,
             favouriteInstrument:
               dto.favouriteInstrument,
             drinkOfChoice: dto.drinkOfChoice,
@@ -75,22 +79,26 @@ export class UserService {
       );
       const hashedCvc = await argon.hash(dto.cvc);
 
-      const existingPayment =
-        await this.prisma.paymentDetails.findFirst(
+      const existingPayments =
+        await this.prisma.paymentDetails.findMany(
           {
             where: {
-              cardNumber: hashedCardNumber,
               userAccountId: dto.userAccountId,
             },
           }
         );
 
-      if (existingPayment) {
-        throw new Error(
-          "Card number already exists for this user."
+      for (const payment of existingPayments) {
+        const match = await argon.verify(
+          payment.cardNumber,
+          dto.cardNumber
         );
+        if (match) {
+          throw new Error(
+            "This card number is already added for this user account."
+          );
+        }
       }
-
       const payment =
         await this.prisma.paymentDetails.create({
           data: {
@@ -118,7 +126,7 @@ export class UserService {
     }
   }
 
-  async addLocation(dto) {
+  async changeLocation(dto: locationDto) {
     try {
       if (
         dto.latitude < -90 ||
@@ -138,14 +146,26 @@ export class UserService {
       }
 
       const existingLocation =
-        await this.prisma.userLocation.findFirst({
+        await this.prisma.userLocation.findMany({
           where: {
             userAccountId: dto.userAccountId,
           },
         });
 
+      if (existingLocation.length > 0) {
+        return this.updateLocation(dto);
+      } else {
+        return this.addLocation(dto);
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async addLocation(dto: locationDto) {
+    try {
       const location =
-        await this.prisma.userLocation.update({
+        await this.prisma.userLocation.create({
           data: {
             latitude: dto.latitude,
             longitude: dto.longitude,
@@ -155,7 +175,6 @@ export class UserService {
               },
             },
           },
-          where: undefined,
         });
       return location;
     } catch (error) {
@@ -163,49 +182,43 @@ export class UserService {
     }
   }
 
-  async updateLocation(dto) {
+  async updateLocation(dto: locationDto) {
     try {
-      if (
-        dto.latitude < -90 ||
-        dto.latitude > 90
-      ) {
-        throw new Error(
-          "Latitude must be between -90 and 90."
-        );
-      }
-      if (
-        dto.longitude < -180 ||
-        dto.longitude > 180
-      ) {
-        throw new Error(
-          "Longitude must be between -180 and 180."
-        );
-      }
-
-      const existingLocation =
-        await this.prisma.userLocation.findFirst({
+      const location =
+        await this.prisma.userLocation.update({
           where: {
-            userAccountId: dto.userAccountId,
+            id: dto.userAccountId,
+          },
+          data: {
+            latitude: dto.latitude,
+            longitude: dto.longitude,
+            userAccount: {
+              connect: {
+                id: dto.userAccountId,
+              },
+            },
           },
         });
-
-      if (existingLocation) {
-        throw new Error(
-          "Location is already created for this user"
-        );
-      }
-      if (existingLocation) {
-        const location =
-          await this.prisma.userLocation.update({
-            where: { id: existingLocation.id },
-            data: {
-              latitude: dto.latitude,
-              longitude: dto.longitude,
-              updatedAt: new Date(),
-            },
-          });
-      }
       return location;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateTelephoneNumber(
+    id: string,
+    telephone: string
+  ) {
+    try {
+      const user = await this.prisma.user.update({
+        where: {
+          id: id,
+        },
+        data: {
+          telephoneNumber: telephone,
+        },
+      });
+      return user;
     } catch (error) {
       throw error;
     }

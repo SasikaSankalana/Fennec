@@ -15,37 +15,37 @@ export class OnboardDto {
   nightlifeType?: string;
 
   @IsString()
-  outingFreequency?: String;
+  outingFrequency?: string;
 
   @IsString()
-  favouriteInstrument?: String;
+  favouriteInstrument?: string;
 
   @IsString()
-  drinkOfChoice: String;
+  drinkOfChoice: string;
 
   @IsString()
-  groupOrAlone?: String;
+  groupOrAlone?: string;
 
   @IsString()
-  arrivalTime?: String;
+  arrivalTime?: string;
 
   @IsString()
-  appealingPromotion?: String;
+  appealingPromotion?: string;
 
   @IsString()
-  notificationPreference?: String;
+  notificationPreference?: string;
 
   @IsString()
-  nighlifeEnvironment?: String;
+  nighlifeEnvironment?: string;
 
   @IsString()
-  foodImportance?: String;
+  foodImportance?: string;
 
   @IsString()
-  drinkPreference?: String;
+  drinkPreference?: string;
 
   @IsString()
-  reasonForNightlife?: String;
+  reasonForNightlife?: string;
 
   @IsString()
   @IsNotEmpty()

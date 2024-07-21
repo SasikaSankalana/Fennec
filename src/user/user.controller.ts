@@ -27,15 +27,6 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @UseGuards(JwtGuard)
-  @Get("me")
-  getMe(@GetUser() user: User) {
-    return user;
-  }
-
-  @Patch()
-  editUser() {}
-
-  @UseGuards(JwtGuard)
   @Post("onboarding")
   Onboarding(@Body() dto: OnboardDto) {
     return this.userService.Onboarding(dto);
@@ -52,12 +43,24 @@ export class UserController {
   @UseGuards(JwtGuard)
   @Post("location")
   async addLocation(@Body() dto: locationDto) {
-    return this.userService.addLocation(dto);
+    return this.userService.changeLocation(dto);
   }
 
+  // @UseGuards(JwtGuard)
+  // @Put("location")
+  // async updateLocation(@Body() dto: locationDto) {
+  //   return this.userService.changeLocation(dto);
+  // }
+
   @UseGuards(JwtGuard)
-  @Put("location")
-  async updateLocation(@Body() dto: locationDto) {
-    return this.userService.updateLocation(dto);
+  @Put("telephone")
+  async updateTelephoneNumber(
+    id: string,
+    telephone: string
+  ) {
+    return this.updateTelephoneNumber(
+      id,
+      telephone
+    );
   }
 }

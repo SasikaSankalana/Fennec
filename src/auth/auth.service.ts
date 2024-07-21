@@ -4,11 +4,17 @@ import {
   Req,
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { AuthDto, OtpDto } from "./dto";
+import {
+  AuthDto,
+  GoogleAuthDto,
+  OtpDto,
+} from "./dto";
 import * as argon from "argon2";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
+import { UserService } from "src/user/user.service";
+import { access } from "fs";
 
 @Injectable()
 export class AuthService {
@@ -22,7 +28,7 @@ export class AuthService {
     const hash = await argon.hash(dto.password);
 
     try {
-      const user =
+      const newUserAccount =
         await this.prisma.userAccount.create({
           data: {
             username: dto.username,
@@ -30,10 +36,30 @@ export class AuthService {
           },
         });
 
-      return this.signToken(
-        user.id,
-        user.username
+      const newUser =
+        await this.prisma.user.create({
+          data: {
+            name: "",
+            telephoneNumber: "",
+            photoUrl: "",
+            currentPoints: 0,
+            userAccount: {
+              connect: {
+                id: newUserAccount.id,
+              },
+            },
+          },
+        });
+
+      const jwtToken = await this.signToken(
+        newUserAccount.id,
+        newUserAccount.username
       );
+      return {
+        jwtToken,
+        id: newUserAccount.id,
+        username: newUserAccount.username,
+      };
     } catch (error) {
       if (
         error instanceof
@@ -50,29 +76,41 @@ export class AuthService {
   }
 
   async signin(dto: AuthDto) {
-    const user =
-      await this.prisma.userAccount.findUnique({
-        where: {
-          username: dto.username,
-        },
-      });
+    try {
+      const userAccount =
+        await this.prisma.userAccount.findUnique({
+          where: {
+            username: dto.username,
+          },
+        });
 
-    if (!user)
-      throw new ForbiddenException(
-        "Incorrect Credentials"
+      if (!userAccount)
+        throw new ForbiddenException(
+          "Incorrect Credentials"
+        );
+
+      const pwMatch = await argon.verify(
+        userAccount.password,
+        dto.password
       );
 
-    const pwMatch = await argon.verify(
-      user.password,
-      dto.password
-    );
+      if (!pwMatch)
+        throw new ForbiddenException(
+          "Incorrect Credentials"
+        );
 
-    if (!pwMatch)
-      throw new ForbiddenException(
-        "Incorrect Credentials"
+      const jwtToken = await this.signToken(
+        userAccount.id,
+        userAccount.username
       );
-
-    return this.signToken(user.id, user.username);
+      return {
+        jwtToken,
+        id: userAccount.id,
+        username: userAccount.username,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 
   async signToken(
@@ -99,19 +137,89 @@ export class AuthService {
     };
   }
 
-  //not working properly
-  async googleCallback(Request, Response) {
-    const jwt = await this.signToken(
-      Request.user.id,
-      Request.user.username
-    );
-    const jwtToken = jwt;
-    Response.set(
-      "authorization",
-      jwt.access_token
-    );
-    Response.status(200);
-    return Response.json(Request.user);
+  async googleSignUp(dto: GoogleAuthDto) {
+    try {
+      const userAccount =
+        await this.prisma.userAccount.findUnique({
+          where: {
+            username: dto.username,
+          },
+        });
+
+      if (!userAccount) {
+        const newUserAccount =
+          await this.prisma.userAccount.create({
+            data: {
+              username: dto.username,
+              password: " ",
+            },
+          });
+
+        console.log(newUserAccount);
+
+        const newUser =
+          await this.prisma.user.create({
+            data: {
+              name: dto.name,
+              telephoneNumber: "",
+              photoUrl: dto.photoUrl,
+              currentPoints: 0,
+              userAccount: {
+                connect: {
+                  id: newUserAccount.id,
+                },
+              },
+            },
+          });
+
+        const token = await this.signToken(
+          newUserAccount.id,
+          newUserAccount.username
+        );
+
+        return {
+          access_token: token.access_token,
+          userId: newUserAccount.id,
+          userName: newUserAccount.username,
+        };
+      } else {
+        throw new ForbiddenException(
+          "User already exists"
+        );
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async googleSignIn(username: string) {
+    try {
+      const user =
+        await this.prisma.userAccount.findUnique({
+          where: {
+            username: username,
+          },
+        });
+
+      if (!user) {
+        throw new ForbiddenException(
+          "User not found"
+        );
+      }
+
+      const token = await this.signToken(
+        user.id,
+        user.username
+      );
+
+      return {
+        access_token: token.access_token,
+        userId: user.id,
+        userName: user.username,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 
   async otpVerification(telephone: string) {
@@ -166,7 +274,7 @@ export class AuthService {
       );
 
       const verificationCheck =
-        await client.verify
+        await client.verify.v2
           .services(serviceId)
           .verificationChecks.create({
             to: dto.telephone,
@@ -176,6 +284,16 @@ export class AuthService {
       console.log(
         `Verification status: ${verificationCheck.status}`
       );
+
+      // const user = await this.prisma.user.update({
+      //   where: {
+      //     id: dto.id,
+      //   },
+      //   data: {
+      //     telephoneNumber: dto.telephone,
+      //   },
+      // });
+      // return user;
     } catch (error) {
       console.error(
         "Error during OTP validation check:",

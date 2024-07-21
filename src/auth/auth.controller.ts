@@ -10,7 +10,11 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { AuthDto, OtpDto } from "./dto";
+import {
+  AuthDto,
+  GoogleAuthDto,
+  OtpDto,
+} from "./dto";
 import { Response } from "express";
 import { GoogleGuard, JwtGuard } from "./guard";
 import { dot } from "node:test/reporters";
@@ -31,20 +35,17 @@ export class AuthController {
   signin(@Body() dto: AuthDto) {
     return this.authService.signin(dto);
   }
+  @Post("google/signup")
+  async googleSignUp(@Body() dto: GoogleAuthDto) {
+    return this.authService.googleSignUp(dto);
+  }
 
-  @UseGuards(GoogleGuard)
-  @Get("google/signin")
-  async google() {}
-
-  @UseGuards(GoogleGuard)
-  @Get("google/redirect")
-  async googleCallback(
-    @Req() req,
-    @Res() res: Response
+  @Post("google/signin")
+  async googleSignIn(
+    @Body("username") username: string
   ) {
-    return this.authService.googleCallback(
-      req,
-      res
+    return this.authService.googleSignIn(
+      username
     );
   }
 

@@ -4,16 +4,16 @@ import {
   IsString,
 } from "class-validator";
 
-export class OtpDto {
-  @IsString()
+export class GoogleAuthDto {
+  @IsEmail()
   @IsNotEmpty()
-  id: string;
+  username: string;
 
-  @IsString()
   @IsNotEmpty()
-  code: string;
+  @IsString()
+  name: string;
 
-  @IsString()
   @IsNotEmpty()
-  telephone: string;
+  @IsString()
+  photoUrl: string;
 }
