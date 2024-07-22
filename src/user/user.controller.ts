@@ -12,9 +12,11 @@ import {
   OnboardDto,
   paymentDetailsDto,
 } from "./dto";
+import { ApiTags } from "@nestjs/swagger";
 
 @UseGuards(JwtGuard)
 @Controller("users")
+@ApiTags("Users")
 export class UserController {
   constructor(private userService: UserService) {}
 
