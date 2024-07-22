@@ -52,6 +52,7 @@ model UserAccount{
   Onboarding Onboarding[]
   paymentDetails PaymentDetails[]
   UserLocation UserLocation[]
+  UserTicket UserTicket[]
 
   @@map("user_accounts")
 }
@@ -96,4 +97,124 @@ model PaymentDetails{
   userAccountId String
 
   @@map("payment_details")
+}
+
+model Club{
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name String
+
+  ClubLocation ClubLocation[]
+  Event Event[]
+  Promotion Promotion[]
+
+  @@map("clubs")
+}
+
+model ClubLocation{
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name String
+  latitude Float
+  longitude Float
+  address String
+  postalCode String
+  city String
+  country String
+
+  club Club @relation(fields: [clubId], references: [id])
+  clubId String
+
+  @@map("club_locations")
+}
+
+model UserTicket{
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userAccount UserAccount @relation(fields: [userAccountId], references: [id])
+  userAccountId String
+
+  ticket Ticket @relation(fields: [ticketId], references: [id])
+  ticketId String
+
+  @@map("user_tickets")
+}
+
+model Event{
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name String
+  dateTime DateTime
+  description String
+
+  club Club @relation(fields: [clubId], references: [id])
+  clubId String
+
+  ticket Ticket[]
+
+  @@map("events")
+
+} 
+
+model Ticket{
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  event Event @relation(fields: [eventId], references: [id])
+  eventId String
+
+  ticketAddOn TicketAddOn[]
+  ticketType TicketType[]
+  UserTicket UserTicket[]
+
+  @@map("tickets")
+}
+
+model TicketAddOn{
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name String
+  price Float
+
+  ticket Ticket @relation(fields: [ticketId], references: [id])
+  ticketId String
+
+  @@map("ticket_add_ons")
+}
+
+model TicketType{
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name String
+  price Float
+  currentQuantity Int
+  totalQuantity Int
+
+  ticket Ticket @relation(fields: [ticketId], references: [id])
+  ticketId String
+
+  @@map("ticket_types")
+}
+
+model Promotion{
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name String
+  description String
+  startDate DateTime
+  endDate DateTime
+
+  club Club @relation(fields: [clubId], references: [id])
+  clubId String
+
+  @@map("promotions")
 }
