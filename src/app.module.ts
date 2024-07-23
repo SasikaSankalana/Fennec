@@ -1,9 +1,9 @@
-import { Module } from "@nestjs/common";
-import { AuthModule } from "./auth/auth.module";
-import { PrismaModule } from "./prisma/prisma.module";
-import { ConfigModule } from "@nestjs/config";
-import { UserModule } from "./user/user.module";
-import { ClubModule } from './club/club.module';
+import { Module } from '@nestjs/common';
+import { AuthModule } from './auth/auth.module';
+import { PrismaModule } from './prisma/prisma.module';
+import { ConfigModule } from '@nestjs/config';
+import { UserModule } from './user/user.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -13,7 +13,7 @@ import { ClubModule } from './club/club.module';
     AuthModule,
     PrismaModule,
     UserModule,
-    ClubModule,
+    AdminModule,
   ],
 })
 export class AppModule {}

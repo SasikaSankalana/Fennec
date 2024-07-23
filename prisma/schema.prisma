@@ -13,6 +13,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  USER
+  ADMIN
+  SUPERADMIN
+}
+
 model User {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
@@ -24,8 +30,6 @@ model User {
   
   userAccount UserAccount @relation(fields: [userAccountId], references: [id])
   userAccountId String
-
-  
 
   @@map("users")
 }
@@ -47,12 +51,14 @@ model UserAccount{
   updatedAt DateTime @updatedAt
   username String @unique
   password String
+  role Role   @default(USER)
 
   User User[]
   Onboarding Onboarding[]
   paymentDetails PaymentDetails[]
   UserLocation UserLocation[]
   UserTicket UserTicket[]
+  Club Club[]
 
   @@map("user_accounts")
 }
@@ -99,13 +105,19 @@ model PaymentDetails{
   @@map("payment_details")
 }
 
+
 model Club{
   id String @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   name String
 
-  ClubLocation ClubLocation[]
+  clubOwner UserAccount @relation(fields: [clubOwnerId], references: [id])
+  clubOwnerId String
+
+  clubLocation ClubLocation @relation(fields: [clubLocationId], references: [id])
+  clubLocationId String
+
   Event Event[]
   Promotion Promotion[]
 
@@ -124,8 +136,7 @@ model ClubLocation{
   city String
   country String
 
-  club Club @relation(fields: [clubId], references: [id])
-  clubId String
+  Club Club[]
 
   @@map("club_locations")
 }

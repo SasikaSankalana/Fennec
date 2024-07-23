@@ -5,7 +5,7 @@ import {
   IsString,
 } from 'class-validator';
 
-export class ClubDto {
+export class UserClubDto {
   @IsString()
   @IsNotEmpty()
   name: string;
