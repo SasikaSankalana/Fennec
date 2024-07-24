@@ -10,7 +10,7 @@ import {
 import { AdminClubDto } from './dto';
 import { AdminClubService } from './admin-club.service';
 
-@Controller('club')
+@Controller('admin/club')
 export class AdminClubController {
   constructor(private adminClubService: AdminClubService) {}
 

@@ -1,57 +1,47 @@
-import {
-  ForbiddenException,
-  Injectable,
-  Req,
-} from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
-import {
-  AuthDto,
-  GoogleAuthDto,
-  OtpDto,
-} from "./dto";
-import * as argon from "argon2";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { JwtService } from "@nestjs/jwt";
-import { ConfigService } from "@nestjs/config";
+import { ForbiddenException, Injectable, Req } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { AuthDto, GoogleAuthDto, OtpDto } from './dto';
+import * as argon from 'argon2';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwt: JwtService,
-    private config: ConfigService
+    private config: ConfigService,
   ) {}
 
   async signup(dto: AuthDto) {
     const hash = await argon.hash(dto.password);
 
     try {
-      const newUserAccount =
-        await this.prisma.userAccount.create({
-          data: {
-            username: dto.username,
-            password: hash,
-          },
-        });
+      const newUserAccount = await this.prisma.userAccount.create({
+        data: {
+          username: dto.username,
+          password: hash,
+        },
+      });
 
-      const newUser =
-        await this.prisma.user.create({
-          data: {
-            name: "",
-            telephoneNumber: "",
-            photoUrl: "",
-            currentPoints: 0,
-            userAccount: {
-              connect: {
-                id: newUserAccount.id,
-              },
+      const newUser = await this.prisma.user.create({
+        data: {
+          name: '',
+          telephoneNumber: '',
+          photoUrl: '',
+          currentPoints: 0,
+          userAccount: {
+            connect: {
+              id: newUserAccount.id,
             },
           },
-        });
+        },
+      });
 
       const jwtToken = await this.signToken(
         newUserAccount.id,
-        newUserAccount.username
+        newUserAccount.username,
       );
       return {
         jwtToken,
@@ -59,14 +49,9 @@ export class AuthService {
         username: newUserAccount.username,
       };
     } catch (error) {
-      if (
-        error instanceof
-        PrismaClientKnownRequestError
-      ) {
-        if (error.code === "P2002") {
-          throw new ForbiddenException(
-            "Credentials Taken"
-          );
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') {
+          throw new ForbiddenException('Credentials Taken');
         }
       }
       throw error;
@@ -75,31 +60,21 @@ export class AuthService {
 
   async signin(dto: AuthDto) {
     try {
-      const userAccount =
-        await this.prisma.userAccount.findUnique({
-          where: {
-            username: dto.username,
-          },
-        });
+      const userAccount = await this.prisma.userAccount.findUnique({
+        where: {
+          username: dto.username,
+        },
+      });
 
-      if (!userAccount)
-        throw new ForbiddenException(
-          "Incorrect Credentials"
-        );
+      if (!userAccount) throw new ForbiddenException('Incorrect Credentials');
 
-      const pwMatch = await argon.verify(
-        userAccount.password,
-        dto.password
-      );
+      const pwMatch = await argon.verify(userAccount.password, dto.password);
 
-      if (!pwMatch)
-        throw new ForbiddenException(
-          "Incorrect Credentials"
-        );
+      if (!pwMatch) throw new ForbiddenException('Incorrect Credentials');
 
       const jwtToken = await this.signToken(
         userAccount.id,
-        userAccount.username
+        userAccount.username,
       );
       return {
         jwtToken,
@@ -113,22 +88,19 @@ export class AuthService {
 
   async signToken(
     userId: string,
-    username: string
+    username: string,
   ): Promise<{ access_token: string }> {
     const payload = {
       sub: userId,
       username,
     };
 
-    const secret = this.config.get("JWT_SECRET");
+    const secret = this.config.get('JWT_SECRET');
 
-    const token = await this.jwt.signAsync(
-      payload,
-      {
-        expiresIn: "60m",
-        secret: secret,
-      }
-    );
+    const token = await this.jwt.signAsync(payload, {
+      expiresIn: '60m',
+      secret: secret,
+    });
 
     return {
       access_token: token,
@@ -137,42 +109,39 @@ export class AuthService {
 
   async googleSignUp(dto: GoogleAuthDto) {
     try {
-      const userAccount =
-        await this.prisma.userAccount.findUnique({
-          where: {
+      const userAccount = await this.prisma.userAccount.findUnique({
+        where: {
+          username: dto.username,
+        },
+      });
+
+      if (!userAccount) {
+        const newUserAccount = await this.prisma.userAccount.create({
+          data: {
             username: dto.username,
+            password: ' ',
           },
         });
 
-      if (!userAccount) {
-        const newUserAccount =
-          await this.prisma.userAccount.create({
-            data: {
-              username: dto.username,
-              password: " ",
-            },
-          });
-
         console.log(newUserAccount);
 
-        const newUser =
-          await this.prisma.user.create({
-            data: {
-              name: dto.name,
-              telephoneNumber: "",
-              photoUrl: dto.photoUrl,
-              currentPoints: 0,
-              userAccount: {
-                connect: {
-                  id: newUserAccount.id,
-                },
+        const newUser = await this.prisma.user.create({
+          data: {
+            name: dto.name,
+            telephoneNumber: '',
+            photoUrl: dto.photoUrl,
+            currentPoints: 0,
+            userAccount: {
+              connect: {
+                id: newUserAccount.id,
               },
             },
-          });
+          },
+        });
 
         const token = await this.signToken(
           newUserAccount.id,
-          newUserAccount.username
+          newUserAccount.username,
         );
 
         return {
@@ -181,9 +150,7 @@ export class AuthService {
           userName: newUserAccount.username,
         };
       } else {
-        throw new ForbiddenException(
-          "User already exists"
-        );
+        throw new ForbiddenException('User already exists');
       }
     } catch (error) {
       throw error;
@@ -192,23 +159,17 @@ export class AuthService {
 
   async googleSignIn(username: string) {
     try {
-      const user =
-        await this.prisma.userAccount.findUnique({
-          where: {
-            username: username,
-          },
-        });
+      const user = await this.prisma.userAccount.findUnique({
+        where: {
+          username: username,
+        },
+      });
 
       if (!user) {
-        throw new ForbiddenException(
-          "User not found"
-        );
+        throw new ForbiddenException('User not found');
       }
 
-      const token = await this.signToken(
-        user.id,
-        user.username
-      );
+      const token = await this.signToken(user.id, user.username);
 
       return {
         access_token: token.access_token,
@@ -222,66 +183,40 @@ export class AuthService {
 
   async otpVerification(telephone: string) {
     try {
-      const accountSid = this.config.get(
-        "TWILIO_ACCOUNT_SID"
-      );
-      const authToken = this.config.get(
-        "TWILIO_AUTH_TOKEN"
-      );
-      const serviceId = this.config.get(
-        "TWILIO_SERVICE_ID"
-      );
+      const accountSid = this.config.get('TWILIO_ACCOUNT_SID');
+      const authToken = this.config.get('TWILIO_AUTH_TOKEN');
+      const serviceId = this.config.get('TWILIO_SERVICE_ID');
 
-      const client = require("twilio")(
-        accountSid,
-        authToken
-      );
+      const client = require('twilio')(accountSid, authToken);
 
       const verification = await client.verify.v2
         .services(serviceId)
         .verifications.create({
           to: telephone,
-          channel: "sms",
+          channel: 'sms',
         });
-      console.log(
-        `Verification status: ${verification.status}`
-      );
+      console.log(`Verification status: ${verification.status}`);
     } catch (error) {
-      console.error(
-        "Error during OTP validation:",
-        error
-      );
+      console.error('Error during OTP validation:', error);
     }
   }
 
   async otpVerificationCheck(dto: OtpDto) {
     try {
-      const accountSid = this.config.get(
-        "TWILIO_ACCOUNT_SID"
-      );
-      const authToken = this.config.get(
-        "TWILIO_AUTH_TOKEN"
-      );
-      const serviceId = this.config.get(
-        "TWILIO_SERVICE_ID"
-      );
+      const accountSid = this.config.get('TWILIO_ACCOUNT_SID');
+      const authToken = this.config.get('TWILIO_AUTH_TOKEN');
+      const serviceId = this.config.get('TWILIO_SERVICE_ID');
 
-      const client = require("twilio")(
-        accountSid,
-        authToken
-      );
+      const client = require('twilio')(accountSid, authToken);
 
-      const verificationCheck =
-        await client.verify.v2
-          .services(serviceId)
-          .verificationChecks.create({
-            to: dto.telephone,
-            code: dto.code,
-          });
+      const verificationCheck = await client.verify.v2
+        .services(serviceId)
+        .verificationChecks.create({
+          to: dto.telephone,
+          code: dto.code,
+        });
 
-      console.log(
-        `Verification status: ${verificationCheck.status}`
-      );
+      console.log(`Verification status: ${verificationCheck.status}`);
 
       const user = await this.prisma.user.update({
         where: {
@@ -293,10 +228,7 @@ export class AuthService {
       });
       return user;
     } catch (error) {
-      console.error(
-        "Error during OTP validation check:",
-        error
-      );
+      console.error('Error during OTP validation check:', error);
     }
   }
 }
