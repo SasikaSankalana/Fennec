@@ -33,4 +33,9 @@ export class AdminClubController {
   getClub(@Param('id') id: string) {
     return this.adminClubService.getClub(id);
   }
+
+  @Get('get')
+  getClubs() {
+    return this.adminClubService.getClubs();
+  }
 }

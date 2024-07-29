@@ -119,6 +119,7 @@ model Club{
   clubLocationId String
 
   Event Event[]
+  ClubNight ClubNight[]
   Promotion Promotion[]
 
   @@map("clubs")
@@ -152,6 +153,9 @@ model UserTicket{
   ticket Ticket @relation(fields: [ticketId], references: [id])
   ticketId String
 
+  ticketAddOn TicketAddOn @relation(fields: [ticketAddOnId], references: [id])
+  ticketAddOnId String  
+
   @@map("user_tickets")
 }
 
@@ -166,22 +170,37 @@ model Event{
   club Club @relation(fields: [clubId], references: [id])
   clubId String
 
-  ticket Ticket[]
+  ticketType TicketType[]
 
   @@map("events")
 
 } 
 
+model ClubNight{
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name String
+  dateTime DateTime
+  description String
+
+  club Club @relation(fields: [clubId], references: [id])
+  clubId String
+
+  ticketType TicketType[]
+
+  @@map("club_nights")
+}
+
 model Ticket{
   id String @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  eventType String
 
-  event Event @relation(fields: [eventId], references: [id])
-  eventId String
+  ticketType TicketType @relation(fields: [ticketTypeId], references: [id])
+  ticketTypeId String
 
-  ticketAddOn TicketAddOn[]
-  ticketType TicketType[]
   UserTicket UserTicket[]
 
   @@map("tickets")
@@ -194,8 +213,7 @@ model TicketAddOn{
   name String
   price Float
 
-  ticket Ticket @relation(fields: [ticketId], references: [id])
-  ticketId String
+  UserTicket UserTicket[]
 
   @@map("ticket_add_ons")
 }
@@ -209,8 +227,13 @@ model TicketType{
   currentQuantity Int
   totalQuantity Int
 
-  ticket Ticket @relation(fields: [ticketId], references: [id])
-  ticketId String
+  event Event @relation(fields: [eventId], references: [id])
+  eventId String
+
+  clubNight ClubNight @relation(fields: [clubNightId], references: [id])
+  clubNightId String
+
+  ticket Ticket[]
 
   @@map("ticket_types")
 }
@@ -223,6 +246,7 @@ model Promotion{
   description String
   startDate DateTime
   endDate DateTime
+  pointsRequired Int
 
   club Club @relation(fields: [clubId], references: [id])
   clubId String

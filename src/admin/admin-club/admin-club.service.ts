@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { AdminClubDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -7,69 +11,151 @@ export class AdminClubService {
   constructor(private prisma: PrismaService) {}
 
   async addClub(dto: AdminClubDto) {
-    const club = await this.prisma.club.create({
-      data: {
-        name: dto.name,
-        clubOwner: {
-          connect: {
-            id: dto.clubOwnerId,
-          },
-        },
-        clubLocation: {
-          create: {
-            name: dto.locationName,
+    try {
+      const existingClub = await this.prisma.club.findFirst({
+        where: {
+          name: dto.name,
+          clubLocation: {
             latitude: dto.latitude,
             longitude: dto.longitude,
-            address: dto.address,
-            postalCode: dto.postalCode,
-            city: dto.city,
-            country: dto.country,
           },
         },
-      },
-    });
+        include: {
+          clubLocation: true,
+        },
+      });
 
-    return club;
+      if (existingClub) {
+        throw new BadRequestException(
+          'A club with this name already exists in this location',
+        );
+      }
+
+      const club = await this.prisma.club.create({
+        data: {
+          name: dto.name,
+          clubOwner: {
+            connect: {
+              id: dto.clubOwnerId,
+            },
+          },
+          clubLocation: {
+            create: {
+              name: dto.locationName,
+              latitude: dto.latitude,
+              longitude: dto.longitude,
+              address: dto.address,
+              postalCode: dto.postalCode,
+              city: dto.city,
+              country: dto.country,
+            },
+          },
+        },
+        include: {
+          clubLocation: true,
+        },
+      });
+
+      return club;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  //check update logic again
   async updateClub(id: string, dto: AdminClubDto) {
-    const club = await this.prisma.club.update({
-      where: {
-        id: id,
-      },
-      data: {
-        name: dto.name,
-        clubOwner: {
-          connect: {
-            id: dto.clubOwnerId,
+    try {
+      const club = await this.prisma.club.update({
+        where: {
+          id: id,
+        },
+        data: {
+          name: dto.name,
+          clubOwner: {
+            connect: {
+              id: dto.clubOwnerId,
+            },
+          },
+          clubLocation: {
+            update: {
+              name: dto.locationName,
+              latitude: dto.latitude,
+              longitude: dto.longitude,
+              address: dto.address,
+              postalCode: dto.postalCode,
+              city: dto.city,
+              country: dto.country,
+            },
           },
         },
-        clubLocation: {
-          update: {
-            name: dto.locationName,
-            latitude: dto.latitude,
-            longitude: dto.longitude,
-            address: dto.address,
-            postalCode: dto.postalCode,
-            city: dto.city,
-            country: dto.country,
-          },
+        include: {
+          clubLocation: true,
         },
-      },
-    });
-    return { club };
+      });
+      return { club };
+    } catch (error) {
+      throw error;
+    }
   }
 
   async deleteClub(id: string) {
-    const club = await this.prisma.club.delete({
-      where: {
-        id: id,
-      },
-    });
+    try {
+      const club = await this.prisma.club.findUnique({
+        where: { id },
+      });
 
-    return;
+      if (!club) {
+        throw new ForbiddenException('Club not found');
+      }
+
+      await this.prisma.club.delete({
+        where: {
+          id: id,
+        },
+        include: {
+          clubLocation: true,
+        },
+      });
+
+      return club;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  async getClub(id: string) {}
+  async getClub(id: string) {
+    try {
+      const club = await this.prisma.club.findUnique({
+        where: {
+          id: id,
+        },
+        include: {
+          clubOwner: true,
+          clubLocation: true,
+        },
+      });
+
+      if (!club) {
+        throw new ForbiddenException('Club not found');
+      }
+
+      return club;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getClubs() {
+    try {
+      const clubs = await this.prisma.club.findMany({
+        include: {
+          clubOwner: true,
+          clubLocation: true,
+        },
+      });
+
+      return clubs;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
