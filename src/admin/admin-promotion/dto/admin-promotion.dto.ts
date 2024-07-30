@@ -1,24 +1,26 @@
 import { Type } from 'class-transformer';
-import {
-  IsDate,
-  IsNotEmpty,
-  IsNumber,
-  IsNumberString,
-  IsString,
-} from 'class-validator';
+import { IsInt, IsNotEmpty, IsString } from 'class-validator';
 
-export class AdminClubNightDto {
+export class AdminPromotionDto {
   @IsString()
   @IsNotEmpty()
   name: string;
 
   @Type(() => Date)
   @IsNotEmpty()
-  dateTime: Date;
+  startDate: Date;
+
+  @Type(() => Date)
+  @IsNotEmpty()
+  endDate: Date;
 
   @IsString()
   @IsNotEmpty()
   description: string;
+
+  @IsNotEmpty()
+  @IsInt()
+  pointsRequired: number;
 
   @IsString()
   @IsNotEmpty()

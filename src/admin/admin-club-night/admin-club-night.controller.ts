@@ -19,12 +19,12 @@ export class AdminClubNightController {
     return this.adminClubNightService.addClubNight(dto);
   }
 
-  @Put('update')
+  @Put('update/:id')
   updateClubNight(@Param('id') id: string, @Body() dto: AdminClubNightDto) {
     return this.adminClubNightService.updateClubNight(id, dto);
   }
 
-  @Delete('delete')
+  @Delete('delete/:id')
   deleteClubNight(@Param('id') id: string) {
     return this.adminClubNightService.deleteClubNight(id);
   }
