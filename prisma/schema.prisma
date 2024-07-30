@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,86 +8,70 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  name      String
+  id              String   @id @default(cuid())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  name            String
+  email           String   @unique
   telephoneNumber String
-  photoUrl  String?
-  currentPoints Int 
-  
-  userAccount UserAccount @relation(fields: [userAccountId], references: [id])
-  userAccountId String
+  photoUrl        String?
+  currentPoints   Int
 
-  
+  userLocation   UserLocation[]
+  onboarding     Onboarding[]
+  paymentDetails PaymentDetails[]
 
   @@map("users")
 }
 
-model UserLocation{
-  id String @id @default(cuid())
+model UserLocation {
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  latitude Float
+  latitude  Float
   longitude Float
+  userId    String
 
-  userAccount UserAccount @relation(fields: [userAccountId], references: [id])
-  userAccountId String
+  user User @relation(fields: [userId], references: [id])
 }
 
-model UserAccount{
-  id       String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  username String @unique
-  password String
-
-  User User[]
-  Onboarding Onboarding[]
-  paymentDetails PaymentDetails[]
-  UserLocation UserLocation[]
-
-  @@map("user_accounts")
-}
-
-model Onboarding{
-  id       String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  residence String?
-  vancouverArea String?
-  nightlifeType String?
-  outingFrequency String?
-  favouriteInstrument String?
-  drinkOfChoice String?
-  groupOrAlone String?
-  arrivalTime String?
-  appealingPromotion String?
+model Onboarding {
+  id                     String   @id @default(cuid())
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  residence              String?
+  vancouverArea          String?
+  nightlifeType          String?
+  outingFrequency        String?
+  favouriteInstrument    String?
+  drinkOfChoice          String?
+  groupOrAlone           String?
+  arrivalTime            String?
+  appealingPromotion     String?
   notificationPreference String?
-  nighlifeEnvironment String?
-  foodImportance String?
-  drinkPreference String?
-  reasonForNightlife String?
+  nighlifeEnvironment    String?
+  foodImportance         String?
+  drinkPreference        String?
+  reasonForNightlife     String?
+  userId                 String
 
-  userAccount UserAccount @relation(fields: [userAccountId], references: [id])
-  userAccountId String
-
+  user User @relation(fields: [userId], references: [id])
 
   @@map("onboardings")
 }
 
-model PaymentDetails{
-  id       String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  paymentMethod String
-  cardNumber String
-  expiryDate DateTime
+model PaymentDetails {
+  id             String   @id @default(cuid())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  paymentMethod  String
+  cardNumber     String
+  expiryDate     DateTime
   cardHolderName String
-  cvc String
+  cvc            String
+  userId         String
 
-  userAccount UserAccount @relation(fields: [userAccountId], references: [id])
-  userAccountId String
+  user User @relation(fields: [userId], references: [id])
 
   @@map("payment_details")
 }

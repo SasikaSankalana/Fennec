@@ -5,7 +5,7 @@ import {
   IsString,
   IsUUID,
   Length,
-} from "class-validator";
+} from 'class-validator';
 
 export class paymentDetailsDto {
   @IsString()
@@ -28,5 +28,5 @@ export class paymentDetailsDto {
   cvc: string;
 
   @IsString()
-  userAccountId: string;
+  userId: string;
 }

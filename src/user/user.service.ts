@@ -7,8 +7,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { locationDto, OnboardDto, paymentDetailsDto } from './dto';
 import * as argon from 'argon2';
 import { validate } from 'class-validator';
-import { log } from 'console';
-import e from 'express';
 
 @Injectable()
 export class UserService {
@@ -18,7 +16,7 @@ export class UserService {
     try {
       const existingOnboarding = await this.prisma.onboarding.findMany({
         where: {
-          userAccountId: dto.userAccountId,
+          userId: dto.userId,
         },
       });
 
@@ -44,9 +42,9 @@ export class UserService {
           foodImportance: dto.foodImportance,
           drinkPreference: dto.drinkPreference,
           reasonForNightlife: dto.reasonForNightlife,
-          userAccount: {
+          user: {
             connect: {
-              id: dto.userAccountId,
+              id: dto.userId,
             },
           },
         },
@@ -70,7 +68,7 @@ export class UserService {
 
       const existingPayments = await this.prisma.paymentDetails.findMany({
         where: {
-          userAccountId: dto.userAccountId,
+          userId: dto.userId,
         },
       });
 
@@ -91,9 +89,9 @@ export class UserService {
           expiryDate: dto.expiryDate,
           cardHolderName: dto.cardHolderName,
           cvc: hashedCvc,
-          userAccount: {
+          user: {
             connect: {
-              id: dto.userAccountId,
+              id: dto.userId,
             },
           },
         },
@@ -118,7 +116,7 @@ export class UserService {
 
       const existingLocation = await this.prisma.userLocation.findMany({
         where: {
-          userAccountId: dto.userAccountId,
+          userId: dto.userId,
         },
       });
 
@@ -138,9 +136,9 @@ export class UserService {
         data: {
           latitude: dto.latitude,
           longitude: dto.longitude,
-          userAccount: {
+          user: {
             connect: {
-              id: dto.userAccountId,
+              id: dto.userId,
             },
           },
         },
@@ -155,14 +153,14 @@ export class UserService {
     try {
       const location = await this.prisma.userLocation.update({
         where: {
-          id: dto.userAccountId,
+          id: dto.userId,
         },
         data: {
           latitude: dto.latitude,
           longitude: dto.longitude,
-          userAccount: {
+          user: {
             connect: {
-              id: dto.userAccountId,
+              id: dto.userId,
             },
           },
         },

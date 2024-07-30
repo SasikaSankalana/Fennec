@@ -1,7 +1,4 @@
-import {
-  IsNotEmpty,
-  IsNumber,
-} from "class-validator";
+import { IsNotEmpty, IsNumber } from 'class-validator';
 
 export class locationDto {
   @IsNumber()
@@ -13,5 +10,5 @@ export class locationDto {
   longitude: number;
 
   @IsNotEmpty()
-  userAccountId: string;
+  userId: string;
 }
