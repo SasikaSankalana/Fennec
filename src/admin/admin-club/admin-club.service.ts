@@ -12,23 +12,10 @@ export class AdminClubService {
 
   async addClub(dto: AdminClubDto) {
     try {
-      const existingClub = await this.prisma.club.findFirst({
-        where: {
-          name: dto.name,
-          clubLocation: {
-            latitude: dto.latitude,
-            longitude: dto.longitude,
-          },
-        },
-        include: {
-          clubLocation: true,
-        },
-      });
+      const clubValidate = await this.clubValidate(dto);
 
-      if (existingClub) {
-        throw new BadRequestException(
-          'A club with this name already exists in this location',
-        );
+      if (clubValidate != true) {
+        throw clubValidate;
       }
 
       const club = await this.prisma.club.create({
@@ -64,6 +51,12 @@ export class AdminClubService {
 
   async updateClub(id: string, dto: AdminClubDto) {
     try {
+      const clubValidate = await this.clubValidate(dto);
+
+      if (clubValidate != true) {
+        throw clubValidate;
+      }
+
       const club = await this.prisma.club.update({
         where: {
           id: id,
@@ -95,6 +88,28 @@ export class AdminClubService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async clubValidate(dto: AdminClubDto) {
+    const existingClub = await this.prisma.club.findFirst({
+      where: {
+        name: dto.name,
+        clubLocation: {
+          latitude: dto.latitude,
+          longitude: dto.longitude,
+        },
+      },
+      include: {
+        clubLocation: true,
+      },
+    });
+
+    if (existingClub) {
+      return new BadRequestException(
+        'A club with this name already exists in this location',
+      );
+    }
+    return true;
   }
 
   async deleteClub(id: string) {

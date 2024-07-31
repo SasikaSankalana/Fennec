@@ -1,4 +1,5 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
+import { error } from 'node:console';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -48,6 +49,19 @@ export class UserPromotionService {
 
   async redeemPromotion(userId: string, requiredPoints: number) {
     try {
+      const currentPoints = await this.prisma.user.findUnique({
+        where: {
+          id: userId,
+        },
+        select: {
+          currentPoints: true,
+        },
+      });
+
+      if (currentPoints.currentPoints < requiredPoints) {
+        throw new error('Insufficient points');
+      }
+
       const updatedPoints = await this.prisma.user.update({
         where: {
           id: userId,
