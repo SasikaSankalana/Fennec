@@ -4,49 +4,30 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Req,
   UseGuards,
-} from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
-import { AuthService } from "./auth.service";
-import { AuthDto, GoogleAuthDto, OtpDto } from "./dto";
-import { JwtGuard } from "./guard";
-
-@Controller("auth")
-@ApiTags("Authentication")
+} from '@nestjs/common';
+import * as FirebaseAuth from 'firebase/auth';
+import { ApiTags } from '@nestjs/swagger';
+import { AuthService } from './auth.service';
+import { SignUpDto } from './dto';
+import { FirebaseGuard } from './guard';
+@Controller('auth')
+@ApiTags('Authentication')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  public jwtToken = { access_token: "" };
-
-  @Post("signup")
-  signup(@Body() dto: AuthDto) {
-    return this.authService.signup(dto);
+  // @UseGuards(FirebaseGuard)
+  @Post('signup')
+  signUp(@Body() dto: SignUpDto) {
+    return this.authService.signUp(dto);
   }
 
   @HttpCode(HttpStatus.OK)
-  @Post("signin")
-  signin(@Body() dto: AuthDto) {
-    return this.authService.signin(dto);
-  }
-  @Post("google/signup")
-  async googleSignUp(@Body() dto: GoogleAuthDto) {
-    return this.authService.googleSignUp(dto);
-  }
-
-  @Post("google/signin")
-  async googleSignIn(@Body("username") username: string) {
-    return this.authService.googleSignIn(username);
-  }
-
-  @UseGuards(JwtGuard)
-  @Post("verification")
-  otpVerification(@Body("telephone") telephone: string) {
-    return this.authService.otpVerification(telephone);
-  }
-
-  @UseGuards(JwtGuard)
-  @Post("verification/check")
-  otpVerificationCheck(@Body() dto: OtpDto) {
-    return this.authService.otpVerificationCheck(dto);
+  // @UseGuards(FirebaseGuard)
+  @Post('signin')
+  signin(@Req() req) {
+    const email = req.user.email;
+    return this.authService.signIn(email);
   }
 }

@@ -7,7 +7,7 @@ CREATE TABLE "users" (
     "telephoneNumber" TEXT NOT NULL,
     "photoUrl" TEXT,
     "currentPoints" INTEGER NOT NULL,
-    "userAccountId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
@@ -19,7 +19,7 @@ CREATE TABLE "UserLocation" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "latitude" DOUBLE PRECISION NOT NULL,
     "longitude" DOUBLE PRECISION NOT NULL,
-    "userAccountId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
 
     CONSTRAINT "UserLocation_pkey" PRIMARY KEY ("id")
 );
@@ -54,7 +54,7 @@ CREATE TABLE "onboardings" (
     "foodImportance" TEXT,
     "drinkPreference" TEXT,
     "reasonForNightlife" TEXT,
-    "userAccountId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
 
     CONSTRAINT "onboardings_pkey" PRIMARY KEY ("id")
 );
@@ -69,7 +69,7 @@ CREATE TABLE "payment_details" (
     "expiryDate" TIMESTAMP(3) NOT NULL,
     "cardHolderName" TEXT NOT NULL,
     "cvc" TEXT NOT NULL,
-    "userAccountId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
 
     CONSTRAINT "payment_details_pkey" PRIMARY KEY ("id")
 );
@@ -78,13 +78,13 @@ CREATE TABLE "payment_details" (
 CREATE UNIQUE INDEX "user_accounts_username_key" ON "user_accounts"("username");
 
 -- AddForeignKey
-ALTER TABLE "users" ADD CONSTRAINT "users_userAccountId_fkey" FOREIGN KEY ("userAccountId") REFERENCES "user_accounts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "users" ADD CONSTRAINT "users_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user_accounts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "UserLocation" ADD CONSTRAINT "UserLocation_userAccountId_fkey" FOREIGN KEY ("userAccountId") REFERENCES "user_accounts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "UserLocation" ADD CONSTRAINT "UserLocation_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user_accounts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "onboardings" ADD CONSTRAINT "onboardings_userAccountId_fkey" FOREIGN KEY ("userAccountId") REFERENCES "user_accounts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "onboardings" ADD CONSTRAINT "onboardings_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user_accounts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "payment_details" ADD CONSTRAINT "payment_details_userAccountId_fkey" FOREIGN KEY ("userAccountId") REFERENCES "user_accounts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "payment_details" ADD CONSTRAINT "payment_details_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user_accounts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

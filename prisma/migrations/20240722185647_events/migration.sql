@@ -29,7 +29,7 @@ CREATE TABLE "user_tickets" (
     "id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "userAccountId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
     "ticketId" TEXT NOT NULL,
 
     CONSTRAINT "user_tickets_pkey" PRIMARY KEY ("id")
@@ -102,7 +102,7 @@ CREATE TABLE "promotions" (
 ALTER TABLE "club_locations" ADD CONSTRAINT "club_locations_clubId_fkey" FOREIGN KEY ("clubId") REFERENCES "clubs"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "user_tickets" ADD CONSTRAINT "user_tickets_userAccountId_fkey" FOREIGN KEY ("userAccountId") REFERENCES "user_accounts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "user_tickets" ADD CONSTRAINT "user_tickets_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user_accounts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "user_tickets" ADD CONSTRAINT "user_tickets_ticketId_fkey" FOREIGN KEY ("ticketId") REFERENCES "tickets"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

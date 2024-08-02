@@ -1,9 +1,7 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { UserPromotionService } from './user-promotion.service';
-import { JwtGuard } from 'src/auth/guard';
 import { RedeemPromotionDto } from './dto';
 
-@UseGuards(JwtGuard)
 @Controller('promotion')
 export class UserPromotionController {
   constructor(private userPromotionService: UserPromotionService) {}

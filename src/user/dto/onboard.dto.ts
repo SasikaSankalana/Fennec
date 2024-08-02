@@ -1,8 +1,4 @@
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsString,
-} from "class-validator";
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 export class OnboardDto {
   @IsString()
@@ -49,5 +45,5 @@ export class OnboardDto {
 
   @IsString()
   @IsNotEmpty()
-  userAccountId: string;
+  userId: string;
 }

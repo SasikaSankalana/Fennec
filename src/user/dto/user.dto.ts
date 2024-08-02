@@ -15,5 +15,5 @@ export class UserDto {
 
   @IsString()
   @IsNotEmpty()
-  userAccountId: string;
+  userId: string;
 }

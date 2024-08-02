@@ -5,10 +5,6 @@ export class RedeemPromotionDto {
   @IsNotEmpty()
   userId: string;
 
-  @IsString()
-  @IsNotEmpty()
-  userAccountId: string;
-
   @IsInt()
   @IsNotEmpty()
   requiredPoints: number;

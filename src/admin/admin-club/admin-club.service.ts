@@ -51,12 +51,6 @@ export class AdminClubService {
 
   async updateClub(id: string, dto: AdminClubDto) {
     try {
-      const clubValidate = await this.clubValidate(dto);
-
-      if (clubValidate != true) {
-        throw clubValidate;
-      }
-
       const club = await this.prisma.club.update({
         where: {
           id: id,

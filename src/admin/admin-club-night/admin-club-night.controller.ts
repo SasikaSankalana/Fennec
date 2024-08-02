@@ -10,9 +10,7 @@ import {
 } from '@nestjs/common';
 import { AdminClubNightService } from './admin-club-night.service';
 import { AdminClubNightDto } from './dto';
-import { JwtGuard } from 'src/auth/guard';
 
-@UseGuards(JwtGuard)
 @Controller('admin/club-night')
 export class AdminClubNightController {
   constructor(private adminClubNightService: AdminClubNightService) {}

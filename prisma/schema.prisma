@@ -27,10 +27,16 @@ model User {
   telephoneNumber String
   photoUrl  String?
   currentPoints Int 
-  
-  userAccount UserAccount @relation(fields: [userAccountId], references: [id])
-  userAccountId String
+  email String @unique
+  role Role @default(USER)
 
+  Onboarding Onboarding[]
+  paymentDetails PaymentDetails[]
+  UserLocation UserLocation[]
+  UserTicket UserTicket[]
+  Club Club[]
+  UserPromotionEvent UserPromotionEvent[]
+  
   @@map("users")
 }
 
@@ -41,27 +47,9 @@ model UserLocation{
   latitude Float
   longitude Float
 
-  userAccount UserAccount @relation(fields: [userAccountId], references: [id])
-  userAccountId String
-}
+  user User @relation(fields: [userId], references: [id])
+  userId String
 
-model UserAccount{
-  id       String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  username String @unique
-  password String
-  role Role   @default(USER)
-
-  User User[]
-  Onboarding Onboarding[]
-  paymentDetails PaymentDetails[]
-  UserLocation UserLocation[]
-  UserTicket UserTicket[]
-  Club Club[]
-  UserPromotionEvent UserPromotionEvent[]
-
-  @@map("user_accounts")
 }
 
 model Onboarding{
@@ -83,8 +71,8 @@ model Onboarding{
   drinkPreference String?
   reasonForNightlife String?
 
-  userAccount UserAccount @relation(fields: [userAccountId], references: [id])
-  userAccountId String
+  user User @relation(fields: [userId], references: [id])
+  userId String
 
 
   @@map("onboardings")
@@ -100,8 +88,8 @@ model PaymentDetails{
   cardHolderName String
   cvc String
 
-  userAccount UserAccount @relation(fields: [userAccountId], references: [id])
-  userAccountId String
+  user User @relation(fields: [userId], references: [id])
+  userId String
 
   @@map("payment_details")
 }
@@ -113,7 +101,7 @@ model Club{
   updatedAt DateTime @updatedAt
   name String
 
-  clubOwner UserAccount @relation(fields: [clubOwnerId], references: [id])
+  clubOwner User @relation(fields: [clubOwnerId], references: [id])
   clubOwnerId String
 
   clubLocation ClubLocation @relation(fields: [clubLocationId], references: [id])
@@ -148,8 +136,8 @@ model UserTicket{
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  userAccount UserAccount @relation(fields: [userAccountId], references: [id])
-  userAccountId String
+  user User @relation(fields: [userId], references: [id])
+  userId String
 
   ticket Ticket @relation(fields: [ticketId], references: [id])
   ticketId String
@@ -266,8 +254,8 @@ model UserPromotionEvent{
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  userAccount UserAccount @relation(fields: [userAccountId], references: [id])
-  userAccountId String
+  user User @relation(fields: [userId], references: [id])
+  userId String
 
   promotion Promotion @relation(fields: [promotionId], references: [id])
   promotionId String

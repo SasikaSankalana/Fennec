@@ -85,9 +85,9 @@ export class UserPromotionService {
               },
             },
             clubNight: {},
-            userAccount: {
+            user: {
               connect: {
-                id: dto.userAccountId,
+                id: dto.userId,
               },
             },
           },
@@ -106,9 +106,9 @@ export class UserPromotionService {
               },
             },
             event: {},
-            userAccount: {
+            user: {
               connect: {
-                id: dto.userAccountId,
+                id: dto.userId,
               },
             },
           },
@@ -135,7 +135,7 @@ export class UserPromotionService {
     try {
       const redeemedPromotions = await this.prisma.userPromotionEvent.findMany({
         where: {
-          userAccountId: userId,
+          userId: userId,
         },
         select: {
           id: true,
