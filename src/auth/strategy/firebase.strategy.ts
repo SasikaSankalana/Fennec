@@ -19,11 +19,7 @@ export class FirebaseAuthStrategy extends PassportStrategy(Strategy) {
   async validate(token: string): Promise<any> {
     try {
       const user = await FirebaseAdmin.auth().verifyIdToken(token);
-      return await this.prisma.user.findUnique({
-        where: {
-          email: user.email,
-        },
-      });
+      return user;
     } catch (error) {
       throw new UnauthorizedException(error.message);
     }

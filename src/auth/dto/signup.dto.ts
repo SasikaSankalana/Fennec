@@ -5,12 +5,7 @@ export class SignUpDto {
   @IsNotEmpty()
   email: string;
 
-  @IsString()
-  name: string;
-
-  @IsString()
-  photoUrl: string;
-
-  @IsString()
-  telephoneNumber: string;
+  name?: string;
+  photoUrl?: string;
+  telephoneNumber?: string;
 }

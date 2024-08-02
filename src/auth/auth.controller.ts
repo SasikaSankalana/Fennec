@@ -26,7 +26,8 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(FirebaseGuard)
   @Post('signin')
-  signin(@Req() user: FirebaseAuth.User) {
-    return this.authService.signIn(user);
+  signin(@Req() req) {
+    const email = req.user.email;
+    return this.authService.signIn(email);
   }
 }

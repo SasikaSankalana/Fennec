@@ -57,12 +57,22 @@ export class UserService {
 
   async addPayment(dto: paymentDetailsDto) {
     try {
-      dto.expiryDate = dto.expiryDate + 'T00:00:00.000Z';
-
       const errors = await validate(dto);
       if (errors.length > 0) {
         throw new Error(`Validation failed: ${errors}`);
       }
+
+      const expiryDatePattern = /^\d{2}\/\d{2}$/;
+      if (!expiryDatePattern.test(dto.expiryDate)) {
+        throw new Error('Expiry date must be in the format MM/YY.');
+      }
+
+      const [month, year] = dto.expiryDate.split('/');
+      const monthNumber = parseInt(month, 10);
+      if (monthNumber < 1 || monthNumber > 12) {
+        throw new Error('Expiry date month must be between 01 and 12.');
+      }
+
       const hashedCardNumber = await argon.hash(dto.cardNumber);
       const hashedCvc = await argon.hash(dto.cvc);
 

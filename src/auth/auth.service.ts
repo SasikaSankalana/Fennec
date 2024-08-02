@@ -14,7 +14,7 @@ export class AuthService {
           name: dto.name || '',
           telephoneNumber: dto.telephoneNumber || '',
           photoUrl: dto.photoUrl || '',
-          email: dto.email,
+          email: dto.email.toLowerCase(),
           currentPoints: 0,
         },
       });
@@ -25,7 +25,13 @@ export class AuthService {
     }
   }
 
-  async signIn(user: any) {
-    return { userId: user.uid };
+  async signIn(email: string) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
+
+    return { userId: user.id };
   }
 }

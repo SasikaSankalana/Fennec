@@ -1,11 +1,4 @@
-import {
-  IsDateString,
-  IsNotEmpty,
-  IsNumberString,
-  IsString,
-  IsUUID,
-  Length,
-} from 'class-validator';
+import { IsNotEmpty, IsNumberString, IsString, Length } from 'class-validator';
 
 export class paymentDetailsDto {
   @IsString()
@@ -16,7 +9,7 @@ export class paymentDetailsDto {
   @Length(16, 16)
   cardNumber: string;
 
-  @IsDateString()
+  @IsString()
   expiryDate: string;
 
   @IsString()
