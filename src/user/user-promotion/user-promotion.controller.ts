@@ -1,6 +1,9 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { UserPromotionService } from './user-promotion.service';
+import { JwtGuard } from 'src/auth/guard';
+import { RedeemPromotionDto } from './dto';
 
+@UseGuards(JwtGuard)
 @Controller('promotion')
 export class UserPromotionController {
   constructor(private userPromotionService: UserPromotionService) {}
@@ -16,11 +19,8 @@ export class UserPromotionController {
   }
 
   @Post('redeem')
-  redeemPromotion(@Body() body: { userId: string; requiredPoints: number }) {
-    return this.userPromotionService.redeemPromotion(
-      body.userId,
-      body.requiredPoints,
-    );
+  redeemPromotion(@Body() dto: RedeemPromotionDto) {
+    return this.userPromotionService.redeemPromotion(dto);
   }
 
   @Get('get/:id/points')

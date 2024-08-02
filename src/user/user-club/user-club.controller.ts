@@ -1,6 +1,8 @@
-import { Controller, Param, Get } from '@nestjs/common';
+import { Controller, Param, Get, UseGuards } from '@nestjs/common';
 import { UserClubService } from './user-club.service';
+import { JwtGuard } from 'src/auth/guard';
 
+@UseGuards(JwtGuard)
 @Controller('club')
 export class UserClubController {
   constructor(private userClubService: UserClubService) {}

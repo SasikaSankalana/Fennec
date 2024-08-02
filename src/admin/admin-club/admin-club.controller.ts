@@ -6,10 +6,13 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { AdminClubDto } from './dto';
 import { AdminClubService } from './admin-club.service';
+import { JwtGuard } from 'src/auth/guard';
 
+@UseGuards(JwtGuard)
 @Controller('admin/club')
 export class AdminClubController {
   constructor(private adminClubService: AdminClubService) {}

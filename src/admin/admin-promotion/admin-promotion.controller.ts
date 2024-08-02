@@ -6,10 +6,13 @@ import {
   Put,
   Delete,
   Get,
+  UseGuards,
 } from '@nestjs/common';
 import { AdminPromotionService } from './admin-promotion.service';
 import { AdminPromotionDto } from './dto';
+import { JwtGuard } from 'src/auth/guard';
 
+@UseGuards(JwtGuard)
 @Controller('admin/promotion')
 export class AdminPromotionController {
   constructor(private adminPromotionService: AdminPromotionService) {}

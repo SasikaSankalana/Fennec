@@ -59,6 +59,7 @@ model UserAccount{
   UserLocation UserLocation[]
   UserTicket UserTicket[]
   Club Club[]
+  UserPromotionEvent UserPromotionEvent[]
 
   @@map("user_accounts")
 }
@@ -171,6 +172,7 @@ model Event{
   clubId String
 
   ticketType TicketType[]
+  UserPromotionEvent UserPromotionEvent[]
 
   @@map("events")
 
@@ -187,7 +189,8 @@ model ClubNight{
   club Club @relation(fields: [clubId], references: [id])
   clubId String
 
-  ticketType TicketType[]
+  TicketType TicketType[]
+
 
   @@map("club_nights")
 }
@@ -250,6 +253,26 @@ model Promotion{
 
   club Club @relation(fields: [clubId], references: [id])
   clubId String
+  
+  UserPromotionEvent UserPromotionEvent[]
+
 
   @@map("promotions")
+}
+
+model UserPromotionEvent{
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userAccount UserAccount @relation(fields: [userAccountId], references: [id])
+  userAccountId String
+
+  promotion Promotion @relation(fields: [promotionId], references: [id])
+  promotionId String
+  
+  event Event @relation(fields: [eventId], references: [id])
+  eventId String
+
+  @@map("user_promotion_events")
 }

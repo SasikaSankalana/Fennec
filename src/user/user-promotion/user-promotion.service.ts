@@ -1,6 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { error } from 'node:console';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { RedeemPromotionDto } from './dto';
 
 @Injectable()
 export class UserPromotionService {
@@ -47,32 +48,59 @@ export class UserPromotionService {
     }
   }
 
-  async redeemPromotion(userId: string, requiredPoints: number) {
+  async redeemPromotion(dto: RedeemPromotionDto) {
     try {
       const currentPoints = await this.prisma.user.findUnique({
         where: {
-          id: userId,
+          id: dto.userId,
         },
         select: {
           currentPoints: true,
         },
       });
 
-      if (currentPoints.currentPoints < requiredPoints) {
+      if (currentPoints.currentPoints < dto.requiredPoints) {
         throw new error('Insufficient points');
       }
 
+      const redeemedPromotion = await this.prisma.userPromotionEvent.create({
+        data: {
+          userAccountId: dto.userId,
+          promotionId: dto.promotionId,
+          eventId: dto.eventId,
+        },
+      });
+
       const updatedPoints = await this.prisma.user.update({
         where: {
-          id: userId,
+          id: dto.userId,
         },
         data: {
           currentPoints: {
-            decrement: requiredPoints,
+            decrement: dto.requiredPoints,
           },
         },
       });
-      return updatedPoints;
+      return { updatedPoints, redeemedPromotion };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getRedeemedPromotions(userId: string) {
+    try {
+      const redeemedPromotions = await this.prisma.userPromotionEvent.findMany({
+        where: {
+          userAccountId: userId,
+        },
+        select: {
+          id: true,
+          promotionId: true,
+          eventId: true,
+        },
+      });
+
+      return redeemedPromotions;
     } catch (error) {
       throw error;
     }
