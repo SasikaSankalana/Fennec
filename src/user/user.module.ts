@@ -6,9 +6,10 @@ import { UserClubController } from './user-club/user-club.controller';
 import { UserClubModule } from './user-club/user-club.module';
 import { UserPromotionModule } from './user-promotion/user-promotion.module';
 import { UserClubNightModule } from './user-club-night/user-club-night.module';
+import { UserEventModule } from './user-event/user-event.module';
 
 @Module({
-  imports: [UserClubModule, UserPromotionModule, UserClubNightModule],
+  imports: [UserClubModule, UserPromotionModule, UserClubNightModule, UserEventModule],
   controllers: [UserController, UserClubController],
   providers: [UserService, PrismaService],
 })

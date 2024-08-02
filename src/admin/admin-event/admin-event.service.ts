@@ -1,20 +1,20 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { AdminClubNightDto } from './dto';
+import { AdminEventDto } from './dto';
 
 @Injectable()
-export class AdminClubNightService {
+export class AdminEventService {
   constructor(private prisma: PrismaService) {}
 
-  async addClubNight(dto: AdminClubNightDto) {
+  async addEvent(dto: AdminEventDto) {
     try {
-      const clubNightValidate = await this.clubNightValidate(dto);
+      const eventValidate = await this.eventValidate(dto);
 
-      if (clubNightValidate !== true) {
-        throw clubNightValidate;
+      if (eventValidate !== true) {
+        throw eventValidate;
       }
 
-      const clubNight = await this.prisma.clubNight.create({
+      const event = await this.prisma.event.create({
         data: {
           name: dto.name,
           dateTime: dto.dateTime,
@@ -27,21 +27,21 @@ export class AdminClubNightService {
         },
       });
 
-      return clubNight;
+      return event;
     } catch (error) {
       throw error;
     }
   }
 
-  async updateClubNight(id: string, dto: AdminClubNightDto) {
+  async updateEvent(id: string, dto: AdminEventDto) {
     try {
-      const clubNightValidate = await this.clubNightValidate(dto);
+      const eventValidate = await this.eventValidate(dto);
 
-      if (clubNightValidate !== true) {
-        throw clubNightValidate;
+      if (eventValidate !== true) {
+        throw eventValidate;
       }
 
-      const updatedClubNight = await this.prisma.clubNight.update({
+      const updatedEvent = await this.prisma.event.update({
         where: {
           id: id,
         },
@@ -52,13 +52,13 @@ export class AdminClubNightService {
         },
       });
 
-      return updatedClubNight;
+      return updatedEvent;
     } catch (error) {
       throw error;
     }
   }
 
-  async clubNightValidate(dto: AdminClubNightDto) {
+  async eventValidate(dto: AdminEventDto) {
     const club = await this.prisma.club.findUnique({
       where: {
         id: dto.clubId,
@@ -73,8 +73,7 @@ export class AdminClubNightService {
       return new BadRequestException('Date must be in the future');
     }
 
-    //check whether a club night exists for the same date in the same club
-    const existingClubNight = await this.prisma.clubNight.findFirst({
+    const existingEvent = await this.prisma.event.findFirst({
       where: {
         clubId: dto.clubId,
         dateTime: {
@@ -87,56 +86,56 @@ export class AdminClubNightService {
       },
     });
 
-    if (existingClubNight) {
+    if (existingEvent) {
       return new BadRequestException(
-        'A club night already exists for this club on the same date',
+        'A event already exists for this club on the same date',
       );
     }
 
     return true;
   }
 
-  async deleteClubNight(id: string) {
+  async deleteEvent(id: string) {
     try {
-      const clubNight = await this.prisma.clubNight.findUnique({
+      const event = await this.prisma.event.findUnique({
         where: { id },
       });
 
-      if (!clubNight) {
-        throw new BadRequestException('Club night not found');
+      if (!event) {
+        throw new BadRequestException('Event not found');
       }
 
-      const deletedClubNight = await this.prisma.clubNight.delete({
+      const deletedEvent = await this.prisma.event.delete({
         where: {
           id,
         },
       });
 
-      return deletedClubNight;
+      return deletedEvent;
     } catch (error) {
       throw error;
     }
   }
 
-  async getClubNight(id: string) {
+  async getEvent(id: string) {
     try {
-      const clubNights = await this.prisma.clubNight.findUnique({
+      const events = await this.prisma.event.findUnique({
         where: {
           id,
         },
       });
 
-      return clubNights;
+      return events;
     } catch (error) {
       throw error;
     }
   }
 
-  async getClubNights() {
+  async getEvents() {
     try {
-      const clubNights = await this.prisma.clubNight.findMany();
+      const events = await this.prisma.event.findMany();
 
-      return clubNights;
+      return events;
     } catch (error) {
       throw error;
     }
@@ -144,7 +143,7 @@ export class AdminClubNightService {
 
   async getClubLocation(id: string) {
     try {
-      const clubLocation = await this.prisma.clubNight.findMany({
+      const clubLocation = await this.prisma.event.findMany({
         where: { id: id },
         select: {
           club: {
