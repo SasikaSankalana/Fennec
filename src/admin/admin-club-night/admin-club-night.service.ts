@@ -75,15 +75,13 @@ export class AdminClubNightService {
       return new BadRequestException('Date must be in the future');
     }
 
-    //check whether a club exists for the same date in the same club
-    const existingClubNight = await this.prisma.clubNight.findMany({
+    //check whether a club night exists for the same date in the same club
+    const existingClubNight = await this.prisma.clubNight.findFirst({
       where: {
-        club: {
-          id: dto.clubId,
-        },
+        clubId: dto.clubId,
         dateTime: {
           gte: new Date(dto.dateTime.setHours(0, 0, 0, 0)),
-          lt: new Date(dto.dateTime.setHours(23, 59, 59, 999)),
+          lte: new Date(dto.dateTime.setHours(23, 59, 59, 999)),
         },
       },
       include: {
