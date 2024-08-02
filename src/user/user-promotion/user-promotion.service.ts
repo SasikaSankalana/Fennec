@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { error } from 'node:console';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RedeemPromotionDto } from './dto';
@@ -50,7 +54,7 @@ export class UserPromotionService {
 
   async redeemPromotion(dto: RedeemPromotionDto) {
     try {
-      const currentPoints = await this.prisma.user.findUnique({
+      const user = await this.prisma.user.findUnique({
         where: {
           id: dto.userId,
         },
@@ -59,17 +63,57 @@ export class UserPromotionService {
         },
       });
 
-      if (currentPoints.currentPoints < dto.requiredPoints) {
-        throw new error('Insufficient points');
+      console.log(user);
+
+      if (user.currentPoints < dto.requiredPoints) {
+        throw new BadRequestException('Insufficient points');
       }
 
-      const redeemedPromotion = await this.prisma.userPromotionEvent.create({
-        data: {
-          userAccountId: dto.userId,
-          promotionId: dto.promotionId,
-          eventId: dto.eventId,
-        },
-      });
+      let redeemedPromotion;
+
+      if (dto.isEvent) {
+        redeemedPromotion = await this.prisma.userPromotionEvent.create({
+          data: {
+            promotion: {
+              connect: {
+                id: dto.promotionId,
+              },
+            },
+            event: {
+              connect: {
+                id: dto.functionId,
+              },
+            },
+            clubNight: {},
+            userAccount: {
+              connect: {
+                id: dto.userAccountId,
+              },
+            },
+          },
+        });
+      } else {
+        redeemedPromotion = await this.prisma.userPromotionEvent.create({
+          data: {
+            promotion: {
+              connect: {
+                id: dto.promotionId,
+              },
+            },
+            clubNight: {
+              connect: {
+                id: dto.functionId,
+              },
+            },
+            event: {},
+            userAccount: {
+              connect: {
+                id: dto.userAccountId,
+              },
+            },
+          },
+        });
+      }
 
       const updatedPoints = await this.prisma.user.update({
         where: {

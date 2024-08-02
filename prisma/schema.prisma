@@ -190,6 +190,7 @@ model ClubNight{
   clubId String
 
   TicketType TicketType[]
+  UserPromotionEvent UserPromotionEvent[]
 
 
   @@map("club_nights")
@@ -271,8 +272,11 @@ model UserPromotionEvent{
   promotion Promotion @relation(fields: [promotionId], references: [id])
   promotionId String
   
-  event Event @relation(fields: [eventId], references: [id])
-  eventId String
+  event Event? @relation(fields: [eventId], references: [id])
+  eventId String?
+
+  clubNight ClubNight? @relation(fields: [clubNightId], references: [id])
+  clubNightId String?
 
   @@map("user_promotion_events")
 }

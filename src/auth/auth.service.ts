@@ -47,6 +47,7 @@ export class AuthService {
         jwtToken,
         id: newUserAccount.id,
         username: newUserAccount.username,
+        userId: newUser.id,
       };
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {

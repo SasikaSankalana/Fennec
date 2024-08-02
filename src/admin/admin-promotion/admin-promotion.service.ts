@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AdminPromotionDto } from './dto';
+import e from 'express';
 
 @Injectable()
 export class AdminPromotionService {
@@ -63,8 +64,21 @@ export class AdminPromotionService {
   }
 
   async promotionValidate(dto: AdminPromotionDto) {
+    const existingPromotion = await this.prisma.promotion.findFirst({
+      where: {
+        name: dto.name,
+        clubId: dto.clubId,
+        startDate: dto.startDate,
+        endDate: dto.endDate,
+      },
+    });
+
+    if (existingPromotion) {
+      return new BadRequestException('Promotion already exists');
+    }
+
     if (dto.startDate > dto.endDate) {
-      return new Error('Start date cannot be after end date');
+      return new BadRequestException('Start date cannot be after end date');
     }
     return true;
   }

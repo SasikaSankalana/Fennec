@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsBoolean, IsInt, IsNotEmpty, IsString } from 'class-validator';
 
 export class RedeemPromotionDto {
   @IsString()
@@ -6,6 +6,10 @@ export class RedeemPromotionDto {
   userId: string;
 
   @IsString()
+  @IsNotEmpty()
+  userAccountId: string;
+
+  @IsInt()
   @IsNotEmpty()
   requiredPoints: number;
 
@@ -15,5 +19,9 @@ export class RedeemPromotionDto {
 
   @IsString()
   @IsNotEmpty()
-  eventId: string;
+  functionId: string;
+
+  @IsBoolean()
+  @IsNotEmpty()
+  isEvent: boolean;
 }
