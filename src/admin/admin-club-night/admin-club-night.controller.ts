@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { AdminClubNightService } from './admin-club-night.service';
 import { AdminClubNightDto } from './dto';
+import { FirebaseGuard } from 'src/auth/guard';
 
 @UseGuards(FirebaseGuard)
 @Controller('admin/club-night')
