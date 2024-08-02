@@ -12,19 +12,19 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { SignUpDto } from './dto';
 import { FirebaseGuard } from './guard';
+
+@UseGuards(FirebaseGuard)
 @Controller('auth')
 @ApiTags('Authentication')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  // @UseGuards(FirebaseGuard)
   @Post('signup')
   signUp(@Body() dto: SignUpDto) {
     return this.authService.signUp(dto);
   }
 
   @HttpCode(HttpStatus.OK)
-  // @UseGuards(FirebaseGuard)
   @Post('signin')
   signin(@Req() req) {
     const email = req.user.email;

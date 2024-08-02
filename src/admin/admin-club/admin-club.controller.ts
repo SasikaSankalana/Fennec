@@ -10,7 +10,9 @@ import {
 } from '@nestjs/common';
 import { AdminClubDto } from './dto';
 import { AdminClubService } from './admin-club.service';
+import { FirebaseGuard } from 'src/auth/guard';
 
+@UseGuards(FirebaseGuard)
 @Controller('admin/club')
 export class AdminClubController {
   constructor(private adminClubService: AdminClubService) {}

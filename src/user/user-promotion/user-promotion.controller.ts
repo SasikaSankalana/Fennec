@@ -1,7 +1,9 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { UserPromotionService } from './user-promotion.service';
 import { RedeemPromotionDto } from './dto';
+import { FirebaseGuard } from 'src/auth/guard';
 
+@UseGuards(FirebaseGuard)
 @Controller('promotion')
 export class UserPromotionController {
   constructor(private userPromotionService: UserPromotionService) {}

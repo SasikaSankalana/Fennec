@@ -10,7 +10,9 @@ import {
 } from '@nestjs/common';
 import { AdminPromotionService } from './admin-promotion.service';
 import { AdminPromotionDto } from './dto';
+import { FirebaseGuard } from 'src/auth/guard';
 
+@UseGuards(FirebaseGuard)
 @Controller('admin/promotion')
 export class AdminPromotionController {
   constructor(private adminPromotionService: AdminPromotionService) {}

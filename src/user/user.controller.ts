@@ -2,7 +2,9 @@ import { Body, Controller, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { locationDto, OnboardDto, paymentDetailsDto, UserDto } from './dto';
 import { ApiTags } from '@nestjs/swagger';
+import { FirebaseGuard } from 'src/auth/guard';
 
+@UseGuards(FirebaseGuard)
 @Controller('users')
 @ApiTags('Users')
 export class UserController {

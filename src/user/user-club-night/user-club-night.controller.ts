@@ -1,6 +1,8 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { UserClubNightService } from './user-club-night.service';
+import { FirebaseGuard } from 'src/auth/guard';
 
+@UseGuards(FirebaseGuard)
 @Controller('club-night')
 export class UserClubNightController {
   constructor(private userClubNightService: UserClubNightService) {}
