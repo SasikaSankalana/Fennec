@@ -2,7 +2,7 @@ import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { UserClubNightService } from './user-club-night.service';
 import { FirebaseGuard } from 'src/auth/guard';
 
-@UseGuards(FirebaseGuard)
+// @UseGuards(FirebaseGuard)
 @Controller('club-night')
 export class UserClubNightController {
   constructor(private userClubNightService: UserClubNightService) {}
@@ -15,5 +15,15 @@ export class UserClubNightController {
   @Get('get')
   getClubNights() {
     return this.userClubNightService.getClubNights();
+  }
+
+  @Get('past/get')
+  getPastClubNights() {
+    return this.userClubNightService.getPastClubNights();
+  }
+
+  @Get('upcoming/get')
+  getUpcomingClubNights() {
+    return this.userClubNightService.getUpcomingClubNights();
   }
 }

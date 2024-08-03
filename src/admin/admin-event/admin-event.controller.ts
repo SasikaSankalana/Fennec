@@ -10,7 +10,7 @@ import {
 import { AdminEventService } from './admin-event.service';
 import { AdminEventDto } from './dto';
 
-@Controller('admin-event')
+@Controller('admin/event')
 export class AdminEventController {
   constructor(private adminEventService: AdminEventService) {}
 

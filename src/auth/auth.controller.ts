@@ -13,7 +13,7 @@ import { AuthService } from './auth.service';
 import { SignUpDto } from './dto';
 import { FirebaseGuard } from './guard';
 
-@UseGuards(FirebaseGuard)
+// @UseGuards(FirebaseGuard)
 @Controller('auth')
 @ApiTags('Authentication')
 export class AuthController {

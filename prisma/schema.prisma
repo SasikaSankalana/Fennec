@@ -110,6 +110,7 @@ model Club{
   Event Event[]
   ClubNight ClubNight[]
   Promotion Promotion[]
+  TermsAndConditions TermsAndConditions[]
 
   @@map("clubs")
 }
@@ -267,4 +268,16 @@ model UserPromotionEvent{
   clubNightId String?
 
   @@map("user_promotion_events")
+}
+
+model TermsAndConditions{
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  termsAndConditions String
+
+  club Club @relation(fields: [clubId], references: [id])
+  clubId String
+
+  @@map("terms_and_conditions")
 }

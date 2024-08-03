@@ -45,4 +45,48 @@ export class UserEventService {
       throw error;
     }
   }
+
+  async getPastEvents() {
+    try {
+      const events = await this.prisma.event.findMany({
+        where: {
+          dateTime: {
+            lt: new Date(),
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+          dateTime: true,
+          clubId: true,
+        },
+      });
+
+      return events;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getUpcomingEvents() {
+    try {
+      const events = await this.prisma.event.findMany({
+        where: {
+          dateTime: {
+            gt: new Date(),
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+          dateTime: true,
+          clubId: true,
+        },
+      });
+
+      return events;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

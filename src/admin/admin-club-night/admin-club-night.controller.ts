@@ -12,7 +12,7 @@ import { AdminClubNightService } from './admin-club-night.service';
 import { AdminClubNightDto } from './dto';
 import { FirebaseGuard } from 'src/auth/guard';
 
-@UseGuards(FirebaseGuard)
+// @UseGuards(FirebaseGuard)
 @Controller('admin/club-night')
 export class AdminClubNightController {
   constructor(private adminClubNightService: AdminClubNightService) {}

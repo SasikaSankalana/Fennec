@@ -45,4 +45,48 @@ export class UserClubNightService {
       throw error;
     }
   }
+
+  async getPastClubNights() {
+    try {
+      const clubNights = await this.prisma.clubNight.findMany({
+        where: {
+          dateTime: {
+            lt: new Date(),
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+          dateTime: true,
+          clubId: true,
+        },
+      });
+
+      return clubNights;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getUpcomingClubNights() {
+    try {
+      const clubNights = await this.prisma.clubNight.findMany({
+        where: {
+          dateTime: {
+            gt: new Date(),
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+          dateTime: true,
+          clubId: true,
+        },
+      });
+
+      return clubNights;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
