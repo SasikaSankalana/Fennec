@@ -18,18 +18,21 @@ import { FirebaseGuard } from 'src/auth/guard';
 export class TermsController {
   constructor(private termsAndConditionsService: TermsAndConditionsService) {}
 
-  @Post('create')
+  @Post('')
   addTerm(@Body() dto: TermsAndConditionsDto) {
     return this.termsAndConditionsService.addTerm(dto);
   }
 
-  @Put('update/:id')
-  updateTerm(@Param('id') id: string, @Body() dto: TermsAndConditionsDto) {
-    return this.termsAndConditionsService.updateTerm(id, dto);
+  @Put(':termsId')
+  updateTerm(
+    @Param('termsId') termsId: string,
+    @Body() dto: TermsAndConditionsDto,
+  ) {
+    return this.termsAndConditionsService.updateTerm(termsId, dto);
   }
 
-  @Get('get:/id')
-  getTerms(@Param('id') id: string) {
-    return this.termsAndConditionsService.getTerms(id);
+  @Get('clubId')
+  getTerms(@Param('clubId') clubId: string) {
+    return this.termsAndConditionsService.getTerms(clubId);
   }
 }

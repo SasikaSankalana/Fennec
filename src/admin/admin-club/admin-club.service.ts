@@ -49,11 +49,11 @@ export class AdminClubService {
     }
   }
 
-  async updateClub(id: string, dto: AdminClubDto) {
+  async updateClub(clubId: string, dto: AdminClubDto) {
     try {
       const club = await this.prisma.club.update({
         where: {
-          id: id,
+          id: clubId,
         },
         data: {
           name: dto.name,
@@ -106,10 +106,10 @@ export class AdminClubService {
     return true;
   }
 
-  async deleteClub(id: string) {
+  async deleteClub(clubId: string) {
     try {
       const club = await this.prisma.club.findUnique({
-        where: { id },
+        where: { id: clubId },
       });
 
       if (!club) {
@@ -118,7 +118,7 @@ export class AdminClubService {
 
       await this.prisma.club.delete({
         where: {
-          id: id,
+          id: clubId,
         },
         include: {
           clubLocation: true,
@@ -131,11 +131,11 @@ export class AdminClubService {
     }
   }
 
-  async getClub(id: string) {
+  async getClub(clubId: string) {
     try {
       const club = await this.prisma.club.findUnique({
         where: {
-          id: id,
+          id: clubId,
         },
         include: {
           clubOwner: true,

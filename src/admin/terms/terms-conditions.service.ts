@@ -25,11 +25,11 @@ export class TermsAndConditionsService {
     }
   }
 
-  async updateTerm(id: string, dto: TermsAndConditionsDto) {
+  async updateTerm(termsId: string, dto: TermsAndConditionsDto) {
     try {
       const term = await this.prisma.termsAndConditions.update({
         where: {
-          id: id,
+          id: termsId,
         },
         data: {
           termsAndConditions: dto.terms,

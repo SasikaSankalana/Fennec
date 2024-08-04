@@ -33,7 +33,7 @@ export class AdminEventService {
     }
   }
 
-  async updateEvent(id: string, dto: AdminEventDto) {
+  async updateEvent(eventId: string, dto: AdminEventDto) {
     try {
       const eventValidate = await this.eventValidate(dto);
 
@@ -43,7 +43,7 @@ export class AdminEventService {
 
       const updatedEvent = await this.prisma.event.update({
         where: {
-          id: id,
+          id: eventId,
         },
         data: {
           name: dto.name,
@@ -95,10 +95,10 @@ export class AdminEventService {
     return true;
   }
 
-  async deleteEvent(id: string) {
+  async deleteEvent(eventId: string) {
     try {
       const event = await this.prisma.event.findUnique({
-        where: { id },
+        where: { id: eventId },
       });
 
       if (!event) {
@@ -107,7 +107,7 @@ export class AdminEventService {
 
       const deletedEvent = await this.prisma.event.delete({
         where: {
-          id,
+          id: eventId,
         },
       });
 
@@ -117,11 +117,11 @@ export class AdminEventService {
     }
   }
 
-  async getEvent(id: string) {
+  async getEvent(eventId: string) {
     try {
       const events = await this.prisma.event.findUnique({
         where: {
-          id,
+          id: eventId,
         },
       });
 
@@ -141,10 +141,10 @@ export class AdminEventService {
     }
   }
 
-  async getClubLocation(id: string) {
+  async getClubLocation(eventId: string) {
     try {
       const clubLocation = await this.prisma.event.findMany({
-        where: { id: id },
+        where: { id: eventId },
         select: {
           club: {
             select: {

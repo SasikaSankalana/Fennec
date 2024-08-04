@@ -33,7 +33,7 @@ export class AdminClubNightService {
     }
   }
 
-  async updateClubNight(id: string, dto: AdminClubNightDto) {
+  async updateClubNight(clubNightId: string, dto: AdminClubNightDto) {
     try {
       const clubNightValidate = await this.clubNightValidate(dto);
 
@@ -43,7 +43,7 @@ export class AdminClubNightService {
 
       const updatedClubNight = await this.prisma.clubNight.update({
         where: {
-          id: id,
+          id: clubNightId,
         },
         data: {
           name: dto.name,
@@ -96,10 +96,10 @@ export class AdminClubNightService {
     return true;
   }
 
-  async deleteClubNight(id: string) {
+  async deleteClubNight(clubNightId: string) {
     try {
       const clubNight = await this.prisma.clubNight.findUnique({
-        where: { id },
+        where: { id: clubNightId },
       });
 
       if (!clubNight) {
@@ -108,7 +108,7 @@ export class AdminClubNightService {
 
       const deletedClubNight = await this.prisma.clubNight.delete({
         where: {
-          id,
+          id: clubNightId,
         },
       });
 
@@ -118,11 +118,11 @@ export class AdminClubNightService {
     }
   }
 
-  async getClubNight(id: string) {
+  async getClubNight(clubNightId: string) {
     try {
       const clubNights = await this.prisma.clubNight.findUnique({
         where: {
-          id,
+          id: clubNightId,
         },
       });
 
@@ -142,10 +142,10 @@ export class AdminClubNightService {
     }
   }
 
-  async getClubLocation(id: string) {
+  async getClubLocation(clubNightId: string) {
     try {
       const clubLocation = await this.prisma.clubNight.findMany({
-        where: { id: id },
+        where: { id: clubNightId },
         select: {
           club: {
             select: {
