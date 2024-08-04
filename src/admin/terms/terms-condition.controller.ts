@@ -1,8 +1,20 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { TermsAndConditionsService } from './terms-conditions.service';
 import { TermsAndConditionsDto } from './dto';
+import { ApiTags } from '@nestjs/swagger';
+import { FirebaseGuard } from 'src/auth/guard';
 
+@UseGuards(FirebaseGuard)
 @Controller('terms')
+@ApiTags('Terms and Conditions')
 export class TermsController {
   constructor(private termsAndConditionsService: TermsAndConditionsService) {}
 

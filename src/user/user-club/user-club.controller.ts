@@ -1,18 +1,20 @@
 import { Controller, Param, Get, UseGuards } from '@nestjs/common';
 import { UserClubService } from './user-club.service';
 import { FirebaseGuard } from 'src/auth/guard';
+import { ApiTags } from '@nestjs/swagger';
 
-@UseGuards(FirebaseGuard)
+// @UseGuards(FirebaseGuard)
 @Controller('club')
+@ApiTags('User Club')
 export class UserClubController {
   constructor(private userClubService: UserClubService) {}
 
-  @Get('get/:id')
-  getClub(@Param('id') id: string) {
-    return this.userClubService.getClub(id);
+  @Get(':clubId')
+  getClub(@Param('clubId') clubId: string) {
+    return this.userClubService.getClub(clubId);
   }
 
-  @Get('get')
+  @Get('')
   getClubs() {
     return this.userClubService.getClubs();
   }

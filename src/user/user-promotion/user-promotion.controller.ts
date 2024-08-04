@@ -2,20 +2,22 @@ import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { UserPromotionService } from './user-promotion.service';
 import { RedeemPromotionDto } from './dto';
 import { FirebaseGuard } from 'src/auth/guard';
+import { ApiTags } from '@nestjs/swagger';
 
-@UseGuards(FirebaseGuard)
+// @UseGuards(FirebaseGuard)
 @Controller('promotion')
+@ApiTags('User Promotion')
 export class UserPromotionController {
   constructor(private userPromotionService: UserPromotionService) {}
 
-  @Get('get/:id')
-  getPromotion(@Param('id') id: string) {
-    return this.userPromotionService.getPromotion(id);
+  @Get(':promotionId')
+  getPromotion(@Param('promotionId') promotionId: string) {
+    return this.userPromotionService.getPromotion(promotionId);
   }
 
-  @Get('get')
-  getPromotions() {
-    return this.userPromotionService.getPromotions();
+  @Get('club/:clubId')
+  getPromotions(@Param('clubId') clubId: string) {
+    return this.userPromotionService.getPromotions(clubId);
   }
 
   @Post('redeem')
@@ -23,8 +25,8 @@ export class UserPromotionController {
     return this.userPromotionService.redeemPromotion(dto);
   }
 
-  @Get('get/:id/points')
-  getPoints(@Param('id') id: string) {
-    return this.userPromotionService.getUserPoints(id);
+  @Get(':promotionId/points')
+  getPoints(@Param('promotionId') promotionId: string) {
+    return this.userPromotionService.getUserPoints(promotionId);
   }
 }

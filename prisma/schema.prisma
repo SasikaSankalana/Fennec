@@ -84,7 +84,7 @@ model PaymentDetails{
   updatedAt DateTime @updatedAt
   paymentMethod String
   cardNumber String
-  expiryDate DateTime
+  expiryDate String
   cardHolderName String
   cvc String
 
@@ -245,7 +245,6 @@ model Promotion{
   clubId String
   
   UserPromotionEvent UserPromotionEvent[]
-
 
   @@map("promotions")
 }

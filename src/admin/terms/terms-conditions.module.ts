@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { TermsService } from './terms-conditions.service';
+import { TermsAndConditionsService } from './terms-conditions.service';
 import { TermsController } from './terms-condition.controller';
 
 @Module({
-  providers: [TermsService],
+  providers: [TermsAndConditionsService],
   controllers: [TermsController],
 })
 export class TermsModule {}

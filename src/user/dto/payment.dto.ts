@@ -16,7 +16,7 @@ export class paymentDetailsDto {
   @Length(16, 16)
   cardNumber: string;
 
-  @IsDateString()
+  @IsString()
   expiryDate: string;
 
   @IsString()

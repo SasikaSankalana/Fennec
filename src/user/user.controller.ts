@@ -4,7 +4,7 @@ import { locationDto, OnboardDto, paymentDetailsDto, UserDto } from './dto';
 import { ApiTags } from '@nestjs/swagger';
 import { FirebaseGuard } from 'src/auth/guard';
 
-@UseGuards(FirebaseGuard)
+// @UseGuards(FirebaseGuard)
 @Controller('users')
 @ApiTags('Users')
 export class UserController {
@@ -30,7 +30,7 @@ export class UserController {
     return this.updateTelephoneNumber(id, telephone);
   }
 
-  @Put('update/:id')
+  @Put(':id')
   async updateUser(@Param('id') id: string, @Body() dto: UserDto) {
     return this.userService.updateUser(id, dto);
   }

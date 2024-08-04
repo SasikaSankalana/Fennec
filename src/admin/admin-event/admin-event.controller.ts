@@ -6,41 +6,46 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { AdminEventService } from './admin-event.service';
 import { AdminEventDto } from './dto';
+import { ApiTags } from '@nestjs/swagger';
+import { FirebaseGuard } from 'src/auth/guard';
 
+// @UseGuards(FirebaseGuard)
 @Controller('admin/event')
+@ApiTags('Admin Event')
 export class AdminEventController {
   constructor(private adminEventService: AdminEventService) {}
 
-  @Post('create')
+  @Post('')
   addEvent(@Body() dto: AdminEventDto) {
     return this.adminEventService.addEvent(dto);
   }
 
-  @Put('update/:id')
-  updateEvent(@Param('id') id: string, @Body() dto: AdminEventDto) {
-    return this.adminEventService.updateEvent(id, dto);
+  @Put(':eventId')
+  updateEvent(@Param('eventId') eventId: string, @Body() dto: AdminEventDto) {
+    return this.adminEventService.updateEvent(eventId, dto);
   }
 
-  @Delete('delete/:id')
-  deleteEvent(@Param('id') id: string) {
-    return this.adminEventService.deleteEvent(id);
+  @Delete(':eventId')
+  deleteEvent(@Param('eventId') eventId: string) {
+    return this.adminEventService.deleteEvent(eventId);
   }
 
-  @Get('get/:id')
-  getEvent(@Param('id') id: string) {
-    return this.adminEventService.getEvent(id);
+  @Get(':eventId')
+  getEvent(@Param('eventId') eventId: string) {
+    return this.adminEventService.getEvent(eventId);
   }
 
-  @Get('get')
+  @Get('')
   getEvents() {
     return this.adminEventService.getEvents();
   }
 
-  @Get('get/:id/location')
-  getClubLocation(@Param('id') id: string) {
-    return this.adminEventService.getClubLocation(id);
+  @Get(':eventId/location')
+  getClubLocation(@Param('eventId') eventId: string) {
+    return this.adminEventService.getClubLocation(eventId);
   }
 }

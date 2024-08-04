@@ -53,12 +53,12 @@ export class UserService {
 
   async addPayment(dto: paymentDetailsDto) {
     try {
-      dto.expiryDate = dto.expiryDate + 'T00:00:00.000Z';
-
-      const errors = await validate(dto);
-      if (errors.length > 0) {
-        throw new Error(`Validation failed: ${errors}`);
+      const regex = /^(0[1-9]|1[0-2])\/([0-9]{2})$/;
+      regex.test(dto.expiryDate);
+      if (!regex.test(dto.expiryDate)) {
+        throw new BadRequestException('Invalid expiry date format.');
       }
+
       const hashedCardNumber = await argon.hash(dto.cardNumber);
       const hashedCvc = await argon.hash(dto.cvc);
 
