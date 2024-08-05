@@ -5,11 +5,11 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class UserEventService {
   constructor(private prisma: PrismaService) {}
 
-  async getEvent(id: string) {
+  async getEvent(eventId: string) {
     try {
       const event = await this.prisma.event.findUnique({
         where: {
-          id: id,
+          id: eventId,
         },
         select: {
           id: true,
@@ -32,28 +32,6 @@ export class UserEventService {
   async getEvents() {
     try {
       const events = await this.prisma.event.findMany({
-        select: {
-          id: true,
-          name: true,
-          dateTime: true,
-          clubId: true,
-        },
-      });
-
-      return events;
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  async getPastEvents() {
-    try {
-      const events = await this.prisma.event.findMany({
-        where: {
-          dateTime: {
-            lt: new Date(),
-          },
-        },
         select: {
           id: true,
           name: true,

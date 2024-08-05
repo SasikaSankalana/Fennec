@@ -7,19 +7,9 @@ import { ApiTags } from '@nestjs/swagger';
 export class UserEventController {
   constructor(private userEventService: UserEventService) {}
 
-  @Get('past')
-  getPastEvents() {
-    return this.userEventService.getPastEvents();
-  }
-
-  @Get('upcoming')
-  getUpcomingEvents() {
-    return this.userEventService.getUpcomingEvents();
-  }
-
-  @Get(':id')
-  getEvent(@Param('id') id: string) {
-    return this.userEventService.getEvent(id);
+  @Get(':eventId')
+  getEvent(@Param('eventId') eventId: string) {
+    return this.userEventService.getEvent(eventId);
   }
 
   @Get('')

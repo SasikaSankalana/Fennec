@@ -7,16 +7,6 @@ import { ApiTags } from '@nestjs/swagger';
 export class UserClubNightController {
   constructor(private userClubNightService: UserClubNightService) {}
 
-  @Get('past')
-  getPastClubNights() {
-    return this.userClubNightService.getPastClubNights();
-  }
-
-  @Get('upcoming')
-  getUpcomingClubNights() {
-    return this.userClubNightService.getUpcomingClubNights();
-  }
-
   @Get(':clubNightId')
   getClubNight(@Param('clubNightId') clubNightId: string) {
     return this.userClubNightService.getClubNight(clubNightId);
