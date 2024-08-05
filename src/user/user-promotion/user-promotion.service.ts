@@ -3,7 +3,6 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
-import { error } from 'node:console';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RedeemPromotionDto } from './dto';
 

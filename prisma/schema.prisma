@@ -36,8 +36,27 @@ model User {
   UserTicket UserTicket[]
   Club Club[]
   UserPromotionEvent UserPromotionEvent[]
+  UserSettings UserSettings[]
   
   @@map("users")
+}
+
+model UserSettings {
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  groupInvitations Boolean
+  accountActivity Boolean
+  updatesAndEnhancements Boolean
+  enableNotifications Boolean
+  enableSounds Boolean
+  enableRewards Boolean
+
+  user User @relation(fields: [userId], references: [id])
+  userId String
+
+  @@map("user_settings")
+
 }
 
 model UserLocation{

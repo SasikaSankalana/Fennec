@@ -232,4 +232,20 @@ export class UserService {
       throw error;
     }
   }
+
+  async addSettings(id: string, settings: any) {
+    try {
+      const user = await this.prisma.user.update({
+        where: {
+          id: id,
+        },
+        data: {
+          settings: settings,
+        },
+      });
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
