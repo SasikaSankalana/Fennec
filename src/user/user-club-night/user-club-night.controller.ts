@@ -1,9 +1,7 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { UserClubNightService } from './user-club-night.service';
-import { FirebaseGuard } from 'src/auth/guard';
 import { ApiTags } from '@nestjs/swagger';
 
-// @UseGuards(FirebaseGuard)
 @Controller('club-night')
 @ApiTags('User Club Night')
 export class UserClubNightController {

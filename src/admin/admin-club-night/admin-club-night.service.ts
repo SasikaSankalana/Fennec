@@ -19,6 +19,7 @@ export class AdminClubNightService {
           name: dto.name,
           dateTime: dto.dateTime,
           description: dto.description,
+          photoUrl: dto.photoUrl,
           club: {
             connect: {
               id: dto.clubId,

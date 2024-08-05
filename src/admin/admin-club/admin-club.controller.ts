@@ -10,10 +10,8 @@ import {
 } from '@nestjs/common';
 import { AdminClubDto } from './dto';
 import { AdminClubService } from './admin-club.service';
-import { FirebaseGuard } from 'src/auth/guard';
 import { ApiTags } from '@nestjs/swagger';
 
-// @UseGuards(FirebaseGuard)
 @Controller('admin/club')
 @ApiTags('Admin Club')
 export class AdminClubController {

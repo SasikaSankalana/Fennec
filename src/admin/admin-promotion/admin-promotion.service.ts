@@ -22,6 +22,7 @@ export class AdminPromotionService {
           startDate: dto.startDate,
           endDate: dto.endDate,
           pointsRequired: dto.pointsRequired,
+          photoUrl: dto.photoUrl,
           club: {
             connect: {
               id: dto.clubId,

@@ -156,6 +156,7 @@ model Event{
   name String
   dateTime DateTime
   description String
+  photoUrl String
 
   club Club @relation(fields: [clubId], references: [id])
   clubId String
@@ -174,6 +175,7 @@ model ClubNight{
   name String
   dateTime DateTime
   description String
+  photoUrl String
 
   club Club @relation(fields: [clubId], references: [id])
   clubId String
@@ -240,6 +242,7 @@ model Promotion{
   startDate DateTime
   endDate DateTime
   pointsRequired Int
+  photoUrl String
 
   club Club @relation(fields: [clubId], references: [id])
   clubId String

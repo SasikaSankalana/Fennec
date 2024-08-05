@@ -3,7 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { TermsAndConditionsDto } from './dto';
 
 @Injectable()
-export class TermsAndConditionsService {
+export class AdminTermsConditionsService {
   constructor(private prisma: PrismaService) {}
 
   async addTerm(dto: TermsAndConditionsDto) {
@@ -44,7 +44,7 @@ export class TermsAndConditionsService {
 
   async getTerms(clubId: string) {
     try {
-      const terms = await this.prisma.termsAndConditions.findMany({
+      const terms = await this.prisma.termsAndConditions.findFirst({
         where: {
           clubId: clubId,
         },

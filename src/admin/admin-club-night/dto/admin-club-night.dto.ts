@@ -17,4 +17,8 @@ export class AdminClubNightDto {
   @IsString()
   @IsNotEmpty()
   clubId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  photoUrl: string;
 }

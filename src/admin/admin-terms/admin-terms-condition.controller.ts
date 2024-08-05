@@ -7,16 +7,14 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { TermsAndConditionsService } from './terms-conditions.service';
+import { AdminTermsConditionsService } from './admin-terms-conditions.service';
 import { TermsAndConditionsDto } from './dto';
 import { ApiTags } from '@nestjs/swagger';
-import { FirebaseGuard } from 'src/auth/guard';
 
-@UseGuards(FirebaseGuard)
-@Controller('terms')
+@Controller('admin/terms')
 @ApiTags('Terms and Conditions')
-export class TermsController {
-  constructor(private termsAndConditionsService: TermsAndConditionsService) {}
+export class AdminTermsConditionsController {
+  constructor(private termsAndConditionsService: AdminTermsConditionsService) {}
 
   @Post('')
   addTerm(@Body() dto: TermsAndConditionsDto) {
@@ -31,7 +29,7 @@ export class TermsController {
     return this.termsAndConditionsService.updateTerm(termsId, dto);
   }
 
-  @Get('clubId')
+  @Get(':clubId')
   getTerms(@Param('clubId') clubId: string) {
     return this.termsAndConditionsService.getTerms(clubId);
   }

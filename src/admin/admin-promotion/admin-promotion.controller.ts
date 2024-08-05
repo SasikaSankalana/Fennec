@@ -10,10 +10,8 @@ import {
 } from '@nestjs/common';
 import { AdminPromotionService } from './admin-promotion.service';
 import { AdminPromotionDto } from './dto';
-import { FirebaseGuard } from 'src/auth/guard';
 import { ApiTags } from '@nestjs/swagger';
 
-// @UseGuards(FirebaseGuard)
 @Controller('admin/promotion')
 @ApiTags('Admin Promotion')
 export class AdminPromotionController {

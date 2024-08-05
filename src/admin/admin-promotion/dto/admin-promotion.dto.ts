@@ -25,4 +25,8 @@ export class AdminPromotionDto {
   @IsString()
   @IsNotEmpty()
   clubId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  photoUrl: string;
 }

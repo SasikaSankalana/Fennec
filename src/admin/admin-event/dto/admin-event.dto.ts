@@ -17,4 +17,8 @@ export class AdminEventDto {
   @IsString()
   @IsNotEmpty()
   clubId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  photoUrl: string;
 }

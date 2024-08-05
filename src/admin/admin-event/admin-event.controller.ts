@@ -11,9 +11,7 @@ import {
 import { AdminEventService } from './admin-event.service';
 import { AdminEventDto } from './dto';
 import { ApiTags } from '@nestjs/swagger';
-import { FirebaseGuard } from 'src/auth/guard';
 
-// @UseGuards(FirebaseGuard)
 @Controller('admin/event')
 @ApiTags('Admin Event')
 export class AdminEventController {

@@ -35,7 +35,7 @@ export class UserPromotionService {
     }
   }
 
-  async getPromotions(clubId: string) {
+  async getClubPromotions(clubId: string) {
     try {
       const promotions = await this.prisma.promotion.findMany({
         where: {
@@ -46,6 +46,28 @@ export class UserPromotionService {
           name: true,
           description: true,
           clubId: true,
+        },
+      });
+
+      return promotions;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getPromotions() {
+    try {
+      const promotions = await this.prisma.promotion.findMany({
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          clubId: true,
+          club: {
+            select: {
+              name: true,
+            },
+          },
         },
       });
 
