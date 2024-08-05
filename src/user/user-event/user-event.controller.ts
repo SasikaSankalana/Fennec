@@ -12,11 +12,6 @@ export class UserEventController {
     return this.userEventService.getPastEvents();
   }
 
-  @Get('upcoming')
-  getUpcomingEvents() {
-    return this.userEventService.getUpcomingEvents();
-  }
-
   @Get(':id')
   getEvent(@Param('id') id: string) {
     return this.userEventService.getEvent(id);

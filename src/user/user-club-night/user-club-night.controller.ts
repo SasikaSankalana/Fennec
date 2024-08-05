@@ -12,18 +12,13 @@ export class UserClubNightController {
     return this.userClubNightService.getPastClubNights();
   }
 
-  @Get('upcoming')
-  getUpcomingClubNights() {
-    return this.userClubNightService.getUpcomingClubNights();
-  }
+  // @Get('upcoming')
+  // getUpcomingClubNights() {
+  //   return this.userClubNightService.getUpcomingClubNights();
+  // }
 
   @Get(':clubNightId')
   getClubNight(@Param('clubNightId') clubNightId: string) {
     return this.userClubNightService.getClubNight(clubNightId);
-  }
-
-  @Get('')
-  getClubNights() {
-    return this.userClubNightService.getClubNights();
   }
 }

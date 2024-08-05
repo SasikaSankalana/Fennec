@@ -6,6 +6,7 @@ import { AdminClubNightModule } from './admin-club-night/admin-club-night.module
 import { AdminPromotionModule } from './admin-promotion/admin-promotion.module';
 import { AdminEventModule } from './admin-event/admin-event.module';
 import { TermsModule } from './admin-terms/admin-terms-conditions.module';
+import { AdminTicketsModule } from './admin-tickets/admin-tickets.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { TermsModule } from './admin-terms/admin-terms-conditions.module';
     AdminPromotionModule,
     AdminEventModule,
     TermsModule,
+    AdminTicketsModule,
   ],
   providers: [AdminService],
   controllers: [AdminController],

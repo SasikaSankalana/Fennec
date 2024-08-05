@@ -119,6 +119,7 @@ model Club{
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   name String
+  capacity Int
 
   clubOwner User @relation(fields: [clubOwnerId], references: [id])
   clubOwnerId String
@@ -180,7 +181,7 @@ model Event{
   club Club @relation(fields: [clubId], references: [id])
   clubId String
 
-  ticketType TicketType[]
+  ticket Ticket[]
   UserPromotionEvent UserPromotionEvent[]
 
   @@map("events")
@@ -199,7 +200,7 @@ model ClubNight{
   club Club @relation(fields: [clubId], references: [id])
   clubId String
 
-  TicketType TicketType[]
+  Ticket Ticket[]
   UserPromotionEvent UserPromotionEvent[]
 
 
@@ -211,6 +212,12 @@ model Ticket{
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   eventType String
+
+  event Event @relation(fields: [eventId], references: [id])
+  eventId String
+
+  clubNight ClubNight @relation(fields: [clubNightId], references: [id])
+  clubNightId String
 
   ticketType TicketType @relation(fields: [ticketTypeId], references: [id])
   ticketTypeId String
@@ -240,12 +247,6 @@ model TicketType{
   price Float
   currentQuantity Int
   totalQuantity Int
-
-  event Event @relation(fields: [eventId], references: [id])
-  eventId String
-
-  clubNight ClubNight @relation(fields: [clubNightId], references: [id])
-  clubNightId String
 
   ticket Ticket[]
 

@@ -1,15 +1,21 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { UserClubNightService } from '../user-club-night/user-club-night.service';
+import { UserEventService } from '../user-event/user-event.service';
 
 @Injectable()
 export class UserClubService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private userClubNightService: UserClubNightService,
+    private userEvents: UserEventService,
+  ) {}
 
-  async getClub(id: string) {
+  async getClub(clubNightId: string) {
     try {
       const club = await this.prisma.club.findUnique({
         where: {
-          id: id,
+          id: clubNightId,
         },
         select: {
           id: true,
@@ -61,6 +67,27 @@ export class UserClubService {
       });
 
       return clubs;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getUpcomingClubNights(clubId: string) {
+    try {
+      const clubNight =
+        await this.userClubNightService.getUpcomingClubNights(clubId);
+
+      return clubNight;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getUpcomingEvents(clubId: string) {
+    try {
+      const event = await this.userEvents.getUpcomingEvents(clubId);
+
+      return event;
     } catch (error) {
       throw error;
     }

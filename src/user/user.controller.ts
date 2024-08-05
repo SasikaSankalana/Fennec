@@ -1,6 +1,20 @@
-import { Body, Controller, Param, Post, Put, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Param,
+  Post,
+  Put,
+  Get,
+  Delete,
+} from '@nestjs/common';
 import { UserService } from './user.service';
-import { locationDto, OnboardDto, paymentDetailsDto, UserDto } from './dto';
+import {
+  locationDto,
+  OnboardDto,
+  paymentDetailsDto,
+  UserDto,
+  userSettingsDto,
+} from './dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @Controller('users')
@@ -32,4 +46,32 @@ export class UserController {
   async updateUser(@Param('id') id: string, @Body() dto: UserDto) {
     return this.userService.updateUser(id, dto);
   }
+
+  @Put(':userId/settings')
+  async updateUserSettings(
+    @Param('userId') userId: string,
+    @Body() dto: userSettingsDto,
+  ) {
+    return this.userService.updateUserSettings(userId, dto);
+  }
+
+  @Get(':userId/settings')
+  async getUserSettings(@Param('userId') userId: string) {
+    return this.userService.getUserSettings(userId);
+  }
+
+  @Get(':userId')
+  async getUser(@Param('userId') userId: string) {
+    return this.userService.getUser(userId);
+  }
+
+  // @Delete(':userId/photo')
+  // async deleteUserPhoto(userId: string) {
+  //   return this.userService.deleteUserPhoto(userId);
+  // }
+
+  // @Put(':userId/photo')
+  // async updateUserPhoto(userId: string, photoUrl: string) {
+  //   return this.userService.updateUserPhoto(userId, photoUrl);
+  // }
 }

@@ -68,7 +68,7 @@ export class UserEventService {
     }
   }
 
-  async getUpcomingEvents() {
+  async getUpcomingEvents(clubId: string) {
     try {
       const events = await this.prisma.event.findMany({
         where: {

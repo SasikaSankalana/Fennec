@@ -1,4 +1,5 @@
 import {
+  IsInt,
   IsNotEmpty,
   IsNumber,
   IsNumberString,
@@ -40,4 +41,8 @@ export class AdminClubDto {
   @IsString()
   @IsNotEmpty()
   clubOwnerId: string;
+
+  @IsInt()
+  @IsNotEmpty()
+  capacity: number;
 }

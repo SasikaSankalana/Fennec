@@ -21,6 +21,7 @@ export class AdminClubService {
       const club = await this.prisma.club.create({
         data: {
           name: dto.name,
+          capacity: dto.capacity,
           clubOwner: {
             connect: {
               id: dto.clubOwnerId,

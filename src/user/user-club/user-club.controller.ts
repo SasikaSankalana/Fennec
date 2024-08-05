@@ -16,4 +16,14 @@ export class UserClubController {
   getClubs() {
     return this.userClubService.getClubs();
   }
+
+  @Get(':clubId/club-nights')
+  getUpcomingClubNights(@Param('clubId') clubId: string) {
+    return this.userClubService.getUpcomingClubNights(clubId);
+  }
+
+  @Get(':clubId/events')
+  getUpcomingEvents(@Param('clubId') clubId: string) {
+    return this.userClubService.getUpcomingEvents(clubId);
+  }
 }

@@ -3,6 +3,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { locationDto, OnboardDto, paymentDetailsDto, UserDto } from './dto';
 import * as argon from 'argon2';
 import { validate } from 'class-validator';
+import { settings } from 'pactum';
+import { userSettingsDto } from './dto/settings.dto';
 
 @Injectable()
 export class UserService {
@@ -233,14 +235,86 @@ export class UserService {
     }
   }
 
-  async addSettings(id: string, settings: any) {
+  async updateUserSettings(userId: string, dto: userSettingsDto) {
+    try {
+      const user = await this.prisma.userSettings.findFirst({
+        where: {
+          userId: userId,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      const userSettings = await this.prisma.userSettings.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          groupInvitations: dto.groupInvitations,
+          accountActivity: dto.accountActivity,
+          updatesAndEnhancements: dto.updatesAndEnhancements,
+          enableNotifications: dto.enableNotifications,
+          enableSounds: dto.enableSounds,
+          enableRewards: dto.enableRewards,
+        },
+      });
+      return userSettings;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getUserSettings(userId: string) {
+    try {
+      const userSettings = await this.prisma.userSettings.findFirst({
+        where: {
+          userId: userId,
+        },
+      });
+      return userSettings;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getUser(userId: string) {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: {
+          id: userId,
+        },
+      });
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async deleteUserPhoto(userId: string) {
     try {
       const user = await this.prisma.user.update({
         where: {
-          id: id,
+          id: userId,
         },
         data: {
-          settings: settings,
+          photoUrl: null,
+        },
+      });
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateUserPhoto(userId: string, photoUrl: string) {
+    try {
+      const user = await this.prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          photoUrl: photoUrl,
         },
       });
       return user;
