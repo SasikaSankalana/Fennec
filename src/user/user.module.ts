@@ -8,6 +8,8 @@ import { UserPromotionModule } from './user-promotion/user-promotion.module';
 import { UserClubNightModule } from './user-club-night/user-club-night.module';
 import { UserEventModule } from './user-event/user-event.module';
 import { UserTermsConditionsModule } from './user-terms-conditions/user-terms-conditions.module';
+import { FirebaseModule } from './firebase/firebase.module';
+import { ImageModule } from './image/image.module';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { UserTermsConditionsModule } from './user-terms-conditions/user-terms-co
     UserClubNightModule,
     UserEventModule,
     UserTermsConditionsModule,
+    ImageModule,
+    FirebaseModule,
   ],
   controllers: [UserController, UserClubController],
   providers: [UserService, PrismaService],

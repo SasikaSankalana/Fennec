@@ -6,4 +6,4 @@ import { AdminTermsConditionsController } from './admin-terms-condition.controll
   providers: [AdminTermsConditionsService],
   controllers: [AdminTermsConditionsController],
 })
-export class TermsModule {}
+export class AdminTermsConditionsModule {}
