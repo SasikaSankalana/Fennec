@@ -59,7 +59,19 @@ export class UserClubNightService {
           id: true,
           name: true,
           dateTime: true,
-          clubId: true,
+          club: {
+            select: {
+              id: true,
+              name: true,
+              clubLocation: {
+                select: {
+                  id: true,
+                  address: true,
+                  country: true,
+                },
+              },
+            },
+          },
         },
       });
 

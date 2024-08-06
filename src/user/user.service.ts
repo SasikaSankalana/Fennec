@@ -5,10 +5,14 @@ import * as argon from 'argon2';
 import { validate } from 'class-validator';
 import { settings } from 'pactum';
 import { userSettingsDto } from './dto/settings.dto';
+import { ImageService } from './image/image.service';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private imageService: ImageService,
+  ) {}
 
   async Onboarding(userId: string, dto: OnboardDto) {
     try {
@@ -308,12 +312,14 @@ export class UserService {
 
   async updateUserPhoto(userId: string, photoUrl: string) {
     try {
+      const savedPhotoUrl = await this.imageService.uploadImage(photoUrl);
+
       const user = await this.prisma.user.update({
         where: {
           id: userId,
         },
         data: {
-          photoUrl: photoUrl,
+          photoUrl: savedPhotoUrl,
         },
       });
       return user;

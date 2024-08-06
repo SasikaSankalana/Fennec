@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common';
+// import { Controller } from '@nestjs/common';
 
-@Controller('firebase')
-export class FirebaseController {}
+// @Controller('firebase')
+// export class FirebaseController {}

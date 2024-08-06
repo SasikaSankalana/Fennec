@@ -15,7 +15,24 @@ export class UserEventService {
           id: true,
           name: true,
           dateTime: true,
-          clubId: true,
+          club: {
+            select: {
+              id: true,
+              name: true,
+              clubLocation: {
+                select: {
+                  id: true,
+                  name: true,
+                  address: true,
+                  city: true,
+                  postalCode: true,
+                  country: true,
+                  latitude: true,
+                  longitude: true,
+                },
+              },
+            },
+          },
         },
       });
 
@@ -59,7 +76,19 @@ export class UserEventService {
           id: true,
           name: true,
           dateTime: true,
-          clubId: true,
+          club: {
+            select: {
+              id: true,
+              name: true,
+              clubLocation: {
+                select: {
+                  id: true,
+                  address: true,
+                  country: true,
+                },
+              },
+            },
+          },
         },
       });
 

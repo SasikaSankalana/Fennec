@@ -5,6 +5,7 @@ import * as FirebaseClient from 'firebase/app';
 
 @Module({
   imports: [ConfigModule.forRoot()],
+  exports: [FirebaseModule],
 })
 export class FirebaseModule implements OnApplicationBootstrap {
   constructor(private configService: ConfigService) {}
@@ -24,6 +25,7 @@ export class FirebaseModule implements OnApplicationBootstrap {
       auth_provider_x509_cert_url: 'https://www.googleapis.com/oauth2/v1/certs',
       client_x509_cert_url: `https://www.googleapis.com/robot/v1/metadata/x509/${this.configService.get<string>('FIREBASE_CLIENT_EMAIL')}`,
       universe_domain: 'googleapis.com',
+      storageBucket: this.configService.get<string>('FIREBASE_STORAGE_BUCKET'),
     };
 
     FirebaseAdmin.initializeApp({
@@ -47,5 +49,9 @@ export class FirebaseModule implements OnApplicationBootstrap {
     FirebaseClient.initializeApp(
       clientConfigJsonString as FirebaseClient.FirebaseOptions,
     );
+  }
+
+  getStorageInstance(): FirebaseAdmin.storage.Storage {
+    return FirebaseAdmin.storage();
   }
 }

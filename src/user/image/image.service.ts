@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { FirebaseService } from '../firebase/firebase.service';
 import { ConfigService } from '@nestjs/config';
+import { FirebaseModule } from 'src/firebase/firebase.module';
 
 @Injectable()
 export class ImageService {
   constructor(
-    private readonly firebaseService: FirebaseService,
+    private readonly firebaseModule: FirebaseModule,
     private configService: ConfigService,
   ) {}
 
   async uploadImage(file): Promise<string> {
-    const storage = this.firebaseService.getStorageInstance();
+    const storage = this.firebaseModule.getStorageInstance();
     const bucket = storage.bucket();
 
     const fileName = `${Date.now()}_${file.originalname}`;

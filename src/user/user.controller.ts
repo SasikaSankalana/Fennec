@@ -79,8 +79,8 @@ export class UserController {
   //   return this.userService.deleteUserPhoto(userId);
   // }
 
-  // @Put(':userId/photo')
-  // async updateUserPhoto(userId: string, photoUrl: string) {
-  //   return this.userService.updateUserPhoto(userId, photoUrl);
-  // }
+  @Put(':userId/photo')
+  async updateUserPhoto(userId: string, photoUrl: string) {
+    return this.userService.updateUserPhoto(userId, photoUrl);
+  }
 }
