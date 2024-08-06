@@ -22,33 +22,42 @@ import { ApiTags } from '@nestjs/swagger';
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @Post('onboarding')
-  Onboarding(@Body() dto: OnboardDto) {
-    return this.userService.Onboarding(dto);
+  @Post(':userId/club/:clubId/points')
+  addPoints(
+    @Param('userId') userId: string,
+    @Param('clubId') clubId: string,
+    @Body('points') points: number,
+  ) {
+    return this.userService.addPoints(userId, clubId, points);
   }
 
-  @Post('payment-details')
-  async addPayment(@Body() dto: paymentDetailsDto) {
-    return this.userService.addPayment(dto);
+  @Post(':userId/onboarding')
+  Onboarding(@Param('userId') userId: string, @Body() dto: OnboardDto) {
+    return this.userService.Onboarding(userId, dto);
   }
 
-  @Post('location')
-  async addLocation(@Body() dto: locationDto) {
-    return this.userService.addLocation(dto);
+  @Post(':userId/payment-details')
+  addPayment(@Param('userId') userId: string, @Body() dto: paymentDetailsDto) {
+    return this.userService.addPayment(userId, dto);
   }
 
-  @Put('telephone')
-  async updateTelephoneNumber(id: string, telephone: string) {
-    return this.updateTelephoneNumber(id, telephone);
+  @Post(':userId/location')
+  addLocation(@Param('userId') userId: string, @Body() dto: locationDto) {
+    return this.userService.addLocation(userId, dto);
   }
 
-  @Put(':id')
-  async updateUser(@Param('id') id: string, @Body() dto: UserDto) {
-    return this.userService.updateUser(id, dto);
+  @Put(':userId/telephone')
+  updateTelephoneNumber(@Param('userId') userId: string, telephone: string) {
+    return this.updateTelephoneNumber(userId, telephone);
+  }
+
+  @Put(':userId')
+  updateUser(@Param('userId') userId: string, @Body() dto: UserDto) {
+    return this.userService.updateUser(userId, dto);
   }
 
   @Put(':userId/settings')
-  async updateUserSettings(
+  updateUserSettings(
     @Param('userId') userId: string,
     @Body() dto: userSettingsDto,
   ) {
@@ -56,12 +65,12 @@ export class UserController {
   }
 
   @Get(':userId/settings')
-  async getUserSettings(@Param('userId') userId: string) {
+  getUserSettings(@Param('userId') userId: string) {
     return this.userService.getUserSettings(userId);
   }
 
   @Get(':userId')
-  async getUser(@Param('userId') userId: string) {
+  getUser(@Param('userId') userId: string) {
     return this.userService.getUser(userId);
   }
 

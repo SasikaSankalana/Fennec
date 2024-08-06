@@ -8,7 +8,4 @@ export class locationDto {
   @IsNumber()
   @IsNotEmpty()
   longitude: number;
-
-  @IsNotEmpty()
-  userId: string;
 }

@@ -76,20 +76,26 @@ export class UserPromotionService {
     }
   }
 
-  async redeemPromotion(dto: RedeemPromotionDto) {
+  async redeemPromotion(
+    clubId: string,
+    promotionId: string,
+    dto: RedeemPromotionDto,
+  ) {
     try {
-      const user = await this.prisma.user.findUnique({
+      const userClubPoints = await this.prisma.userClubPoints.findFirst({
         where: {
-          id: dto.userId,
-        },
-        select: {
-          currentPoints: true,
+          userId: dto.userId,
+          clubId: clubId,
         },
       });
 
-      console.log(user);
+      if (!userClubPoints) {
+        throw new BadRequestException(
+          'User has no redeemable points for this club',
+        );
+      }
 
-      if (user.currentPoints < dto.requiredPoints) {
+      if (userClubPoints.points < dto.requiredPoints) {
         throw new BadRequestException('Insufficient points');
       }
 
@@ -100,7 +106,7 @@ export class UserPromotionService {
           data: {
             promotion: {
               connect: {
-                id: dto.promotionId,
+                id: promotionId,
               },
             },
             event: {
@@ -121,7 +127,7 @@ export class UserPromotionService {
           data: {
             promotion: {
               connect: {
-                id: dto.promotionId,
+                id: promotionId,
               },
             },
             clubNight: {
@@ -139,12 +145,12 @@ export class UserPromotionService {
         });
       }
 
-      const updatedPoints = await this.prisma.user.update({
+      const updatedPoints = await this.prisma.userClubPoints.update({
         where: {
-          id: dto.userId,
+          id: userClubPoints.id,
         },
         data: {
-          currentPoints: {
+          points: {
             decrement: dto.requiredPoints,
           },
         },
@@ -176,16 +182,16 @@ export class UserPromotionService {
 
   async getUserPoints(userId: string) {
     try {
-      const user = await this.prisma.user.findUnique({
+      const userClubPoints = await this.prisma.userClubPoints.findMany({
         where: {
-          id: userId,
+          userId: userId,
         },
         select: {
-          currentPoints: true,
+          points: true,
         },
       });
 
-      return user.currentPoints;
+      return userClubPoints;
     } catch (error) {
       throw error;
     }

@@ -10,11 +10,11 @@ import { userSettingsDto } from './dto/settings.dto';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async Onboarding(dto: OnboardDto) {
+  async Onboarding(userId: string, dto: OnboardDto) {
     try {
       const existingOnboarding = await this.prisma.onboarding.findFirst({
         where: {
-          userId: dto.userId,
+          userId: userId,
         },
       });
 
@@ -42,7 +42,7 @@ export class UserService {
           reasonForNightlife: dto.reasonForNightlife,
           user: {
             connect: {
-              id: dto.userId,
+              id: userId,
             },
           },
         },
@@ -53,7 +53,7 @@ export class UserService {
     }
   }
 
-  async addPayment(dto: paymentDetailsDto) {
+  async addPayment(userId: string, dto: paymentDetailsDto) {
     try {
       const regex = /^(0[1-9]|1[0-2])\/([0-9]{2})$/;
       regex.test(dto.expiryDate);
@@ -66,7 +66,7 @@ export class UserService {
 
       const existingPayments = await this.prisma.paymentDetails.findMany({
         where: {
-          userId: dto.userId,
+          userId: userId,
         },
       });
 
@@ -87,7 +87,7 @@ export class UserService {
           cvc: hashedCvc,
           user: {
             connect: {
-              id: dto.userId,
+              id: userId,
             },
           },
         },
@@ -111,7 +111,7 @@ export class UserService {
     return true;
   }
 
-  async addLocation(dto: locationDto) {
+  async addLocation(userId: string, dto: locationDto) {
     try {
       const locationValidation = await this.validateLocation(dto);
 
@@ -121,7 +121,7 @@ export class UserService {
 
       const existingLocation = await this.prisma.userLocation.findFirst({
         where: {
-          userId: dto.userId,
+          userId: userId,
           longitude: dto.longitude,
           latitude: dto.latitude,
         },
@@ -133,12 +133,12 @@ export class UserService {
 
       const updateLocation = await this.prisma.userLocation.findMany({
         where: {
-          userId: dto.userId,
+          userId: userId,
         },
       });
 
       if (updateLocation.length > 0) {
-        return this.updateLocation(dto);
+        return this.updateLocation(userId, dto);
       }
 
       const location = await this.prisma.userLocation.create({
@@ -147,7 +147,7 @@ export class UserService {
           longitude: dto.longitude,
           user: {
             connect: {
-              id: dto.userId,
+              id: userId,
             },
           },
         },
@@ -159,7 +159,7 @@ export class UserService {
     }
   }
 
-  async updateLocation(dto: locationDto) {
+  async updateLocation(userId: string, dto: locationDto) {
     try {
       const locationValidation = await this.validateLocation(dto);
 
@@ -168,7 +168,7 @@ export class UserService {
       }
       const existingLocation = await this.prisma.userLocation.findFirst({
         where: {
-          userId: dto.userId,
+          userId: userId,
         },
         select: {
           id: true,
@@ -189,7 +189,7 @@ export class UserService {
           longitude: dto.longitude,
           user: {
             connect: {
-              id: dto.userId,
+              id: userId,
             },
           },
         },
@@ -226,7 +226,6 @@ export class UserService {
           name: dto.name,
           telephoneNumber: dto.telephoneNumber,
           photoUrl: '',
-          currentPoints: dto.currentPoints,
         },
       });
       return user;
@@ -318,6 +317,48 @@ export class UserService {
         },
       });
       return user;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async addPoints(userId: string, clubId: string, points: number) {
+    try {
+      const userClubPoints = await this.prisma.userClubPoints.findFirst({
+        where: {
+          userId: userId,
+          clubId: clubId,
+        },
+      });
+
+      if (userClubPoints) {
+        const updatedPoints = await this.prisma.userClubPoints.update({
+          where: {
+            id: userClubPoints.id,
+          },
+          data: {
+            points: userClubPoints.points + points,
+          },
+        });
+        return updatedPoints;
+      } else {
+        const createdPoints = await this.prisma.userClubPoints.create({
+          data: {
+            points: points,
+            user: {
+              connect: {
+                id: userId,
+              },
+            },
+            club: {
+              connect: {
+                id: clubId,
+              },
+            },
+          },
+        });
+        return createdPoints;
+      }
     } catch (error) {
       throw error;
     }

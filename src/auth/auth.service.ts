@@ -15,7 +15,6 @@ export class AuthService {
           telephoneNumber: dto.telephoneNumber || '',
           photoUrl: dto.photoUrl || '',
           email: dto.email.toLowerCase(),
-          currentPoints: 0,
           UserSettings: {
             create: {
               groupInvitations: true,

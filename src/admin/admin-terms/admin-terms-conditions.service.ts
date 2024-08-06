@@ -6,14 +6,14 @@ import { TermsAndConditionsDto } from './dto';
 export class AdminTermsConditionsService {
   constructor(private prisma: PrismaService) {}
 
-  async addTerm(dto: TermsAndConditionsDto) {
+  async addTerm(clubId: string, dto: TermsAndConditionsDto) {
     try {
       const term = await this.prisma.termsAndConditions.create({
         data: {
           termsAndConditions: dto.terms,
           club: {
             connect: {
-              id: dto.clubId,
+              id: clubId,
             },
           },
         },
@@ -25,11 +25,16 @@ export class AdminTermsConditionsService {
     }
   }
 
-  async updateTerm(termsId: string, dto: TermsAndConditionsDto) {
+  async updateTerm(clubId: string, dto: TermsAndConditionsDto) {
     try {
+      const clubTerms = await this.prisma.termsAndConditions.findFirst({
+        where: {
+          clubId: clubId,
+        },
+      });
       const term = await this.prisma.termsAndConditions.update({
         where: {
-          id: termsId,
+          id: clubTerms.id,
         },
         data: {
           termsAndConditions: dto.terms,

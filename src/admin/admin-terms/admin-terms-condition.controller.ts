@@ -16,17 +16,17 @@ import { ApiTags } from '@nestjs/swagger';
 export class AdminTermsConditionsController {
   constructor(private termsAndConditionsService: AdminTermsConditionsService) {}
 
-  @Post('')
-  addTerm(@Body() dto: TermsAndConditionsDto) {
-    return this.termsAndConditionsService.addTerm(dto);
+  @Post(':clubId')
+  addTerm(@Param('clubId') clubId: string, @Body() dto: TermsAndConditionsDto) {
+    return this.termsAndConditionsService.addTerm(clubId, dto);
   }
 
-  @Put(':termsId')
+  @Put(':clubId')
   updateTerm(
-    @Param('termsId') termsId: string,
+    @Param('clubId') clubId: string,
     @Body() dto: TermsAndConditionsDto,
   ) {
-    return this.termsAndConditionsService.updateTerm(termsId, dto);
+    return this.termsAndConditionsService.updateTerm(clubId, dto);
   }
 
   @Get(':clubId')

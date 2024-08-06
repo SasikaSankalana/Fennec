@@ -26,7 +26,4 @@ export class paymentDetailsDto {
   @IsNumberString()
   @Length(3, 4)
   cvc: string;
-
-  @IsString()
-  userId: string;
 }

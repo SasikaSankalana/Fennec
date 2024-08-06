@@ -18,16 +18,6 @@ export class UserPromotionController {
     return this.userPromotionService.getPromotions();
   }
 
-  @Get('club/:clubId')
-  getClubPromotions(@Param('clubId') clubId: string) {
-    return this.userPromotionService.getClubPromotions(clubId);
-  }
-
-  @Post('redeem')
-  redeemPromotion(@Body() dto: RedeemPromotionDto) {
-    return this.userPromotionService.redeemPromotion(dto);
-  }
-
   @Get(':promotionId/points')
   getPoints(@Param('promotionId') promotionId: string) {
     return this.userPromotionService.getUserPoints(promotionId);

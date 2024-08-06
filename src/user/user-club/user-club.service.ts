@@ -1,14 +1,17 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UserClubNightService } from '../user-club-night/user-club-night.service';
 import { UserEventService } from '../user-event/user-event.service';
+import { UserPromotionService } from '../user-promotion/user-promotion.service';
+import { UserClubNightService } from '../user-club-night/user-club-night.service';
+import { RedeemPromotionDto } from '../user-promotion/dto';
 
 @Injectable()
 export class UserClubService {
   constructor(
     private prisma: PrismaService,
+    private userEventsService: UserEventService,
+    private userPromotionService: UserPromotionService,
     private userClubNightService: UserClubNightService,
-    private userEvents: UserEventService,
   ) {}
 
   async getClub(clubNightId: string) {
@@ -85,9 +88,38 @@ export class UserClubService {
 
   async getUpcomingEvents(clubId: string) {
     try {
-      const event = await this.userEvents.getUpcomingEvents(clubId);
+      const event = await this.userEventsService.getUpcomingEvents(clubId);
 
       return event;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getClubPromotion(clubId: string) {
+    try {
+      const promotion =
+        await this.userPromotionService.getClubPromotions(clubId);
+
+      return promotion;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async redeemClubPromotion(
+    promotionId: string,
+    clubId: string,
+    dto: RedeemPromotionDto,
+  ) {
+    try {
+      const promotion = await this.userPromotionService.redeemPromotion(
+        promotionId,
+        clubId,
+        dto,
+      );
+
+      return promotion;
     } catch (error) {
       throw error;
     }
