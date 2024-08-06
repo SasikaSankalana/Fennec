@@ -5,11 +5,11 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class UserClubNightService {
   constructor(private prisma: PrismaService) {}
 
-  async getClubNight(id: string) {
+  async getClubNight(clubNightId: string) {
     try {
       const clubNight = await this.prisma.clubNight.findUnique({
         where: {
-          id: id,
+          id: clubNightId,
         },
         select: {
           id: true,
@@ -32,6 +32,29 @@ export class UserClubNightService {
   async getClubNights() {
     try {
       const clubNights = await this.prisma.clubNight.findMany({
+        select: {
+          id: true,
+          name: true,
+          dateTime: true,
+          clubId: true,
+        },
+      });
+
+      return clubNights;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getUpcomingClubNights(clubId: string) {
+    try {
+      const clubNights = await this.prisma.clubNight.findMany({
+        where: {
+          clubId: clubId,
+          dateTime: {
+            gt: new Date(),
+          },
+        },
         select: {
           id: true,
           name: true,

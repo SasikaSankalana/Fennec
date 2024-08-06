@@ -11,10 +11,6 @@ export class RedeemPromotionDto {
 
   @IsString()
   @IsNotEmpty()
-  promotionId: string;
-
-  @IsString()
-  @IsNotEmpty()
   functionId: string;
 
   @IsBoolean()

@@ -10,34 +10,37 @@ import {
 } from '@nestjs/common';
 import { AdminPromotionService } from './admin-promotion.service';
 import { AdminPromotionDto } from './dto';
-import { FirebaseGuard } from 'src/auth/guard';
+import { ApiTags } from '@nestjs/swagger';
 
-@UseGuards(FirebaseGuard)
 @Controller('admin/promotion')
+@ApiTags('Admin Promotion')
 export class AdminPromotionController {
   constructor(private adminPromotionService: AdminPromotionService) {}
 
-  @Post('create')
+  @Post('')
   addPromotion(@Body() dto: AdminPromotionDto) {
     return this.adminPromotionService.addPromotion(dto);
   }
 
-  @Put('update/:id')
-  updatePromotion(@Param('id') id: string, @Body() dto: AdminPromotionDto) {
-    return this.adminPromotionService.updatePromotion(id, dto);
+  @Put(':promotionId')
+  updatePromotion(
+    @Param('promotionId') promotionId: string,
+    @Body() dto: AdminPromotionDto,
+  ) {
+    return this.adminPromotionService.updatePromotion(promotionId, dto);
   }
 
-  @Delete('delete/:id')
-  deletePromotion(@Param('id') id: string) {
-    return this.adminPromotionService.deletePromotion(id);
+  @Delete(':promotionId')
+  deletePromotion(@Param('promotionId') promotionId: string) {
+    return this.adminPromotionService.deletePromotion(promotionId);
   }
 
-  @Get('get/:id')
-  getPromotion(@Param('id') id: string) {
-    return this.adminPromotionService.getPromotion(id);
+  @Get(':promotionId')
+  getPromotion(@Param('promotionId') promotionId: string) {
+    return this.adminPromotionService.getPromotion(promotionId);
   }
 
-  @Get('get')
+  @Get('')
   getPromotions() {
     return this.adminPromotionService.getPromotions();
   }

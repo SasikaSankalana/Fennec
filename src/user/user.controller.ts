@@ -1,37 +1,86 @@
-import { Body, Controller, Param, Post, Put, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Param,
+  Post,
+  Put,
+  Get,
+  Delete,
+} from '@nestjs/common';
 import { UserService } from './user.service';
-import { locationDto, OnboardDto, paymentDetailsDto, UserDto } from './dto';
+import {
+  locationDto,
+  OnboardDto,
+  paymentDetailsDto,
+  UserDto,
+  userSettingsDto,
+} from './dto';
 import { ApiTags } from '@nestjs/swagger';
-import { FirebaseGuard } from 'src/auth/guard';
 
-@UseGuards(FirebaseGuard)
 @Controller('users')
 @ApiTags('Users')
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @Post('onboarding')
-  Onboarding(@Body() dto: OnboardDto) {
-    return this.userService.Onboarding(dto);
+  @Post(':userId/club/:clubId/points')
+  addPoints(
+    @Param('userId') userId: string,
+    @Param('clubId') clubId: string,
+    @Body('points') points: number,
+  ) {
+    return this.userService.addPoints(userId, clubId, points);
   }
 
-  @Post('payment-details')
-  async addPayment(@Body() dto: paymentDetailsDto) {
-    return this.userService.addPayment(dto);
+  @Post(':userId/onboarding')
+  Onboarding(@Param('userId') userId: string, @Body() dto: OnboardDto) {
+    return this.userService.Onboarding(userId, dto);
   }
 
-  @Post('location')
-  async addLocation(@Body() dto: locationDto) {
-    return this.userService.addLocation(dto);
+  @Post(':userId/payment-details')
+  addPayment(@Param('userId') userId: string, @Body() dto: paymentDetailsDto) {
+    return this.userService.addPayment(userId, dto);
   }
 
-  @Put('telephone')
-  async updateTelephoneNumber(id: string, telephone: string) {
-    return this.updateTelephoneNumber(id, telephone);
+  @Post(':userId/location')
+  addLocation(@Param('userId') userId: string, @Body() dto: locationDto) {
+    return this.userService.addLocation(userId, dto);
   }
 
-  @Put('update/:id')
-  async updateUser(@Param('id') id: string, @Body() dto: UserDto) {
-    return this.userService.updateUser(id, dto);
+  @Put(':userId/telephone')
+  updateTelephoneNumber(@Param('userId') userId: string, telephone: string) {
+    return this.updateTelephoneNumber(userId, telephone);
   }
+
+  @Put(':userId')
+  updateUser(@Param('userId') userId: string, @Body() dto: UserDto) {
+    return this.userService.updateUser(userId, dto);
+  }
+
+  @Put(':userId/settings')
+  updateUserSettings(
+    @Param('userId') userId: string,
+    @Body() dto: userSettingsDto,
+  ) {
+    return this.userService.updateUserSettings(userId, dto);
+  }
+
+  @Get(':userId/settings')
+  getUserSettings(@Param('userId') userId: string) {
+    return this.userService.getUserSettings(userId);
+  }
+
+  @Get(':userId')
+  getUser(@Param('userId') userId: string) {
+    return this.userService.getUser(userId);
+  }
+
+  // @Delete(':userId/photo')
+  // async deleteUserPhoto(userId: string) {
+  //   return this.userService.deleteUserPhoto(userId);
+  // }
+
+  // @Put(':userId/photo')
+  // async updateUserPhoto(userId: string, photoUrl: string) {
+  //   return this.userService.updateUserPhoto(userId, photoUrl);
+  // }
 }

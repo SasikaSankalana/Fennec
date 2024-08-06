@@ -1,11 +1,5 @@
 import { Type } from 'class-transformer';
-import {
-  IsDate,
-  IsNotEmpty,
-  IsNumber,
-  IsNumberString,
-  IsString,
-} from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class AdminClubNightDto {
   @IsString()
@@ -23,4 +17,8 @@ export class AdminClubNightDto {
   @IsString()
   @IsNotEmpty()
   clubId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  photoUrl: string;
 }

@@ -10,40 +10,43 @@ import {
 } from '@nestjs/common';
 import { AdminClubNightService } from './admin-club-night.service';
 import { AdminClubNightDto } from './dto';
-import { FirebaseGuard } from 'src/auth/guard';
+import { ApiTags } from '@nestjs/swagger';
 
-@UseGuards(FirebaseGuard)
 @Controller('admin/club-night')
+@ApiTags('Admin Club Night')
 export class AdminClubNightController {
   constructor(private adminClubNightService: AdminClubNightService) {}
 
-  @Post('create')
+  @Post('')
   addClubNight(@Body() dto: AdminClubNightDto) {
     return this.adminClubNightService.addClubNight(dto);
   }
 
-  @Put('update/:id')
-  updateClubNight(@Param('id') id: string, @Body() dto: AdminClubNightDto) {
-    return this.adminClubNightService.updateClubNight(id, dto);
+  @Put(':clubNightId')
+  updateClubNight(
+    @Param('clubNightId') clubNightId: string,
+    @Body() dto: AdminClubNightDto,
+  ) {
+    return this.adminClubNightService.updateClubNight(clubNightId, dto);
   }
 
-  @Delete('delete/:id')
-  deleteClubNight(@Param('id') id: string) {
-    return this.adminClubNightService.deleteClubNight(id);
+  @Delete(':clubNightId')
+  deleteClubNight(@Param('clubNightId') clubNightId: string) {
+    return this.adminClubNightService.deleteClubNight(clubNightId);
   }
 
-  @Get('get/:id')
-  getClubNight(@Param('id') id: string) {
-    return this.adminClubNightService.getClubNight(id);
+  @Get(':clubNightId')
+  getClubNight(@Param('clubNightId') clubNightId: string) {
+    return this.adminClubNightService.getClubNight(clubNightId);
   }
 
-  @Get('get')
+  @Get('')
   getClubNights() {
     return this.adminClubNightService.getClubNights();
   }
 
-  @Get('get/:id/location')
-  getClubLocation(@Param('id') id: string) {
-    return this.adminClubNightService.getClubLocation(id);
+  @Get(':clubNightId/location')
+  getClubLocation(@Param('clubNightId') clubNightId: string) {
+    return this.adminClubNightService.getClubLocation(clubNightId);
   }
 }

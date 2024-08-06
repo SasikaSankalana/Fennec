@@ -22,6 +22,7 @@ export class AdminPromotionService {
           startDate: dto.startDate,
           endDate: dto.endDate,
           pointsRequired: dto.pointsRequired,
+          photoUrl: dto.photoUrl,
           club: {
             connect: {
               id: dto.clubId,
@@ -36,7 +37,7 @@ export class AdminPromotionService {
     }
   }
 
-  async updatePromotion(id: string, dto: AdminPromotionDto) {
+  async updatePromotion(promotionId: string, dto: AdminPromotionDto) {
     try {
       const promotionValidate = await this.promotionValidate(dto);
 
@@ -46,7 +47,7 @@ export class AdminPromotionService {
 
       const promotion = await this.prisma.promotion.update({
         where: {
-          id,
+          id: promotionId,
         },
         data: {
           name: dto.name,
@@ -83,11 +84,11 @@ export class AdminPromotionService {
     return true;
   }
 
-  async deletePromotion(id: string) {
+  async deletePromotion(promotionId: string) {
     try {
       const promotion = await this.prisma.promotion.delete({
         where: {
-          id,
+          id: promotionId,
         },
       });
 
@@ -97,11 +98,11 @@ export class AdminPromotionService {
     }
   }
 
-  async getPromotion(id: string) {
+  async getPromotion(promotionId: string) {
     try {
       const promotion = await this.prisma.promotion.findUnique({
         where: {
-          id,
+          id: promotionId,
         },
       });
 

@@ -10,34 +10,34 @@ import {
 } from '@nestjs/common';
 import { AdminClubDto } from './dto';
 import { AdminClubService } from './admin-club.service';
-import { FirebaseGuard } from 'src/auth/guard';
+import { ApiTags } from '@nestjs/swagger';
 
-@UseGuards(FirebaseGuard)
 @Controller('admin/club')
+@ApiTags('Admin Club')
 export class AdminClubController {
   constructor(private adminClubService: AdminClubService) {}
 
-  @Post('/create')
+  @Post('')
   addClub(@Body() dto: AdminClubDto) {
     return this.adminClubService.addClub(dto);
   }
 
-  @Put('/update/:id')
-  updateClub(@Param('id') id: string, @Body() dto: AdminClubDto) {
-    return this.adminClubService.updateClub(id, dto);
+  @Put(':clubId')
+  updateClub(@Param('clubId') clubId: string, @Body() dto: AdminClubDto) {
+    return this.adminClubService.updateClub(clubId, dto);
   }
 
-  @Delete('delete/:id')
-  deleteClub(@Param('id') id: string) {
-    return this.adminClubService.deleteClub(id);
+  @Delete(':clubId')
+  deleteClub(@Param('id') clubId: string) {
+    return this.adminClubService.deleteClub(clubId);
   }
 
-  @Get('get/:id')
-  getClub(@Param('id') id: string) {
-    return this.adminClubService.getClub(id);
+  @Get(':clubId')
+  getClub(@Param('clubId') clubId: string) {
+    return this.adminClubService.getClub(clubId);
   }
 
-  @Get('get')
+  @Get('')
   getClubs() {
     return this.adminClubService.getClubs();
   }

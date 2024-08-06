@@ -42,8 +42,4 @@ export class OnboardDto {
 
   @IsString()
   reasonForNightlife?: string;
-
-  @IsString()
-  @IsNotEmpty()
-  userId: string;
 }

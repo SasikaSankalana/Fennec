@@ -26,7 +26,6 @@ model User {
   name      String
   telephoneNumber String
   photoUrl  String?
-  currentPoints Int 
   email String @unique
   role Role @default(USER)
 
@@ -36,8 +35,43 @@ model User {
   UserTicket UserTicket[]
   Club Club[]
   UserPromotionEvent UserPromotionEvent[]
+  UserSettings UserSettings[]
+  userClubPoints UserClubPoints[]
   
   @@map("users")
+}
+
+model UserClubPoints{
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  points Int
+
+  user User @relation(fields: [userId], references: [id])
+  userId String
+
+  club Club @relation(fields: [clubId], references: [id])
+  clubId String
+
+  @@map("user_points")
+}
+
+model UserSettings {
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  groupInvitations Boolean
+  accountActivity Boolean
+  updatesAndEnhancements Boolean
+  enableNotifications Boolean
+  enableSounds Boolean
+  enableRewards Boolean
+
+  user User @relation(fields: [userId], references: [id])
+  userId String
+
+  @@map("user_settings")
+
 }
 
 model UserLocation{
@@ -84,7 +118,7 @@ model PaymentDetails{
   updatedAt DateTime @updatedAt
   paymentMethod String
   cardNumber String
-  expiryDate DateTime
+  expiryDate String
   cardHolderName String
   cvc String
 
@@ -100,6 +134,7 @@ model Club{
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   name String
+  capacity Int
 
   clubOwner User @relation(fields: [clubOwnerId], references: [id])
   clubOwnerId String
@@ -110,6 +145,8 @@ model Club{
   Event Event[]
   ClubNight ClubNight[]
   Promotion Promotion[]
+  TermsAndConditions TermsAndConditions[]
+  UserClubPoints UserClubPoints[]
 
   @@map("clubs")
 }
@@ -155,11 +192,12 @@ model Event{
   name String
   dateTime DateTime
   description String
+  photoUrl String
 
   club Club @relation(fields: [clubId], references: [id])
   clubId String
 
-  ticketType TicketType[]
+  ticket Ticket[]
   UserPromotionEvent UserPromotionEvent[]
 
   @@map("events")
@@ -173,11 +211,12 @@ model ClubNight{
   name String
   dateTime DateTime
   description String
+  photoUrl String
 
   club Club @relation(fields: [clubId], references: [id])
   clubId String
 
-  TicketType TicketType[]
+  Ticket Ticket[]
   UserPromotionEvent UserPromotionEvent[]
 
 
@@ -189,6 +228,12 @@ model Ticket{
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   eventType String
+
+  event Event @relation(fields: [eventId], references: [id])
+  eventId String
+
+  clubNight ClubNight @relation(fields: [clubNightId], references: [id])
+  clubNightId String
 
   ticketType TicketType @relation(fields: [ticketTypeId], references: [id])
   ticketTypeId String
@@ -219,12 +264,6 @@ model TicketType{
   currentQuantity Int
   totalQuantity Int
 
-  event Event @relation(fields: [eventId], references: [id])
-  eventId String
-
-  clubNight ClubNight @relation(fields: [clubNightId], references: [id])
-  clubNightId String
-
   ticket Ticket[]
 
   @@map("ticket_types")
@@ -239,12 +278,12 @@ model Promotion{
   startDate DateTime
   endDate DateTime
   pointsRequired Int
+  photoUrl String
 
   club Club @relation(fields: [clubId], references: [id])
   clubId String
   
   UserPromotionEvent UserPromotionEvent[]
-
 
   @@map("promotions")
 }
@@ -267,4 +306,16 @@ model UserPromotionEvent{
   clubNightId String?
 
   @@map("user_promotion_events")
+}
+
+model TermsAndConditions{
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  termsAndConditions String
+
+  club Club @relation(fields: [clubId], references: [id])
+  clubId String
+
+  @@map("terms_and_conditions")
 }

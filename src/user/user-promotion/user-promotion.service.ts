@@ -3,7 +3,6 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
-import { error } from 'node:console';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RedeemPromotionDto } from './dto';
 
@@ -35,9 +34,12 @@ export class UserPromotionService {
     }
   }
 
-  async getPromotions() {
+  async getClubPromotions(clubId: string) {
     try {
       const promotions = await this.prisma.promotion.findMany({
+        where: {
+          clubId: clubId,
+        },
         select: {
           id: true,
           name: true,
@@ -52,20 +54,48 @@ export class UserPromotionService {
     }
   }
 
-  async redeemPromotion(dto: RedeemPromotionDto) {
+  async getPromotions() {
     try {
-      const user = await this.prisma.user.findUnique({
-        where: {
-          id: dto.userId,
-        },
+      const promotions = await this.prisma.promotion.findMany({
         select: {
-          currentPoints: true,
+          id: true,
+          name: true,
+          description: true,
+          clubId: true,
+          club: {
+            select: {
+              name: true,
+            },
+          },
         },
       });
 
-      console.log(user);
+      return promotions;
+    } catch (error) {
+      throw error;
+    }
+  }
 
-      if (user.currentPoints < dto.requiredPoints) {
+  async redeemPromotion(
+    clubId: string,
+    promotionId: string,
+    dto: RedeemPromotionDto,
+  ) {
+    try {
+      const userClubPoints = await this.prisma.userClubPoints.findFirst({
+        where: {
+          userId: dto.userId,
+          clubId: clubId,
+        },
+      });
+
+      if (!userClubPoints) {
+        throw new BadRequestException(
+          'User has no redeemable points for this club',
+        );
+      }
+
+      if (userClubPoints.points < dto.requiredPoints) {
         throw new BadRequestException('Insufficient points');
       }
 
@@ -76,7 +106,7 @@ export class UserPromotionService {
           data: {
             promotion: {
               connect: {
-                id: dto.promotionId,
+                id: promotionId,
               },
             },
             event: {
@@ -97,7 +127,7 @@ export class UserPromotionService {
           data: {
             promotion: {
               connect: {
-                id: dto.promotionId,
+                id: promotionId,
               },
             },
             clubNight: {
@@ -115,12 +145,12 @@ export class UserPromotionService {
         });
       }
 
-      const updatedPoints = await this.prisma.user.update({
+      const updatedPoints = await this.prisma.userClubPoints.update({
         where: {
-          id: dto.userId,
+          id: userClubPoints.id,
         },
         data: {
-          currentPoints: {
+          points: {
             decrement: dto.requiredPoints,
           },
         },
@@ -152,16 +182,16 @@ export class UserPromotionService {
 
   async getUserPoints(userId: string) {
     try {
-      const user = await this.prisma.user.findUnique({
+      const userClubPoints = await this.prisma.userClubPoints.findMany({
         where: {
-          id: userId,
+          userId: userId,
         },
         select: {
-          currentPoints: true,
+          points: true,
         },
       });
 
-      return user.currentPoints;
+      return userClubPoints;
     } catch (error) {
       throw error;
     }

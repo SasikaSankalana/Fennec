@@ -16,7 +16,7 @@ export class paymentDetailsDto {
   @Length(16, 16)
   cardNumber: string;
 
-  @IsDateString()
+  @IsString()
   expiryDate: string;
 
   @IsString()
@@ -26,7 +26,4 @@ export class paymentDetailsDto {
   @IsNumberString()
   @Length(3, 4)
   cvc: string;
-
-  @IsString()
-  userId: string;
 }
