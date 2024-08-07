@@ -38,4 +38,15 @@ export class ImageService {
       stream.end(file.buffer);
     });
   }
+
+  async deleteImage(imageUrl: string): Promise<void> {
+    const storage = this.firebaseModule.getStorageInstance();
+    const bucket = storage.bucket();
+
+    console.log('Image URL:', imageUrl);
+
+    const fileName = imageUrl.split('/o/')[1].split('?')[0];
+
+    await bucket.file(fileName).delete();
+  }
 }

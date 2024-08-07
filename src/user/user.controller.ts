@@ -89,7 +89,7 @@ export class UserController {
   }
 
   @Delete(':userId/photo')
-  async deleteUserPhoto(userId: string) {
+  async deleteUserPhoto(@Param('userId') userId: string) {
     return this.userService.deleteUserPhoto(userId);
   }
 }

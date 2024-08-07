@@ -310,6 +310,31 @@ export class UserService {
 
   async deleteUserPhoto(userId: string) {
     try {
+      console.log('User ID:', userId);
+
+      const photoUser = await this.prisma.user.findFirst({
+        where: {
+          id: userId,
+        },
+        select: {
+          photoUrl: true,
+        },
+      });
+
+      if (!photoUser) {
+        throw new Error('User not found');
+      }
+
+      console.log('user:', photoUser);
+
+      console.log('Photo URL1:', photoUser.photoUrl);
+
+      if (!photoUser.photoUrl || photoUser.photoUrl.trim() === '') {
+        throw new Error('No photo URL found for the user');
+      }
+
+      await this.imageService.deleteImage(photoUser.photoUrl);
+
       const user = await this.prisma.user.update({
         where: {
           id: userId,

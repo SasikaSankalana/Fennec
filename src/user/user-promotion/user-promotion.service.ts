@@ -82,6 +82,17 @@ export class UserPromotionService {
     dto: RedeemPromotionDto,
   ) {
     try {
+      const promotion = await this.prisma.promotion.findUnique({
+        where: {
+          id: promotionId,
+          clubId: clubId,
+        },
+      });
+
+      if (!promotion) {
+        throw new BadRequestException('Promotion not found this club');
+      }
+
       const userClubPoints = await this.prisma.userClubPoints.findFirst({
         where: {
           userId: dto.userId,
