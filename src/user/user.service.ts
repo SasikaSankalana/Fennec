@@ -6,6 +6,8 @@ import { validate } from 'class-validator';
 import { settings } from 'pactum';
 import { userSettingsDto } from './dto/settings.dto';
 import { ImageService } from './image/image.service';
+import { photoDto } from './user-club/dto/photo.dto';
+import { MulterField } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 
 @Injectable()
 export class UserService {
@@ -288,7 +290,19 @@ export class UserService {
           id: userId,
         },
       });
-      return user;
+
+      const userClubPoints = await this.prisma.userClubPoints.findMany({
+        where: {
+          userId: userId,
+        },
+      });
+
+      let totalPoints = 0;
+      for (const clubPoints of userClubPoints) {
+        totalPoints += clubPoints.points;
+      }
+
+      return { user, totalPoints };
     } catch (error) {
       throw error;
     }
@@ -310,9 +324,9 @@ export class UserService {
     }
   }
 
-  async updateUserPhoto(userId: string, photoUrl: string) {
+  async updateUserPhoto(userId: string, file: MulterField) {
     try {
-      const savedPhotoUrl = await this.imageService.uploadImage(photoUrl);
+      const savedPhotoUrl = await this.imageService.uploadImage(file);
 
       const user = await this.prisma.user.update({
         where: {

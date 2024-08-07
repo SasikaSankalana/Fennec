@@ -32,13 +32,14 @@ export class FirebaseModule implements OnApplicationBootstrap {
       credential: FirebaseAdmin.credential.cert(
         firebaseAdminConfig as FirebaseAdmin.ServiceAccount,
       ),
+      storageBucket: firebaseAdminConfig.storageBucket,
     });
 
     const clientConfigJsonString = {
       apiKey: this.configService.get<string>('FIREBASE_API_KEY'),
       authDomain: this.configService.get<string>('FIREBASE_AUTH_DOMAIN'),
       projectId: this.configService.get<string>('FIREBASE_PROJECT_ID'),
-      storageBucket: this.configService.get<string>('FIREBASE_STORAGE_BUCKET'),
+      // storageBucket: this.configService.get<string>('FIREBASE_STORAGE_BUCKET'),
       messagingSenderId: this.configService.get<string>(
         'FIREBASE_MESSAGING_SENDER_ID',
       ),
