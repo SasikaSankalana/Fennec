@@ -19,6 +19,6 @@ import { FirebaseModule } from './firebase/firebase.module';
     AdminModule,
     FirebaseModule,
   ],
-  providers: [{ provide: APP_GUARD, useClass: FirebaseGuard }],
+  // providers: [{ provide: APP_GUARD, useClass: FirebaseGuard }],
 })
 export class AppModule {}

@@ -86,6 +86,16 @@ export class AdminClubService {
   }
 
   async clubValidate(dto: AdminClubDto) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: dto.clubOwnerId,
+      },
+    });
+
+    if (!user) {
+      return new BadRequestException('User not found');
+    }
+
     const existingClub = await this.prisma.club.findFirst({
       where: {
         name: dto.name,
