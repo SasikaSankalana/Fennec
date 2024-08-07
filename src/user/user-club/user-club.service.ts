@@ -14,27 +14,36 @@ export class UserClubService {
     private userClubNightService: UserClubNightService,
   ) {}
 
-  async getClub(clubNightId: string) {
+  async getClub(clubId: string) {
     try {
       const club = await this.prisma.club.findUnique({
         where: {
-          id: clubNightId,
+          id: clubId,
         },
         select: {
           id: true,
           name: true,
-          clubLocationId: true,
-          clubLocation: {
+          Promotion: {
             select: {
+              id: true,
               name: true,
-              latitude: true,
-              longitude: true,
-              address: true,
-              country: true,
-              city: true,
-              postalCode: true,
+              endDate: true,
+              pointsRequired: true,
+              description: true,
             },
           },
+          // clubLocationId: true,
+          // clubLocation: {
+          //   select: {
+          //     name: true,
+          //     latitude: true,
+          //     longitude: true,
+          //     address: true,
+          //     country: true,
+          //     city: true,
+          //     postalCode: true,
+          //   },
+          // },
         },
       });
 
@@ -48,28 +57,32 @@ export class UserClubService {
     }
   }
 
-  async getClubs() {
+  async getClubs(userId: string) {
     try {
-      const clubs = await this.prisma.club.findMany({
+      const userClubs = await this.prisma.userClubPoints.findMany({
+        where: {
+          userId: userId,
+        },
         select: {
-          id: true,
-          name: true,
-          clubLocationId: true,
-          clubLocation: {
+          clubId: true,
+          points: true,
+          club: {
             select: {
+              id: true,
               name: true,
-              latitude: true,
-              longitude: true,
-              address: true,
-              country: true,
-              city: true,
-              postalCode: true,
+              Promotion: {
+                select: {
+                  id: true,
+                  name: true,
+                  endDate: true,
+                },
+              },
             },
           },
         },
       });
 
-      return clubs;
+      return userClubs;
     } catch (error) {
       throw error;
     }

@@ -13,9 +13,9 @@ export class UserClubController {
     return this.userClubService.getClub(clubId);
   }
 
-  @Get('')
-  getClubs() {
-    return this.userClubService.getClubs();
+  @Get('/user/:userId')
+  getClubs(@Param('userId') userId: string) {
+    return this.userClubService.getClubs(userId);
   }
 
   @Get(':clubId/club-nights/upcoming')

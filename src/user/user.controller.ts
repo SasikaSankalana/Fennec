@@ -6,6 +6,8 @@ import {
   Put,
   Get,
   Delete,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import {
@@ -16,6 +18,9 @@ import {
   userSettingsDto,
 } from './dto';
 import { ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { photoDto } from './user-club/dto/photo.dto';
+import { MulterField } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 
 @Controller('users')
 @ApiTags('Users')
@@ -74,13 +79,17 @@ export class UserController {
     return this.userService.getUser(userId);
   }
 
-  // @Delete(':userId/photo')
-  // async deleteUserPhoto(userId: string) {
-  //   return this.userService.deleteUserPhoto(userId);
-  // }
+  @Put(':userId/photo')
+  @UseInterceptors(FileInterceptor('file'))
+  async updateUserPhoto(
+    @Param('userId') userId: string,
+    @UploadedFile() file: MulterField,
+  ) {
+    return this.userService.updateUserPhoto(userId, file);
+  }
 
-  // @Put(':userId/photo')
-  // async updateUserPhoto(userId: string, photoUrl: string) {
-  //   return this.userService.updateUserPhoto(userId, photoUrl);
-  // }
+  @Delete(':userId/photo')
+  async deleteUserPhoto(@Param('userId') userId: string) {
+    return this.userService.deleteUserPhoto(userId);
+  }
 }

@@ -178,11 +178,23 @@ model UserTicket{
 
   ticket Ticket @relation(fields: [ticketId], references: [id])
   ticketId String
-
-  ticketAddOn TicketAddOn @relation(fields: [ticketAddOnId], references: [id])
-  ticketAddOnId String  
+ 
+ UserTicketAddOn UserTicketAddOn[]
 
   @@map("user_tickets")
+}
+
+model UserTicketAddOn{
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ticketAddOn TicketAddOn @relation(fields: [ticketAddOnId], references: [id])
+  ticketAddOnId String 
+
+  userTicket UserTicket @relation(fields: [userTicketId], references: [id])
+  userTicketId String
+
 }
 
 model Event{
@@ -250,7 +262,7 @@ model TicketAddOn{
   name String
   price Float
 
-  UserTicket UserTicket[]
+  UserTicketAddOn UserTicketAddOn[]
 
   @@map("ticket_add_ons")
 }

@@ -5,10 +5,16 @@ import * as argon from 'argon2';
 import { validate } from 'class-validator';
 import { settings } from 'pactum';
 import { userSettingsDto } from './dto/settings.dto';
+import { ImageService } from './image/image.service';
+import { photoDto } from './user-club/dto/photo.dto';
+import { MulterField } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private imageService: ImageService,
+  ) {}
 
   async Onboarding(userId: string, dto: OnboardDto) {
     try {
@@ -284,7 +290,19 @@ export class UserService {
           id: userId,
         },
       });
-      return user;
+
+      const userClubPoints = await this.prisma.userClubPoints.findMany({
+        where: {
+          userId: userId,
+        },
+      });
+
+      let totalPoints = 0;
+      for (const clubPoints of userClubPoints) {
+        totalPoints += clubPoints.points;
+      }
+
+      return { user, totalPoints };
     } catch (error) {
       throw error;
     }
@@ -292,6 +310,31 @@ export class UserService {
 
   async deleteUserPhoto(userId: string) {
     try {
+      console.log('User ID:', userId);
+
+      const photoUser = await this.prisma.user.findFirst({
+        where: {
+          id: userId,
+        },
+        select: {
+          photoUrl: true,
+        },
+      });
+
+      if (!photoUser) {
+        throw new Error('User not found');
+      }
+
+      console.log('user:', photoUser);
+
+      console.log('Photo URL1:', photoUser.photoUrl);
+
+      if (!photoUser.photoUrl || photoUser.photoUrl.trim() === '') {
+        throw new Error('No photo URL found for the user');
+      }
+
+      await this.imageService.deleteImage(photoUser.photoUrl);
+
       const user = await this.prisma.user.update({
         where: {
           id: userId,
@@ -306,14 +349,16 @@ export class UserService {
     }
   }
 
-  async updateUserPhoto(userId: string, photoUrl: string) {
+  async updateUserPhoto(userId: string, file: MulterField) {
     try {
+      const savedPhotoUrl = await this.imageService.uploadImage(file);
+
       const user = await this.prisma.user.update({
         where: {
           id: userId,
         },
         data: {
-          photoUrl: photoUrl,
+          photoUrl: savedPhotoUrl,
         },
       });
       return user;
