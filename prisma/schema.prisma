@@ -32,7 +32,8 @@ model User {
   Onboarding Onboarding[]
   paymentDetails PaymentDetails[]
   UserLocation UserLocation[]
-  UserTicket UserTicket[]
+  // UserTicket UserTicket[]
+  Ticket Ticket[]
   Club Club[]
   UserPromotionEvent UserPromotionEvent[]
   UserSettings UserSettings[]
@@ -168,34 +169,34 @@ model ClubLocation{
   @@map("club_locations")
 }
 
-model UserTicket{
-  id String @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// model UserTicket{
+//   id String @id @default(cuid())
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
-  userId String
+//   user User @relation(fields: [userId], references: [id])
+//   userId String
 
-  ticket Ticket @relation(fields: [ticketId], references: [id])
-  ticketId String
+//   ticket Ticket @relation(fields: [ticketId], references: [id])
+//   ticketId String
  
- UserTicketAddOn UserTicketAddOn[]
+//  UserTicketAddOn UserTicketAddOn[]
 
-  @@map("user_tickets")
-}
+//   @@map("user_tickets")
+// }
 
-model UserTicketAddOn{
-  id String @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// model UserTicketAddOn{
+//   id String @id @default(cuid())
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
 
-  ticketAddOn TicketAddOn @relation(fields: [ticketAddOnId], references: [id])
-  ticketAddOnId String 
+//   ticketAddOn TicketAddOn @relation(fields: [ticketAddOnId], references: [id])
+//   ticketAddOnId String 
 
-  userTicket UserTicket @relation(fields: [userTicketId], references: [id])
-  userTicketId String
+//   userTicket UserTicket @relation(fields: [userTicketId], references: [id])
+//   userTicketId String
 
-}
+// }
 
 model Event{
   id String @id @default(cuid())
@@ -209,7 +210,10 @@ model Event{
   club Club @relation(fields: [clubId], references: [id])
   clubId String
 
-  ticket Ticket[]
+  TickerAddOn TicketAddOn[]
+  TicketTier TicketTier[]
+
+  // Ticket Ticket[]
   UserPromotionEvent UserPromotionEvent[]
 
   @@map("events")
@@ -228,7 +232,10 @@ model ClubNight{
   club Club @relation(fields: [clubId], references: [id])
   clubId String
 
-  Ticket Ticket[]
+  TicketTier TicketTier[]
+  TicketAddOn TicketAddOn[]
+
+  // Ticket Ticket[]
   UserPromotionEvent UserPromotionEvent[]
 
 
@@ -239,18 +246,25 @@ model Ticket{
   id String @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  eventType String
+  total Float
+  // eventType String
 
-  event Event @relation(fields: [eventId], references: [id])
-  eventId String
+  // event Event @relation(fields: [eventId], references: [id])
+  // eventId String
 
-  clubNight ClubNight @relation(fields: [clubNightId], references: [id])
-  clubNightId String
+  // clubNight ClubNight @relation(fields: [clubNightId], references: [id])
+  // clubNightId String
 
-  ticketType TicketType @relation(fields: [ticketTypeId], references: [id])
+  ticketAddOn TicketAddOn @relation(fields: [ticketAddOnId], references: [id])
+  ticketAddOnId String 
+
+  user User @relation(fields: [userId], references: [id])
+  userId String
+
+  ticketTier TicketTier @relation(fields: [ticketTypeId], references: [id])
   ticketTypeId String
 
-  UserTicket UserTicket[]
+  // UserTicket UserTicket[]
 
   @@map("tickets")
 }
@@ -261,13 +275,20 @@ model TicketAddOn{
   updatedAt DateTime @updatedAt
   name String
   price Float
+  maxQuantity Int
 
-  UserTicketAddOn UserTicketAddOn[]
+  event Event? @relation(fields: [eventId], references: [id])
+  eventId String?
+
+  clubNight ClubNight? @relation(fields: [clubNightId], references: [id])
+  clubNightId String?
+
+  Ticket Ticket[]
 
   @@map("ticket_add_ons")
 }
 
-model TicketType{
+model TicketTier{
   id String @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -275,10 +296,17 @@ model TicketType{
   price Float
   currentQuantity Int
   totalQuantity Int
+  isPrivate Boolean
+
+  event Event? @relation(fields: [eventId], references: [id])
+  eventId String?
+
+  clubNight ClubNight? @relation(fields: [clubNightId], references: [id])
+  clubNightId String?
 
   ticket Ticket[]
+  @@map("ticket_tiers")
 
-  @@map("ticket_types")
 }
 
 model Promotion{
@@ -294,6 +322,7 @@ model Promotion{
 
   club Club @relation(fields: [clubId], references: [id])
   clubId String
+
   
   UserPromotionEvent UserPromotionEvent[]
 
