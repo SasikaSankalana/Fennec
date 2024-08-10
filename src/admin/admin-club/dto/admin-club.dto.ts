@@ -1,3 +1,4 @@
+import { MulterField } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 import {
   IsInt,
   IsNotEmpty,
@@ -45,4 +46,7 @@ export class AdminClubDto {
   @IsInt()
   @IsNotEmpty()
   capacity: number;
+
+  @IsNotEmpty()
+  photoUrl: MulterField;
 }

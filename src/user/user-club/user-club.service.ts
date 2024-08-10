@@ -74,6 +74,7 @@ export class UserClubService {
                 select: {
                   id: true,
                   name: true,
+                  description: true,
                   endDate: true,
                 },
               },

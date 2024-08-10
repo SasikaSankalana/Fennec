@@ -20,4 +20,12 @@ export class UserTicketsController {
   async getTicketSummary(@Body() dto: TicketSummaryDto) {
     return this.userTicketsService.getTicketSummary(dto);
   }
+
+  @Post('reserve/:userId')
+  async reserveTickets(
+    @Body() dto: TicketSummaryDto,
+    @Param('userId') userId: string,
+  ) {
+    return this.userTicketsService.reserveTickets(dto, userId);
+  }
 }

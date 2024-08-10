@@ -1,10 +1,14 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AdminClubNightDto } from './dto';
+import { ImageService } from 'src/image/image.service';
 
 @Injectable()
 export class AdminClubNightService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private imageService: ImageService,
+  ) {}
 
   async addClubNight(dto: AdminClubNightDto) {
     try {
@@ -14,12 +18,14 @@ export class AdminClubNightService {
         throw clubNightValidate;
       }
 
+      const savedPhotoUrl = await this.imageService.uploadImage(dto.photoUrl);
+
       const clubNight = await this.prisma.clubNight.create({
         data: {
           name: dto.name,
           dateTime: dto.dateTime,
           description: dto.description,
-          photoUrl: dto.photoUrl,
+          photoUrl: savedPhotoUrl,
           club: {
             connect: {
               id: dto.clubId,
@@ -42,6 +48,17 @@ export class AdminClubNightService {
         throw clubNightValidate;
       }
 
+      const existingClubNight = await this.prisma.clubNight.findUnique({
+        where: {
+          id: clubNightId,
+        },
+      });
+
+      const savedPhotoUrl = await this.imageService.updateImage(
+        existingClubNight.photoUrl,
+        dto.photoUrl,
+      );
+
       const updatedClubNight = await this.prisma.clubNight.update({
         where: {
           id: clubNightId,
@@ -50,6 +67,7 @@ export class AdminClubNightService {
           name: dto.name,
           dateTime: dto.dateTime,
           description: dto.description,
+          photoUrl: savedPhotoUrl,
         },
       });
 
@@ -106,6 +124,8 @@ export class AdminClubNightService {
       if (!clubNight) {
         throw new BadRequestException('Club night not found');
       }
+
+      await this.imageService.deleteImage(clubNight.photoUrl);
 
       const deletedClubNight = await this.prisma.clubNight.delete({
         where: {

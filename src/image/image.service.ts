@@ -49,4 +49,9 @@ export class ImageService {
 
     await bucket.file(fileName).delete();
   }
+
+  async updateImage(oldImageUrl: string, newImage): Promise<string> {
+    await this.deleteImage(oldImageUrl);
+    return this.uploadImage(newImage);
+  }
 }

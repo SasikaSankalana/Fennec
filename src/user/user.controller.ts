@@ -81,15 +81,19 @@ export class UserController {
 
   @Put(':userId/photo')
   @UseInterceptors(FileInterceptor('file'))
-  async updateUserPhoto(
+  updateUserPhoto(
     @Param('userId') userId: string,
     @UploadedFile() file: MulterField,
   ) {
     return this.userService.updateUserPhoto(userId, file);
   }
 
+  getPaymentDetials(@Param('userId') userId: string) {
+    return this.userService.getPaymentDetails(userId);
+  }
+
   @Delete(':userId/photo')
-  async deleteUserPhoto(@Param('userId') userId: string) {
+  deleteUserPhoto(@Param('userId') userId: string) {
     return this.userService.deleteUserPhoto(userId);
   }
 }

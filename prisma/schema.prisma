@@ -32,12 +32,12 @@ model User {
   Onboarding Onboarding[]
   paymentDetails PaymentDetails[]
   UserLocation UserLocation[]
-  // UserTicket UserTicket[]
-  Ticket Ticket[]
+  Reservation Reservation[]
   Club Club[]
   UserPromotionEvent UserPromotionEvent[]
   UserSettings UserSettings[]
   userClubPoints UserClubPoints[]
+  Payments Payments[]
   
   @@map("users")
 }
@@ -126,6 +126,8 @@ model PaymentDetails{
   user User @relation(fields: [userId], references: [id])
   userId String
 
+  Payments Payments[]
+
   @@map("payment_details")
 }
 
@@ -136,6 +138,7 @@ model Club{
   updatedAt DateTime @updatedAt
   name String
   capacity Int
+  photoUrl String?
 
   clubOwner User @relation(fields: [clubOwnerId], references: [id])
   clubOwnerId String
@@ -148,6 +151,7 @@ model Club{
   Promotion Promotion[]
   TermsAndConditions TermsAndConditions[]
   UserClubPoints UserClubPoints[]
+  Payments Payments[]
 
   @@map("clubs")
 }
@@ -169,35 +173,6 @@ model ClubLocation{
   @@map("club_locations")
 }
 
-// model UserTicket{
-//   id String @id @default(cuid())
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-
-//   user User @relation(fields: [userId], references: [id])
-//   userId String
-
-//   ticket Ticket @relation(fields: [ticketId], references: [id])
-//   ticketId String
- 
-//  UserTicketAddOn UserTicketAddOn[]
-
-//   @@map("user_tickets")
-// }
-
-// model UserTicketAddOn{
-//   id String @id @default(cuid())
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-
-//   ticketAddOn TicketAddOn @relation(fields: [ticketAddOnId], references: [id])
-//   ticketAddOnId String 
-
-//   userTicket UserTicket @relation(fields: [userTicketId], references: [id])
-//   userTicketId String
-
-// }
-
 model Event{
   id String @id @default(cuid())
   createdAt DateTime @default(now())
@@ -213,7 +188,6 @@ model Event{
   TickerAddOn TicketAddOn[]
   TicketTier TicketTier[]
 
-  // Ticket Ticket[]
   UserPromotionEvent UserPromotionEvent[]
 
   @@map("events")
@@ -234,37 +208,49 @@ model ClubNight{
 
   TicketTier TicketTier[]
   TicketAddOn TicketAddOn[]
-
-  // Ticket Ticket[]
   UserPromotionEvent UserPromotionEvent[]
 
 
   @@map("club_nights")
 }
 
-model Ticket{
+model Reservation{
   id String @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   total Float
-  // eventType String
 
-  // event Event @relation(fields: [eventId], references: [id])
-  // eventId String
-
-  // clubNight ClubNight @relation(fields: [clubNightId], references: [id])
-  // clubNightId String
-
-  ticketAddOn TicketAddOn @relation(fields: [ticketAddOnId], references: [id])
-  ticketAddOnId String 
+  ReservationAddOns ReservationAddOns[]
+  Ticket Ticket[]
 
   user User @relation(fields: [userId], references: [id])
   userId String
+}
 
-  ticketTier TicketTier @relation(fields: [ticketTypeId], references: [id])
-  ticketTypeId String
+model ReservationAddOns{
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  quantity Int
 
-  // UserTicket UserTicket[]
+  reservation Reservation @relation(fields: [reservationId], references: [id])
+  reservationId String
+
+  ticketAddOn TicketAddOn @relation(fields: [ticketAddOnId], references: [id])
+  ticketAddOnId String
+}
+
+model Ticket{
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  price Float
+
+  reservation Reservation @relation(fields: [reservationId], references: [id])
+  reservationId String
+ 
+  ticketTier TicketTier @relation(fields: [ticketTierId], references: [id])
+  ticketTierId String
 
   @@map("tickets")
 }
@@ -283,7 +269,7 @@ model TicketAddOn{
   clubNight ClubNight? @relation(fields: [clubNightId], references: [id])
   clubNightId String?
 
-  Ticket Ticket[]
+  ReservationAddOns ReservationAddOns[]
 
   @@map("ticket_add_ons")
 }
@@ -318,7 +304,6 @@ model Promotion{
   startDate DateTime
   endDate DateTime
   pointsRequired Int
-  photoUrl String
 
   club Club @relation(fields: [clubId], references: [id])
   clubId String
@@ -360,3 +345,23 @@ model TermsAndConditions{
 
   @@map("terms_and_conditions")
 }
+
+model Payments{
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  paymentType String
+  total Float
+  
+  paymentDetails PaymentDetails @relation(fields: [paymentDetailsId], references: [id])
+  paymentDetailsId String
+
+  club Club @relation(fields: [clubId], references: [id])
+  clubId String
+
+  user User @relation(fields: [userId], references: [id])
+  userId String
+
+  @@map("payments")
+}
+
