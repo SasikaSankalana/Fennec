@@ -37,7 +37,7 @@ export class UserEventService {
       });
 
       if (!event) {
-        throw new ForbiddenException('Club not found');
+        throw new ForbiddenException('Event not found');
       }
 
       return event;

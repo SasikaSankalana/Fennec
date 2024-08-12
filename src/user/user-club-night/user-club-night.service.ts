@@ -20,7 +20,7 @@ export class UserClubNightService {
       });
 
       if (!clubNight) {
-        throw new ForbiddenException('Club not found');
+        throw new ForbiddenException('Club Night not found');
       }
 
       return clubNight;

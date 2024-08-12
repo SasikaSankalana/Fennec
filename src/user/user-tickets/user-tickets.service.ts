@@ -67,14 +67,15 @@ export class UserTicketsService {
     try {
       const reservationData = await this.prisma.$transaction(async (tx) => {
         for (const tier of dto.ticketTiers) {
-          if (
-            tier.qty >
-            (
-              await tx.ticketTier.findUnique({
-                where: { id: tier.id },
-              })
-            ).currentQuantity
-          ) {
+          const ticketTier = await tx.ticketTier.findUnique({
+            where: { id: tier.id },
+          });
+
+          if (!ticketTier) {
+            throw new BadRequestException('Ticket tier not found');
+          }
+
+          if (tier.qty > ticketTier.currentQuantity) {
             throw new BadRequestException('Not enough tickets available');
           }
 
