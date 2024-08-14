@@ -12,8 +12,11 @@ export class UserClubNightController {
     return this.userClubNightService.getClubNights();
   }
 
-  @Get(':clubNightId')
-  getClubNight(@Param('clubNightId') clubNightId: string) {
-    return this.userClubNightService.getClubNight(clubNightId);
+  @Get(':clubNightId/user/:userId')
+  getClubNight(
+    @Param('clubNightId') clubNightId: string,
+    @Param('userId') userId: string,
+  ) {
+    return this.userClubNightService.getClubNight(clubNightId, userId);
   }
 }

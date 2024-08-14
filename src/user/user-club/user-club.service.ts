@@ -32,18 +32,18 @@ export class UserClubService {
               description: true,
             },
           },
-          // clubLocationId: true,
-          // clubLocation: {
-          //   select: {
-          //     name: true,
-          //     latitude: true,
-          //     longitude: true,
-          //     address: true,
-          //     country: true,
-          //     city: true,
-          //     postalCode: true,
-          //   },
-          // },
+          clubLocation: {
+            select: {
+              id: true,
+              name: true,
+              address: true,
+              latitude: true,
+              longitude: true,
+              city: true,
+              postalCode: true,
+              country: true,
+            },
+          },
         },
       });
 
@@ -78,6 +78,18 @@ export class UserClubService {
                   endDate: true,
                 },
               },
+              clubLocation: {
+                select: {
+                  id: true,
+                  name: true,
+                  address: true,
+                  latitude: true,
+                  longitude: true,
+                  city: true,
+                  postalCode: true,
+                  country: true,
+                },
+              },
             },
           },
         },
@@ -93,7 +105,6 @@ export class UserClubService {
     try {
       const clubNight =
         await this.userClubNightService.getUpcomingClubNights(clubId);
-
       return clubNight;
     } catch (error) {
       throw error;
@@ -103,7 +114,6 @@ export class UserClubService {
   async getUpcomingEvents(clubId: string) {
     try {
       const event = await this.userEventsService.getUpcomingEvents(clubId);
-
       return event;
     } catch (error) {
       throw error;
@@ -114,7 +124,6 @@ export class UserClubService {
     try {
       const promotion =
         await this.userPromotionService.getClubPromotions(clubId);
-
       return promotion;
     } catch (error) {
       throw error;

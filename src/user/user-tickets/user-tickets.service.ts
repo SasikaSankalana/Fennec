@@ -99,16 +99,42 @@ export class UserTicketsService {
           throw new BadRequestException('Payment failed');
         }
 
-        const reservation = await tx.reservation.create({
-          data: {
-            total: (await total).total,
-            user: {
-              connect: {
-                id: userId,
+        let reservation;
+        if (dto.isEvent) {
+          reservation = await tx.reservation.create({
+            data: {
+              total: (await total).total,
+              event: {
+                connect: {
+                  id: dto.functionId,
+                },
+              },
+              clubNight: {},
+              user: {
+                connect: {
+                  id: userId,
+                },
               },
             },
-          },
-        });
+          });
+        } else {
+          reservation = await tx.reservation.create({
+            data: {
+              total: (await total).total,
+              clubNight: {
+                connect: {
+                  id: dto.functionId,
+                },
+              },
+              event: {},
+              user: {
+                connect: {
+                  id: userId,
+                },
+              },
+            },
+          });
+        }
 
         for (const tier of dto.ticketTiers) {
           for (tier.qty; tier.qty > 0; tier.qty--) {

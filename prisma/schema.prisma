@@ -187,6 +187,7 @@ model Event{
 
   TickerAddOn TicketAddOn[]
   TicketTier TicketTier[]
+  Reservation Reservation[]
 
   UserPromotionEvent UserPromotionEvent[]
 
@@ -209,6 +210,7 @@ model ClubNight{
   TicketTier TicketTier[]
   TicketAddOn TicketAddOn[]
   UserPromotionEvent UserPromotionEvent[]
+  Reservation Reservation[]
 
 
   @@map("club_nights")
@@ -223,8 +225,16 @@ model Reservation{
   ReservationAddOns ReservationAddOns[]
   Ticket Ticket[]
 
+  event Event? @relation(fields: [eventId], references: [id])
+  eventId String?
+
+  clubNight ClubNight? @relation(fields: [clubNightId], references: [id])
+  clubNightId String?
+  
   user User @relation(fields: [userId], references: [id])
   userId String
+
+  @@map("reservations")
 }
 
 model ReservationAddOns{
@@ -238,6 +248,8 @@ model ReservationAddOns{
 
   ticketAddOn TicketAddOn @relation(fields: [ticketAddOnId], references: [id])
   ticketAddOnId String
+
+  @@map("reservation_add_ons")
 }
 
 model Ticket{

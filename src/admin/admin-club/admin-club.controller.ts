@@ -22,13 +22,8 @@ export class AdminClubController {
   constructor(private adminClubService: AdminClubService) {}
 
   @Post('')
-  @UseInterceptors(FileInterceptor('photoUrl'))
-  addClub(
-    @UploadedFile() photoUrl: MulterField,
-    @Body('jsonBody') dto: AdminClubDto,
-  ) {
-    console.log(dto);
-
+  // @UseInterceptors(FileInterceptor('photoUrl'))
+  addClub(@Body() dto: AdminClubDto) {
     return this.adminClubService.addClub(dto);
   }
 
