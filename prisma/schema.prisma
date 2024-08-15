@@ -85,6 +85,8 @@ model UserLocation{
   user User @relation(fields: [userId], references: [id])
   userId String
 
+  @@map("user_locations")
+
 }
 
 model Onboarding{
