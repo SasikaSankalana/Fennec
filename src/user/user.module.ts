@@ -9,8 +9,9 @@ import { UserClubNightModule } from './user-club-night/user-club-night.module';
 import { UserEventModule } from './user-event/user-event.module';
 import { UserTermsConditionsModule } from './user-terms-conditions/user-terms-conditions.module';
 import { FirebaseModule } from '../firebase/firebase.module';
-import { ImageModule } from './image/image.module';
-import { ImageService } from './image/image.service';
+import { ImageModule } from '../image/image.module';
+import { ImageService } from '../image/image.service';
+import { UserTicketsModule } from './user-tickets/user-tickets.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { ImageService } from './image/image.service';
     UserTermsConditionsModule,
     ImageModule,
     FirebaseModule,
+    UserTicketsModule,
   ],
   controllers: [UserController, UserClubController],
   providers: [UserService, PrismaService, ImageService],

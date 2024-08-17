@@ -5,10 +5,14 @@ import {
 } from '@nestjs/common';
 import { AdminClubDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ImageService } from 'src/image/image.service';
 
 @Injectable()
 export class AdminClubService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private imageService: ImageService,
+  ) {}
 
   async addClub(dto: AdminClubDto) {
     try {
@@ -18,10 +22,13 @@ export class AdminClubService {
         throw clubValidate;
       }
 
+      const savedPhotoUrl = await this.imageService.uploadImage(dto.photoUrl);
+
       const club = await this.prisma.club.create({
         data: {
           name: dto.name,
           capacity: dto.capacity,
+          photoUrl: savedPhotoUrl,
           clubOwner: {
             connect: {
               id: dto.clubOwnerId,
@@ -52,12 +59,30 @@ export class AdminClubService {
 
   async updateClub(clubId: string, dto: AdminClubDto) {
     try {
+      const existingClub = await this.prisma.club.findUnique({
+        where: { id: clubId },
+        select: {
+          photoUrl: true,
+        },
+      });
+
+      if (!existingClub) {
+        throw new ForbiddenException('Club not found');
+      }
+
+      const savedPhotoUrl = await this.imageService.updateImage(
+        existingClub.photoUrl,
+        dto.photoUrl,
+      );
+
       const club = await this.prisma.club.update({
         where: {
           id: clubId,
         },
         data: {
           name: dto.name,
+          capacity: dto.capacity,
+          photoUrl: savedPhotoUrl,
           clubOwner: {
             connect: {
               id: dto.clubOwnerId,
@@ -79,7 +104,37 @@ export class AdminClubService {
           clubLocation: true,
         },
       });
-      return { club };
+      return club;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async deleteClub(clubId: string) {
+    try {
+      const club = await this.prisma.club.findUnique({
+        where: { id: clubId },
+        select: {
+          photoUrl: true,
+        },
+      });
+
+      if (!club) {
+        throw new BadRequestException('Club not found');
+      }
+
+      await this.imageService.deleteImage(club.photoUrl);
+
+      await this.prisma.club.delete({
+        where: {
+          id: clubId,
+        },
+        include: {
+          clubLocation: true,
+        },
+      });
+
+      return club;
     } catch (error) {
       throw error;
     }
@@ -115,31 +170,6 @@ export class AdminClubService {
       );
     }
     return true;
-  }
-
-  async deleteClub(clubId: string) {
-    try {
-      const club = await this.prisma.club.findUnique({
-        where: { id: clubId },
-      });
-
-      if (!club) {
-        throw new ForbiddenException('Club not found');
-      }
-
-      await this.prisma.club.delete({
-        where: {
-          id: clubId,
-        },
-        include: {
-          clubLocation: true,
-        },
-      });
-
-      return club;
-    } catch (error) {
-      throw error;
-    }
   }
 
   async getClub(clubId: string) {

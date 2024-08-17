@@ -6,11 +6,15 @@ import {
   Param,
   Post,
   Put,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AdminClubDto } from './dto';
 import { AdminClubService } from './admin-club.service';
 import { ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { MulterField } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 
 @Controller('admin/club')
 @ApiTags('Admin Club')
@@ -18,6 +22,7 @@ export class AdminClubController {
   constructor(private adminClubService: AdminClubService) {}
 
   @Post('')
+  // @UseInterceptors(FileInterceptor('photoUrl'))
   addClub(@Body() dto: AdminClubDto) {
     return this.adminClubService.addClub(dto);
   }

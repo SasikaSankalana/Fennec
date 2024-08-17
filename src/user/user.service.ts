@@ -2,12 +2,9 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { locationDto, OnboardDto, paymentDetailsDto, UserDto } from './dto';
 import * as argon from 'argon2';
-import { validate } from 'class-validator';
-import { settings } from 'pactum';
 import { userSettingsDto } from './dto/settings.dto';
-import { ImageService } from './image/image.service';
-import { photoDto } from './user-club/dto/photo.dto';
 import { MulterField } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
+import { ImageService } from 'src/image/image.service';
 
 @Injectable()
 export class UserService {
@@ -184,8 +181,6 @@ export class UserService {
         },
       });
 
-      console.log('existingLocation', existingLocation);
-
       const location = await this.prisma.userLocation.update({
         where: {
           id: existingLocation.id,
@@ -310,8 +305,6 @@ export class UserService {
 
   async deleteUserPhoto(userId: string) {
     try {
-      console.log('User ID:', userId);
-
       const photoUser = await this.prisma.user.findFirst({
         where: {
           id: userId,
@@ -322,15 +315,11 @@ export class UserService {
       });
 
       if (!photoUser) {
-        throw new Error('User not found');
+        throw new BadRequestException('User not found');
       }
 
-      console.log('user:', photoUser);
-
-      console.log('Photo URL1:', photoUser.photoUrl);
-
       if (!photoUser.photoUrl || photoUser.photoUrl.trim() === '') {
-        throw new Error('No photo URL found for the user');
+        throw new BadRequestException('No photo URL found for the user');
       }
 
       await this.imageService.deleteImage(photoUser.photoUrl);
@@ -404,6 +393,19 @@ export class UserService {
         });
         return createdPoints;
       }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getPaymentDetails(userId: string) {
+    try {
+      const paymentDetails = await this.prisma.paymentDetails.findMany({
+        where: {
+          userId: userId,
+        },
+      });
+      return paymentDetails;
     } catch (error) {
       throw error;
     }
