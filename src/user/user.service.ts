@@ -410,4 +410,44 @@ export class UserService {
       throw error;
     }
   }
+
+  async getParticipants(functionId: string, isEvent: boolean) {
+    try {
+      if (isEvent) {
+        const participants = await this.prisma.reservation.findMany({
+          where: {
+            eventId: functionId,
+          },
+          select: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                photoUrl: true,
+              },
+            },
+          },
+        });
+        return participants;
+      } else {
+        const participants = await this.prisma.reservation.findMany({
+          where: {
+            clubNightId: functionId,
+          },
+          select: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                photoUrl: true,
+              },
+            },
+          },
+        });
+        return participants;
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
 }

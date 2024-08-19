@@ -11,11 +11,16 @@ import {
 import { AdminClubNightService } from './admin-club-night.service';
 import { AdminClubNightDto } from './dto';
 import { ApiTags } from '@nestjs/swagger';
+import { AdminTicketsService } from '../admin-tickets/admin-tickets.service';
+import { TicketAddOnsDto, TicketTiersDto } from '../admin-tickets/dto';
 
 @Controller('admin/club-night')
 @ApiTags('Admin Club Night')
 export class AdminClubNightController {
-  constructor(private adminClubNightService: AdminClubNightService) {}
+  constructor(
+    private adminClubNightService: AdminClubNightService,
+    private adminTicketsService: AdminTicketsService,
+  ) {}
 
   @Post('')
   addClubNight(@Body() dto: AdminClubNightDto) {
@@ -48,5 +53,21 @@ export class AdminClubNightController {
   @Get(':clubNightId/location')
   getClubLocation(@Param('clubNightId') clubNightId: string) {
     return this.adminClubNightService.getClubLocation(clubNightId);
+  }
+
+  @Post(':clubNightId/tickets/tiers')
+  createTicketTier(
+    @Param('clubNightId') clubNightId: string,
+    @Body() dto: TicketTiersDto,
+  ) {
+    return this.adminTicketsService.createTicketTier(dto, clubNightId, false);
+  }
+
+  @Post(':clubNightId/tickets/addons')
+  createAddOn(
+    @Param('clubNightId') clubNightId: string,
+    @Body() dto: TicketAddOnsDto,
+  ) {
+    return this.adminTicketsService.createAddOn(dto, clubNightId, false);
   }
 }

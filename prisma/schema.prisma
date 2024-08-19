@@ -38,6 +38,7 @@ model User {
   UserSettings UserSettings[]
   userClubPoints UserClubPoints[]
   Payments Payments[]
+  ClubReview ClubReview[]
   
   @@map("users")
 }
@@ -141,6 +142,7 @@ model Club{
   name String
   capacity Int
   photoUrl String?
+  rating Int?
 
   clubOwner User @relation(fields: [clubOwnerId], references: [id])
   clubOwnerId String
@@ -154,8 +156,26 @@ model Club{
   TermsAndConditions TermsAndConditions[]
   UserClubPoints UserClubPoints[]
   Payments Payments[]
+  ClubReview ClubReview[]
 
   @@map("clubs")
+}
+
+model ClubReview{
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name String
+  email String
+  totalPoints Int
+  comment String?
+  rating Int
+
+  club Club @relation(fields: [clubId], references: [id])
+  clubId String
+
+  user User @relation(fields: [userId], references: [id])
+  userId String
 }
 
 model ClubLocation{

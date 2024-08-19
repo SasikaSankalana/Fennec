@@ -1,19 +1,11 @@
 import { IsInt, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class TicketSummaryDto {
-  @IsString()
-  @IsNotEmpty()
-  isEvent: boolean;
-
   @IsNotEmpty()
   ticketTiers: TicketTierDto[];
 
   @IsNotEmpty()
   ticketaddOns: TicketAddOnsDto[];
-
-  @IsString()
-  @IsNotEmpty()
-  functionId: string;
 }
 
 export class TicketTierDto {

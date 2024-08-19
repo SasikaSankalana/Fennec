@@ -1,45 +1,76 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { TicketSummaryDto } from './dto';
+import e from 'express';
 
 @Injectable()
 export class UserTicketsService {
   constructor(private prisma: PrismaService) {}
 
-  async getTickets(functionId: string) {
+  async getTickets(functionId: string, isEvent: boolean) {
     try {
-      const ticketTiers = await this.prisma.ticketTier.findMany({
-        where: {
-          eventId: functionId,
-        },
-        select: {
-          id: true,
-          name: true,
-          price: true,
-          currentQuantity: true,
-        },
-      });
+      if (isEvent) {
+        const ticketTiers = await this.prisma.ticketTier.findMany({
+          where: {
+            eventId: functionId,
+          },
+          select: {
+            id: true,
+            name: true,
+            price: true,
+            currentQuantity: true,
+          },
+        });
 
-      return ticketTiers;
+        return ticketTiers;
+      } else {
+        const ticketTiers = await this.prisma.ticketTier.findMany({
+          where: {
+            clubNightId: functionId,
+          },
+          select: {
+            id: true,
+            name: true,
+            price: true,
+            currentQuantity: true,
+          },
+        });
+        return ticketTiers;
+      }
     } catch (error) {
       throw new Error(error);
     }
   }
 
-  async getAddOns(functionId: string) {
+  async getAddOns(functionId: string, isEvent: boolean) {
     try {
-      const addOns = await this.prisma.ticketAddOn.findMany({
-        where: {
-          eventId: functionId,
-        },
-        select: {
-          id: true,
-          name: true,
-          price: true,
-          maxQuantity: true,
-        },
-      });
-      return addOns;
+      if (isEvent) {
+        const addOns = await this.prisma.ticketAddOn.findMany({
+          where: {
+            eventId: functionId,
+          },
+          select: {
+            id: true,
+            name: true,
+            price: true,
+            maxQuantity: true,
+          },
+        });
+        return addOns;
+      } else {
+        const addOns = await this.prisma.ticketAddOn.findMany({
+          where: {
+            clubNightId: functionId,
+          },
+          select: {
+            id: true,
+            name: true,
+            price: true,
+            maxQuantity: true,
+          },
+        });
+        return addOns;
+      }
     } catch (error) {
       throw new Error(error);
     }
@@ -63,7 +94,12 @@ export class UserTicketsService {
     }
   }
 
-  async reserveTickets(dto: TicketSummaryDto, userId: string) {
+  async reserveTickets(
+    dto: TicketSummaryDto,
+    userId: string,
+    functionId: string,
+    isEvent: boolean,
+  ) {
     try {
       const reservationData = await this.prisma.$transaction(async (tx) => {
         for (const tier of dto.ticketTiers) {
@@ -100,13 +136,13 @@ export class UserTicketsService {
         }
 
         let reservation;
-        if (dto.isEvent) {
+        if (isEvent) {
           reservation = await tx.reservation.create({
             data: {
               total: (await total).total,
               event: {
                 connect: {
-                  id: dto.functionId,
+                  id: functionId,
                 },
               },
               clubNight: {},
@@ -123,7 +159,7 @@ export class UserTicketsService {
               total: (await total).total,
               clubNight: {
                 connect: {
-                  id: dto.functionId,
+                  id: functionId,
                 },
               },
               event: {},

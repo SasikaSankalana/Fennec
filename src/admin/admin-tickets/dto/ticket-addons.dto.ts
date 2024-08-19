@@ -24,10 +24,6 @@ export class AddonsDto {
 
 export class TicketAddOnsDto {
   @IsNotEmpty()
-  @IsBoolean()
-  isEvent: boolean;
-
-  @IsNotEmpty()
   @ValidateNested({ each: true })
   @Type(() => AddonsDto)
   ticketAddOns: AddonsDto[];
