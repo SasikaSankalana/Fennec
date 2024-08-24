@@ -27,6 +27,8 @@ model User {
   telephoneNumber String
   photoUrl  String?
   email String @unique
+  dateOfBirth DateTime?
+  gender String?  
   role Role @default(USER)
 
   Onboarding Onboarding[]
@@ -83,8 +85,8 @@ model UserLocation{
   latitude Float
   longitude Float
 
-  user User @relation(fields: [userId], references: [id])
-  userId String
+  user User? @relation(fields: [userId], references: [id])
+  userId String?
 
   @@map("user_locations")
 

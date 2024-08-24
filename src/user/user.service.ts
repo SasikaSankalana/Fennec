@@ -225,8 +225,9 @@ export class UserService {
         },
         data: {
           name: dto.name,
+          // username: dto.username,
           telephoneNumber: dto.telephoneNumber,
-          photoUrl: '',
+          dateOfBirth: dto.dateOfBirth,
         },
       });
       return user;

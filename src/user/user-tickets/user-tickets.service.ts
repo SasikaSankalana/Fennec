@@ -236,4 +236,98 @@ export class UserTicketsService {
       return false;
     }
   }
+
+  async getUserReservations(userId: string) {
+    try {
+      const reservations = await this.prisma.reservation.findMany({
+        where: {
+          userId: userId,
+        },
+        include: {
+          event: true,
+          clubNight: true,
+        },
+      });
+
+      const reservationsList = [];
+      for (const reservation of reservations) {
+        if (!reservation.event) {
+          const clubNight = await this.prisma.clubNight.findUnique({
+            where: {
+              id: reservation.clubNightId,
+            },
+            select: {
+              id: true,
+              name: true,
+              dateTime: true,
+              club: {
+                select: {
+                  name: true,
+                  clubLocation: {
+                    select: {
+                      name: true,
+                      address: true,
+                      city: true,
+                      country: true,
+                    },
+                  },
+                },
+              },
+              TicketTier: {
+                select: {
+                  name: true,
+                  price: true,
+                },
+              },
+            },
+          });
+
+          const lowestPrice = Math.min(
+            ...clubNight.TicketTier.map((tier) => tier.price),
+          );
+
+          reservationsList.push({ clubNight, lowestPrice });
+        } else {
+          const event = await this.prisma.event.findUnique({
+            where: {
+              id: reservation.eventId,
+            },
+            select: {
+              id: true,
+              name: true,
+              dateTime: true,
+              club: {
+                select: {
+                  name: true,
+                  clubLocation: {
+                    select: {
+                      name: true,
+                      address: true,
+                      city: true,
+                      country: true,
+                    },
+                  },
+                },
+              },
+              TicketTier: {
+                select: {
+                  name: true,
+                  price: true,
+                },
+              },
+            },
+          });
+
+          const lowestPrice = Math.min(
+            ...event.TicketTier.map((tier) => tier.price),
+          );
+
+          reservationsList.push({ event, lowestPrice });
+        }
+      }
+      return reservationsList;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

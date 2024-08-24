@@ -14,6 +14,7 @@ import { ImageService } from '../image/image.service';
 import { UserTicketsModule } from './user-tickets/user-tickets.module';
 import { UserReviewsController } from './user-reviews/user-reviews.controller';
 import { UserReviewsModule } from './user-reviews/user-reviews.module';
+import { UserTicketsService } from './user-tickets/user-tickets.service';
 
 @Module({
   imports: [
@@ -28,6 +29,6 @@ import { UserReviewsModule } from './user-reviews/user-reviews.module';
     UserReviewsModule,
   ],
   controllers: [UserController, UserClubController, UserReviewsController],
-  providers: [UserService, PrismaService, ImageService],
+  providers: [UserService, PrismaService, ImageService, UserTicketsService],
 })
 export class UserModule {}

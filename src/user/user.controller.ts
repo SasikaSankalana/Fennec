@@ -21,11 +21,15 @@ import { ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { photoDto } from './user-club/dto/photo.dto';
 import { MulterField } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
+import { UserTicketsService } from './user-tickets/user-tickets.service';
 
 @Controller('users')
 @ApiTags('Users')
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private userTicketsService: UserTicketsService,
+  ) {}
 
   @Post(':userId/club/:clubId/points')
   addPoints(
@@ -95,5 +99,10 @@ export class UserController {
   @Delete(':userId/photo')
   deleteUserPhoto(@Param('userId') userId: string) {
     return this.userService.deleteUserPhoto(userId);
+  }
+
+  @Get('/:userId/tickets')
+  getUserReservations(@Param('userId') userId: string) {
+    return this.userTicketsService.getUserReservations(userId);
   }
 }
