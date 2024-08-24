@@ -13,6 +13,26 @@ export class UserService {
     private imageService: ImageService,
   ) {}
 
+  async getUsers() {
+    try {
+      const users = await this.prisma.user.findMany({
+        select: {
+          id: true,
+          name: true,
+          UserLocation: {
+            select: {
+              latitude: true,
+              longitude: true,
+            },
+          },
+        },
+      });
+      return users;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async Onboarding(userId: string, dto: OnboardDto) {
     try {
       const existingOnboarding = await this.prisma.onboarding.findFirst({

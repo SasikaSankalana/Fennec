@@ -15,6 +15,8 @@ import { UserTicketsModule } from './user-tickets/user-tickets.module';
 import { UserReviewsController } from './user-reviews/user-reviews.controller';
 import { UserReviewsModule } from './user-reviews/user-reviews.module';
 import { UserTicketsService } from './user-tickets/user-tickets.service';
+import { UserFriendsModule } from './user-friends/user-friends.module';
+import { UserFriendsService } from './user-friends/user-friends.service';
 
 @Module({
   imports: [
@@ -27,8 +29,15 @@ import { UserTicketsService } from './user-tickets/user-tickets.service';
     FirebaseModule,
     UserTicketsModule,
     UserReviewsModule,
+    UserFriendsModule,
   ],
   controllers: [UserController, UserClubController, UserReviewsController],
-  providers: [UserService, PrismaService, ImageService, UserTicketsService],
+  providers: [
+    UserService,
+    PrismaService,
+    ImageService,
+    UserTicketsService,
+    UserFriendsService,
+  ],
 })
 export class UserModule {}

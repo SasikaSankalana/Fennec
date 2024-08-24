@@ -19,6 +19,10 @@ enum Role {
   SUPERADMIN
 }
 
+enum FriendRequestStatus {
+  PENDING
+}
+
 model User {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
@@ -41,6 +45,13 @@ model User {
   userClubPoints UserClubPoints[]
   Payments Payments[]
   ClubReview ClubReview[]
+
+  receivedFriendRequests FriendRequest[] @relation("FirendRequestReceiver")
+  sentFriendRequests FriendRequest[] @relation("FriendRequestSender")
+
+  requestedFriends Friend[] @relation("RequestedUser")
+  acceptedFriends Friend[] @relation("AcceptedUser")
+  
   
   @@map("users")
 }
@@ -90,6 +101,34 @@ model UserLocation{
 
   @@map("user_locations")
 
+}
+
+model FriendRequest{
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation("FriendRequestSender", fields: [userId], references: [id])
+  userId String
+
+  friend User @relation("FirendRequestReceiver",fields: [friendId], references: [id])
+  friendId String
+
+  @@map("friend_requests")
+}
+
+model Friend{
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation("RequestedUser", fields: [userId], references: [id])
+  userId String
+
+  friend User @relation("AcceptedUser",fields: [friendId], references: [id])
+  friendId String
+
+  @@map("friends")
 }
 
 model Onboarding{

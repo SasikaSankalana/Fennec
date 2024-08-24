@@ -22,6 +22,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { photoDto } from './user-club/dto/photo.dto';
 import { MulterField } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 import { UserTicketsService } from './user-tickets/user-tickets.service';
+import { UserFriendsService } from './user-friends/user-friends.service';
 
 @Controller('users')
 @ApiTags('Users')
@@ -29,6 +30,7 @@ export class UserController {
   constructor(
     private userService: UserService,
     private userTicketsService: UserTicketsService,
+    private userFriendsService: UserFriendsService,
   ) {}
 
   @Post(':userId/club/:clubId/points')
@@ -104,5 +106,51 @@ export class UserController {
   @Get('/:userId/tickets')
   getUserReservations(@Param('userId') userId: string) {
     return this.userTicketsService.getUserReservations(userId);
+  }
+
+  @Get()
+  async getUsers() {
+    return this.userService.getUsers();
+  }
+
+  @Get(':userId/friends/:friendId')
+  getFriend(
+    @Param('friendId') friendId: string,
+    @Param('userId') userId: string,
+  ) {
+    return this.userFriendsService.getFriend(userId, friendId);
+  }
+
+  @Post(':userId/friends/:friendId')
+  createFriendRequest(
+    @Param('friendId') friendId: string,
+    @Param('userId') userId: string,
+  ) {
+    return this.userFriendsService.createFriendRequest(userId, friendId);
+  }
+
+  @Post('requests/:requestId/accept')
+  acceptFriendRequest(@Param('requestId') requestId: string, @Body() dto: any) {
+    return this.userFriendsService.acceptFriendRequest(requestId, dto);
+  }
+
+  @Delete('requests/:requestId/delete')
+  deleteFriendRequest(@Param('requestId') requestId: string) {
+    return this.userFriendsService.deleteFriendRequest(requestId);
+  }
+
+  @Get(':userId/requests')
+  getFriendRequests(@Param('userId') userId: string) {
+    return this.userFriendsService.getFriendRequests(userId);
+  }
+
+  @Delete('requests/:requestId/reject')
+  rejectFriendRequest(@Param('requestId') requestId: string) {
+    return this.userFriendsService.deleteFriendRequest(requestId);
+  }
+
+  @Get(':userId/friends')
+  getUserFriends(@Param('userId') userId: string) {
+    return this.userFriendsService.getFriends(userId);
   }
 }
