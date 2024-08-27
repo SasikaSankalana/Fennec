@@ -3,8 +3,7 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
-import { error } from 'console';
-import e from 'express';
+
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -25,9 +24,6 @@ export class UserFriendsService {
               friendId: userId,
             },
           ],
-        },
-        select: {
-          status: true,
         },
       });
 
@@ -113,13 +109,10 @@ export class UserFriendsService {
         },
       });
       if (existingFriendRequests) {
-        if (existingFriendRequests.status == 'PENDING') {
-          throw new BadRequestException('Friend request exists');
-        }
+        throw new BadRequestException('Friend request exists');
       }
       const friendRequest = await this.prisma.friendRequest.create({
         data: {
-          status: 'PENDING',
           userId: userId,
           friendId: friendId,
         },
@@ -158,11 +151,9 @@ export class UserFriendsService {
       const friendRequests = await this.prisma.friendRequest.findMany({
         where: {
           friendId: userId,
-          status: 'PENDING',
         },
         select: {
           id: true,
-          status: true,
           user: {
             select: {
               id: true,
@@ -184,6 +175,10 @@ export class UserFriendsService {
           where: {
             id: requestId,
           },
+          select: {
+            userId: true,
+            friendId: true,
+          },
         },
       );
 
@@ -192,12 +187,12 @@ export class UserFriendsService {
           data: {
             user: {
               connect: {
-                id: dto.userId,
+                id: existingFriendRequests.userId,
               },
             },
             friend: {
               connect: {
-                id: dto.friendId,
+                id: existingFriendRequests.friendId,
               },
             },
           },
@@ -220,14 +215,17 @@ export class UserFriendsService {
 
   async getFriends(userId: string) {
     try {
-      const friends = await this.prisma.friend.findMany({
+      const friends = [];
+
+      const friendList1 = await this.prisma.friend.findMany({
         where: {
-          OR: [
-            {
-              userId: userId,
-            },
-            { friendId: userId },
-          ],
+          userId: userId,
+          // OR: [
+          //   {
+          //     userId: userId,
+          //   },
+          //   { friendId: userId },
+          // ],
         },
         select: {
           friend: {
@@ -244,6 +242,41 @@ export class UserFriendsService {
           },
         },
       });
+
+      friendList1.forEach((friend) => {
+        friends.push(friend);
+      });
+
+      const friendList2 = await this.prisma.friend.findMany({
+        where: {
+          friendId: userId,
+          // OR: [
+          //   {
+          //     userId: userId,
+          //   },
+          //   { friendId: userId },
+          // ],
+        },
+        select: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              UserLocation: {
+                select: {
+                  latitude: true,
+                  longitude: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      friendList2.forEach((friend) => {
+        friends.push(friend);
+      });
+
       return friends;
     } catch (error) {
       throw error;

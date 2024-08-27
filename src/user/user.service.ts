@@ -13,9 +13,9 @@ export class UserService {
     private imageService: ImageService,
   ) {}
 
-  async getUsers() {
+  async getUsers(userId: string) {
     try {
-      const users = await this.prisma.user.findMany({
+      const existingUsers = await this.prisma.user.findMany({
         select: {
           id: true,
           name: true,
@@ -27,6 +27,56 @@ export class UserService {
           },
         },
       });
+
+      const users = [];
+      for (const user of existingUsers) {
+        const existingFriend = await this.prisma.friend.findFirst({
+          where: {
+            OR: [
+              {
+                userId: user.id,
+                friendId: userId,
+              },
+              {
+                userId: userId,
+                friendId: user.id,
+              },
+            ],
+          },
+        });
+
+        let status;
+        if (existingFriend) {
+          status = 'FRIENDS';
+        } else {
+          const existingFriendRequest =
+            await this.prisma.friendRequest.findFirst({
+              where: {
+                OR: [
+                  {
+                    userId: user.id,
+                    friendId: userId,
+                  },
+                  {
+                    userId: userId,
+                    friendId: user.id,
+                  },
+                ],
+              },
+            });
+
+          if (existingFriendRequest) {
+            status = 'PENDING';
+          } else {
+            status = 'NOT_FRIENDS';
+          }
+        }
+        users.push({
+          user: user,
+          status: status,
+        });
+      }
+
       return users;
     } catch (error) {
       throw error;

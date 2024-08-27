@@ -108,9 +108,9 @@ export class UserController {
     return this.userTicketsService.getUserReservations(userId);
   }
 
-  @Get()
-  async getUsers() {
-    return this.userService.getUsers();
+  @Get(':userId/list')
+  getUsers(@Param('userId') userId: string) {
+    return this.userService.getUsers(userId);
   }
 
   @Get(':userId/friends/:friendId')
