@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { TicketAddOnsDto, TicketTiersDto } from './dto';
 
@@ -9,58 +9,94 @@ export class AdminTicketsService {
   async createTicketTier(
     tiers: TicketTiersDto,
     functionId: string,
+    isEvent: boolean,
   ): Promise<any> {
     try {
-      const ticketTiers = [];
-      if (tiers.isEvent) {
-        for (const tier of tiers.ticketTiers) {
-          const ticketTier = await this.prisma.ticketTier.create({
-            data: {
-              name: tier.name,
-              price: tier.price,
-              totalQuantity: tier.totalQuantity,
-              isPrivate: tier.isPrivate,
-              currentQuantity: tier.totalQuantity,
-              event: {
-                connect: {
+      const ticketTierData = await this.prisma.$transaction(async (tx) => {
+        const ticketTiers = [];
+        if (isEvent) {
+          for (const tier of tiers.ticketTiers) {
+            const existingTier = await tx.ticketTier.findFirst({
+              where: {
+                name: tier.name,
+                event: {
                   id: functionId,
                 },
               },
-              clubNight: {},
-            },
-          });
-          ticketTiers.push(ticketTier);
-        }
-      } else {
-        for (const tier of tiers.ticketTiers) {
-          const ticketTier = await this.prisma.ticketTier.create({
-            data: {
-              name: tier.name,
-              price: tier.price,
-              totalQuantity: tier.totalQuantity,
-              isPrivate: tier.isPrivate,
-              currentQuantity: tier.totalQuantity,
-              clubNight: {
-                connect: {
+            });
+
+            if (existingTier) {
+              throw new ForbiddenException(
+                `${tier.name} Tier for this Event already exists`,
+              );
+            }
+
+            const ticketTier = await tx.ticketTier.create({
+              data: {
+                name: tier.name,
+                price: tier.price,
+                totalQuantity: tier.totalQuantity,
+                isPrivate: tier.isPrivate,
+                currentQuantity: tier.totalQuantity,
+                event: {
+                  connect: {
+                    id: functionId,
+                  },
+                },
+              },
+            });
+            ticketTiers.push(ticketTier);
+          }
+        } else {
+          for (const tier of tiers.ticketTiers) {
+            const existingTier = await tx.ticketTier.findFirst({
+              where: {
+                name: tier.name,
+                clubNight: {
                   id: functionId,
                 },
               },
-              event: {},
-            },
-          });
-          ticketTiers.push(ticketTier);
+            });
+
+            if (existingTier) {
+              throw new ForbiddenException(
+                `${tier.name} Tier for this Club Night already exists`,
+              );
+            }
+
+            const ticketTier = await tx.ticketTier.create({
+              data: {
+                name: tier.name,
+                price: tier.price,
+                totalQuantity: tier.totalQuantity,
+                isPrivate: tier.isPrivate,
+                currentQuantity: tier.totalQuantity,
+                clubNight: {
+                  connect: {
+                    id: functionId,
+                  },
+                },
+              },
+            });
+            ticketTiers.push(ticketTier);
+          }
         }
-      }
-      return ticketTiers;
+        return ticketTiers;
+      });
+      return ticketTierData;
     } catch (error) {
       throw error;
     }
   }
 
-  async createAddOn(addons: TicketAddOnsDto, functionId: string): Promise<any> {
+  async createAddOn(
+    addons: TicketAddOnsDto,
+    functionId: string,
+    isEvent: boolean,
+  ): Promise<any> {
     try {
       const ticketAddOns = [];
-      if (addons.isEvent) {
+      if (isEvent) {
         for (const addon of addons.ticketAddOns) {
           const ticketAddOn = await this.prisma.ticketAddOn.create({
             data: {

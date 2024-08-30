@@ -13,6 +13,76 @@ export class UserService {
     private imageService: ImageService,
   ) {}
 
+  async getUsers(userId: string) {
+    try {
+      const existingUsers = await this.prisma.user.findMany({
+        select: {
+          id: true,
+          name: true,
+          UserLocation: {
+            select: {
+              latitude: true,
+              longitude: true,
+            },
+          },
+        },
+      });
+
+      const users = [];
+      for (const user of existingUsers) {
+        const existingFriend = await this.prisma.friend.findFirst({
+          where: {
+            OR: [
+              {
+                userId: user.id,
+                friendId: userId,
+              },
+              {
+                userId: userId,
+                friendId: user.id,
+              },
+            ],
+          },
+        });
+
+        let status;
+        if (existingFriend) {
+          status = 'FRIENDS';
+        } else {
+          const existingFriendRequest =
+            await this.prisma.friendRequest.findFirst({
+              where: {
+                OR: [
+                  {
+                    userId: user.id,
+                    friendId: userId,
+                  },
+                  {
+                    userId: userId,
+                    friendId: user.id,
+                  },
+                ],
+              },
+            });
+
+          if (existingFriendRequest) {
+            status = 'PENDING';
+          } else {
+            status = 'NOT_FRIENDS';
+          }
+        }
+        users.push({
+          user: user,
+          status: status,
+        });
+      }
+
+      return users;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async Onboarding(userId: string, dto: OnboardDto) {
     try {
       const existingOnboarding = await this.prisma.onboarding.findFirst({
@@ -225,8 +295,9 @@ export class UserService {
         },
         data: {
           name: dto.name,
+          // username: dto.username,
           telephoneNumber: dto.telephoneNumber,
-          photoUrl: '',
+          dateOfBirth: dto.dateOfBirth,
         },
       });
       return user;
@@ -406,6 +477,46 @@ export class UserService {
         },
       });
       return paymentDetails;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getParticipants(functionId: string, isEvent: boolean) {
+    try {
+      if (isEvent) {
+        const participants = await this.prisma.reservation.findMany({
+          where: {
+            eventId: functionId,
+          },
+          select: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                photoUrl: true,
+              },
+            },
+          },
+        });
+        return participants;
+      } else {
+        const participants = await this.prisma.reservation.findMany({
+          where: {
+            clubNightId: functionId,
+          },
+          select: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                photoUrl: true,
+              },
+            },
+          },
+        });
+        return participants;
+      }
     } catch (error) {
       throw error;
     }

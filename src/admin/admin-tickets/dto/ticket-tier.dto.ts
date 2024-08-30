@@ -28,10 +28,6 @@ export class TierDto {
 }
 
 export class TicketTiersDto {
-  @IsBoolean()
-  @IsNotEmpty()
-  isEvent: boolean;
-
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => TierDto)

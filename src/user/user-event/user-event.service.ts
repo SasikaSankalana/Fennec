@@ -15,6 +15,7 @@ export class UserEventService {
           id: true,
           name: true,
           dateTime: true,
+          description: true,
           club: {
             select: {
               id: true,

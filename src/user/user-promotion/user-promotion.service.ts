@@ -45,6 +45,8 @@ export class UserPromotionService {
           name: true,
           description: true,
           clubId: true,
+          pointsRequired: true,
+          endDate: true,
         },
       });
 

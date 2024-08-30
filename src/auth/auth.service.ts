@@ -11,10 +11,11 @@ export class AuthService {
     try {
       const newUser = await this.prisma.user.create({
         data: {
-          name: dto.name || '',
-          telephoneNumber: dto.telephoneNumber || '',
-          photoUrl: dto.photoUrl || '',
+          name: dto.name,
+          telephoneNumber: dto.telephoneNumber,
           email: dto.email.toLowerCase(),
+          gender: dto.gender,
+          dateOfBirth: dto.dateOfBirth,
           UserSettings: {
             create: {
               groupInvitations: true,
@@ -23,6 +24,12 @@ export class AuthService {
               enableNotifications: true,
               enableSounds: true,
               enableRewards: true,
+            },
+          },
+          UserLocation: {
+            create: {
+              latitude: dto.latitude,
+              longitude: dto.longitude,
             },
           },
         },
@@ -40,6 +47,10 @@ export class AuthService {
         email,
       },
     });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
 
     return { userId: user.id };
   }

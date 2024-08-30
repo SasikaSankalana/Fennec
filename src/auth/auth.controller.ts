@@ -11,7 +11,6 @@ import * as FirebaseAuth from 'firebase/auth';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { SignUpDto } from './dto';
-import { FirebaseGuard } from './guard';
 
 // @UseGuards(FirebaseGuard)
 @Controller('auth')
