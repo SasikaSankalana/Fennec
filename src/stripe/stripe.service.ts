@@ -15,6 +15,23 @@ export class StripeService {
     return this.stripe.customers.create({ email, name });
   }
 
+  async savePaymentMethod(
+    email: string,
+    name: string,
+    paymentMethodId: string,
+  ) {
+    const customer = await this.stripe.customers.create({
+      payment_method: paymentMethodId,
+      email: email,
+      name: name,
+      invoice_settings: {
+        default_payment_method: paymentMethodId,
+      },
+    });
+
+    return customer.id;
+  }
+
   async retrievePaymentMethod(
     paymentMethodId: string,
   ): Promise<Stripe.PaymentMethod> {

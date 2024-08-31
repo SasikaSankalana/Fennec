@@ -26,4 +26,7 @@ export class SignUpDto {
 
   @IsNumber()
   longitude: number;
+
+  @IsString()
+  paymentMethodId: string;
 }
