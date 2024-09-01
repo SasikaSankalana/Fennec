@@ -1,6 +1,5 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { UserPromotionService } from './user-promotion.service';
-import { RedeemPromotionDto } from './dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @Controller('promotion')
