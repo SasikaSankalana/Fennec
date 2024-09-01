@@ -1,14 +1,28 @@
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
+import { StripeService } from 'src/stripe/stripe.service';
 import { SignUpDto } from './dto';
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private stripe: StripeService,
+  ) {}
 
   async signUp(dto: SignUpDto) {
     try {
+      let stripeCustomerId = null;
+
+      if (dto.paymentMethodId) {
+        stripeCustomerId = await this.stripe.savePaymentMethod(
+          dto.email,
+          dto.name,
+          dto.paymentMethodId,
+        );
+      }
+
       const newUser = await this.prisma.user.create({
         data: {
           name: dto.name,
@@ -16,6 +30,7 @@ export class AuthService {
           email: dto.email.toLowerCase(),
           gender: dto.gender,
           dateOfBirth: dto.dateOfBirth,
+          stripeCustomerId,
           UserSettings: {
             create: {
               groupInvitations: true,
