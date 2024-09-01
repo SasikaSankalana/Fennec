@@ -289,15 +289,15 @@ export class UserService {
 
   async updateUser(id: string, dto: UserDto) {
     try {
+      const dob = new Date(dto.dateOfBirth.setHours(0, 0, 0, 0));
       const user = await this.prisma.user.update({
         where: {
           id: id,
         },
         data: {
           name: dto.name,
-          // username: dto.username,
           telephoneNumber: dto.telephoneNumber,
-          dateOfBirth: dto.dateOfBirth,
+          dateOfBirth: dob,
         },
       });
       return user;

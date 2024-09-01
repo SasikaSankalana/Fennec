@@ -17,6 +17,7 @@ import { UserReviewsModule } from './user-reviews/user-reviews.module';
 import { UserTicketsService } from './user-tickets/user-tickets.service';
 import { UserFriendsModule } from './user-friends/user-friends.module';
 import { UserFriendsService } from './user-friends/user-friends.service';
+import { UserTicketTransfersModule } from './user-ticket-transfers/user-ticket-transfers.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { UserFriendsService } from './user-friends/user-friends.service';
     UserTicketsModule,
     UserReviewsModule,
     UserFriendsModule,
+    UserTicketTransfersModule,
   ],
   controllers: [UserController, UserClubController, UserReviewsController],
   providers: [
