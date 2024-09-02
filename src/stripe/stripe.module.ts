@@ -1,10 +1,11 @@
-import { DynamicModule, Module } from '@nestjs/common';
+import { DynamicModule, Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { StripeService } from './stripe.service';
 import { StripeController } from './stripe.controller';
 
+@Global()
 @Module({
-  controllers: [StripeController]
+  controllers: [StripeController],
 })
 export class StripeModule {
   static forRootAsync(): DynamicModule {
@@ -20,6 +21,7 @@ export class StripeModule {
           inject: [ConfigService],
         },
       ],
+      exports: [StripeService],
     };
   }
 }
