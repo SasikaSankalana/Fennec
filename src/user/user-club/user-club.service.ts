@@ -14,25 +14,34 @@ export class UserClubService {
     private userClubNightService: UserClubNightService,
   ) {}
 
-  async getClub(clubNightId: string) {
+  async getClub(clubId: string) {
     try {
       const club = await this.prisma.club.findUnique({
         where: {
-          id: clubNightId,
+          id: clubId,
         },
         select: {
           id: true,
           name: true,
-          clubLocationId: true,
+          Promotion: {
+            select: {
+              id: true,
+              name: true,
+              endDate: true,
+              pointsRequired: true,
+              description: true,
+            },
+          },
           clubLocation: {
             select: {
+              id: true,
               name: true,
+              address: true,
               latitude: true,
               longitude: true,
-              address: true,
-              country: true,
               city: true,
               postalCode: true,
+              country: true,
             },
           },
         },
@@ -48,28 +57,45 @@ export class UserClubService {
     }
   }
 
-  async getClubs() {
+  async getClubs(userId: string) {
     try {
-      const clubs = await this.prisma.club.findMany({
+      const userClubs = await this.prisma.userClubPoints.findMany({
+        where: {
+          userId: userId,
+        },
         select: {
-          id: true,
-          name: true,
-          clubLocationId: true,
-          clubLocation: {
+          clubId: true,
+          points: true,
+          club: {
             select: {
+              id: true,
               name: true,
-              latitude: true,
-              longitude: true,
-              address: true,
-              country: true,
-              city: true,
-              postalCode: true,
+              Promotion: {
+                select: {
+                  id: true,
+                  name: true,
+                  description: true,
+                  endDate: true,
+                },
+              },
+              clubLocation: {
+                select: {
+                  id: true,
+                  name: true,
+                  address: true,
+                  latitude: true,
+                  longitude: true,
+                  city: true,
+                  postalCode: true,
+                  country: true,
+                },
+              },
             },
           },
         },
       });
 
-      return clubs;
+      return userClubs;
     } catch (error) {
       throw error;
     }
@@ -79,7 +105,6 @@ export class UserClubService {
     try {
       const clubNight =
         await this.userClubNightService.getUpcomingClubNights(clubId);
-
       return clubNight;
     } catch (error) {
       throw error;
@@ -89,7 +114,6 @@ export class UserClubService {
   async getUpcomingEvents(clubId: string) {
     try {
       const event = await this.userEventsService.getUpcomingEvents(clubId);
-
       return event;
     } catch (error) {
       throw error;
@@ -100,7 +124,6 @@ export class UserClubService {
     try {
       const promotion =
         await this.userPromotionService.getClubPromotions(clubId);
-
       return promotion;
     } catch (error) {
       throw error;

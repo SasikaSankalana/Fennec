@@ -1,3 +1,4 @@
+import { MulterField } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 import { Type } from 'class-transformer';
 import { IsNotEmpty, IsString } from 'class-validator';
 
@@ -18,7 +19,6 @@ export class AdminEventDto {
   @IsNotEmpty()
   clubId: string;
 
-  @IsString()
   @IsNotEmpty()
-  photoUrl: string;
+  photoUrl: MulterField;
 }

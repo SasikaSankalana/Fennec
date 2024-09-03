@@ -5,7 +5,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class UserEventService {
   constructor(private prisma: PrismaService) {}
 
-  async getEvent(eventId: string) {
+  async getEvent(eventId: string, userId: string) {
     try {
       const event = await this.prisma.event.findUnique({
         where: {
@@ -15,15 +15,44 @@ export class UserEventService {
           id: true,
           name: true,
           dateTime: true,
-          clubId: true,
+          description: true,
+          club: {
+            select: {
+              id: true,
+              name: true,
+              clubLocation: {
+                select: {
+                  id: true,
+                  name: true,
+                  address: true,
+                  latitude: true,
+                  longitude: true,
+                  city: true,
+                  postalCode: true,
+                  country: true,
+                },
+              },
+            },
+          },
         },
       });
 
       if (!event) {
-        throw new ForbiddenException('Club not found');
+        throw new ForbiddenException('Event not found');
       }
 
-      return event;
+      const reservation = await this.prisma.reservation.findFirst({
+        where: {
+          userId: userId,
+          eventId: eventId,
+        },
+      });
+
+      let isReserved = false;
+      if (reservation) {
+        isReserved = true;
+      }
+      return { event, isReserved };
     } catch (error) {
       throw error;
     }
@@ -36,7 +65,24 @@ export class UserEventService {
           id: true,
           name: true,
           dateTime: true,
-          clubId: true,
+          club: {
+            select: {
+              id: true,
+              name: true,
+              clubLocation: {
+                select: {
+                  id: true,
+                  name: true,
+                  address: true,
+                  latitude: true,
+                  longitude: true,
+                  city: true,
+                  postalCode: true,
+                  country: true,
+                },
+              },
+            },
+          },
         },
       });
 
@@ -59,7 +105,24 @@ export class UserEventService {
           id: true,
           name: true,
           dateTime: true,
-          clubId: true,
+          club: {
+            select: {
+              id: true,
+              name: true,
+              clubLocation: {
+                select: {
+                  id: true,
+                  name: true,
+                  address: true,
+                  latitude: true,
+                  longitude: true,
+                  city: true,
+                  postalCode: true,
+                  country: true,
+                },
+              },
+            },
+          },
         },
       });
 

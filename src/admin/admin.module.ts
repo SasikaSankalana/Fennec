@@ -5,7 +5,7 @@ import { AdminClubModule } from './admin-club/admin-club.module';
 import { AdminClubNightModule } from './admin-club-night/admin-club-night.module';
 import { AdminPromotionModule } from './admin-promotion/admin-promotion.module';
 import { AdminEventModule } from './admin-event/admin-event.module';
-import { TermsModule } from './admin-terms/admin-terms-conditions.module';
+import { AdminTermsConditionsModule } from './admin-terms/admin-terms-conditions.module';
 import { AdminTicketsModule } from './admin-tickets/admin-tickets.module';
 
 @Module({
@@ -14,8 +14,8 @@ import { AdminTicketsModule } from './admin-tickets/admin-tickets.module';
     AdminClubNightModule,
     AdminPromotionModule,
     AdminEventModule,
-    TermsModule,
     AdminTicketsModule,
+    AdminTermsConditionsModule,
   ],
   providers: [AdminService],
   controllers: [AdminController],

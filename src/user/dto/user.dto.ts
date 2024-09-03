@@ -1,4 +1,11 @@
-import { IsInt, IsNotEmpty, IsNumberString, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsDate,
+  IsDateString,
+  IsNotEmpty,
+  IsNumberString,
+  IsString,
+} from 'class-validator';
 
 export class UserDto {
   @IsString()
@@ -9,11 +16,11 @@ export class UserDto {
   @IsNotEmpty()
   telephoneNumber: string;
 
-  @IsNotEmpty()
-  @IsInt()
-  currentPoints: number;
-
   @IsString()
   @IsNotEmpty()
-  userId: string;
+  username: string;
+
+  @Type(() => Date)
+  @IsNotEmpty()
+  dateOfBirth: Date;
 }

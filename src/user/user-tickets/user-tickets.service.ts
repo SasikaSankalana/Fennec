@@ -1,0 +1,333 @@
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { TicketSummaryDto } from './dto';
+import e from 'express';
+
+@Injectable()
+export class UserTicketsService {
+  constructor(private prisma: PrismaService) {}
+
+  async getTickets(functionId: string, isEvent: boolean) {
+    try {
+      if (isEvent) {
+        const ticketTiers = await this.prisma.ticketTier.findMany({
+          where: {
+            eventId: functionId,
+          },
+          select: {
+            id: true,
+            name: true,
+            price: true,
+            currentQuantity: true,
+          },
+        });
+
+        return ticketTiers;
+      } else {
+        const ticketTiers = await this.prisma.ticketTier.findMany({
+          where: {
+            clubNightId: functionId,
+          },
+          select: {
+            id: true,
+            name: true,
+            price: true,
+            currentQuantity: true,
+          },
+        });
+        return ticketTiers;
+      }
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  async getAddOns(functionId: string, isEvent: boolean) {
+    try {
+      if (isEvent) {
+        const addOns = await this.prisma.ticketAddOn.findMany({
+          where: {
+            eventId: functionId,
+          },
+          select: {
+            id: true,
+            name: true,
+            price: true,
+            maxQuantity: true,
+          },
+        });
+        return addOns;
+      } else {
+        const addOns = await this.prisma.ticketAddOn.findMany({
+          where: {
+            clubNightId: functionId,
+          },
+          select: {
+            id: true,
+            name: true,
+            price: true,
+            maxQuantity: true,
+          },
+        });
+        return addOns;
+      }
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  async getTicketSummary(dto: TicketSummaryDto) {
+    try {
+      let total = 0;
+
+      for (const tier of dto.ticketTiers) {
+        total = total + tier.price * tier.qty;
+      }
+
+      for (const addOn of dto.ticketaddOns) {
+        total += addOn.price * addOn.qty;
+      }
+
+      return { total, dto };
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  async reserveTickets(
+    dto: TicketSummaryDto,
+    userId: string,
+    functionId: string,
+    isEvent: boolean,
+  ) {
+    try {
+      const reservationData = await this.prisma.$transaction(async (tx) => {
+        for (const tier of dto.ticketTiers) {
+          const ticketTier = await tx.ticketTier.findUnique({
+            where: { id: tier.id },
+          });
+
+          if (!ticketTier) {
+            throw new BadRequestException('Ticket tier not found');
+          }
+
+          if (tier.qty > ticketTier.currentQuantity) {
+            throw new BadRequestException('Not enough tickets available');
+          }
+
+          await tx.ticketTier.update({
+            where: {
+              id: tier.id,
+            },
+            data: {
+              currentQuantity: {
+                decrement: tier.qty,
+              },
+            },
+          });
+        }
+
+        const isPaymentSuccess = await this.makePayment();
+
+        const total = this.getTicketSummary(dto);
+
+        if (!isPaymentSuccess) {
+          throw new BadRequestException('Payment failed');
+        }
+
+        let reservation;
+        if (isEvent) {
+          reservation = await tx.reservation.create({
+            data: {
+              total: (await total).total,
+              event: {
+                connect: {
+                  id: functionId,
+                },
+              },
+              clubNight: {},
+              user: {
+                connect: {
+                  id: userId,
+                },
+              },
+            },
+          });
+        } else {
+          reservation = await tx.reservation.create({
+            data: {
+              total: (await total).total,
+              clubNight: {
+                connect: {
+                  id: functionId,
+                },
+              },
+              event: {},
+              user: {
+                connect: {
+                  id: userId,
+                },
+              },
+            },
+          });
+        }
+
+        for (const tier of dto.ticketTiers) {
+          for (tier.qty; tier.qty > 0; tier.qty--) {
+            await tx.ticket.create({
+              data: {
+                price: tier.price,
+                ticketTier: {
+                  connect: {
+                    id: tier.id,
+                  },
+                },
+                reservation: {
+                  connect: {
+                    id: reservation.id,
+                  },
+                },
+              },
+            });
+          }
+        }
+
+        for (const addOn of dto.ticketaddOns) {
+          await tx.reservationAddOns.create({
+            data: {
+              quantity: addOn.qty,
+              ticketAddOn: {
+                connect: {
+                  id: addOn.id,
+                },
+              },
+              reservation: {
+                connect: {
+                  id: reservation.id,
+                },
+              },
+            },
+          });
+        }
+
+        const reservationData = await tx.reservation.findUnique({
+          where: {
+            id: reservation.id,
+          },
+          include: {
+            Ticket: true,
+            ReservationAddOns: true,
+          },
+        });
+        return reservationData;
+      });
+      return reservationData;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async makePayment() {
+    const isSuccess = true;
+    //payment method
+    if (isSuccess) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  async getUserReservations(userId: string) {
+    try {
+      const reservations = await this.prisma.reservation.findMany({
+        where: {
+          userId: userId,
+        },
+        include: {
+          event: true,
+          clubNight: true,
+        },
+      });
+
+      const reservationsList = [];
+      for (const reservation of reservations) {
+        if (!reservation.event) {
+          const clubNight = await this.prisma.clubNight.findUnique({
+            where: {
+              id: reservation.clubNightId,
+            },
+            select: {
+              id: true,
+              name: true,
+              dateTime: true,
+              club: {
+                select: {
+                  name: true,
+                  clubLocation: {
+                    select: {
+                      name: true,
+                      address: true,
+                      city: true,
+                      country: true,
+                    },
+                  },
+                },
+              },
+              TicketTier: {
+                select: {
+                  name: true,
+                  price: true,
+                },
+              },
+            },
+          });
+
+          const lowestPrice = Math.min(
+            ...clubNight.TicketTier.map((tier) => tier.price),
+          );
+
+          reservationsList.push({ clubNight, lowestPrice });
+        } else {
+          const event = await this.prisma.event.findUnique({
+            where: {
+              id: reservation.eventId,
+            },
+            select: {
+              id: true,
+              name: true,
+              dateTime: true,
+              club: {
+                select: {
+                  name: true,
+                  clubLocation: {
+                    select: {
+                      name: true,
+                      address: true,
+                      city: true,
+                      country: true,
+                    },
+                  },
+                },
+              },
+              TicketTier: {
+                select: {
+                  name: true,
+                  price: true,
+                },
+              },
+            },
+          });
+
+          const lowestPrice = Math.min(
+            ...event.TicketTier.map((tier) => tier.price),
+          );
+
+          reservationsList.push({ event, lowestPrice });
+        }
+      }
+      return reservationsList;
+    } catch (error) {
+      throw error;
+    }
+  }
+}
