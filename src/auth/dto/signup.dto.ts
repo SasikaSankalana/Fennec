@@ -1,3 +1,4 @@
+import { Optional } from '@nestjs/common';
 import { IsEmail, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class SignUpDto {
@@ -27,6 +28,6 @@ export class SignUpDto {
   @IsNumber()
   longitude: number;
 
-  @IsString()
+  @Optional()
   paymentMethodId: string;
 }
