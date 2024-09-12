@@ -19,9 +19,6 @@ enum Role {
   SUPERADMIN
 }
 
-enum FriendRequestStatus {
-  PENDING
-}
 
 model User {
   id               String    @id @default(cuid())
@@ -46,6 +43,10 @@ model User {
   userClubPoints     UserClubPoints[]
   Payments           Payments[]
   ClubReview         ClubReview[]
+  SplitGroup         SplitGroup[]
+  SplitGroupMembers  SplitGroupMembers[]
+  SplitPayment       SplitPayment[]
+  SplitPaymentUsers  SplitPaymentUsers[]
 
   receivedFriendRequests FriendRequest[] @relation("FirendRequestReceiver")
   sentFriendRequests     FriendRequest[] @relation("FriendRequestSender")
@@ -431,4 +432,79 @@ model Payments {
   userId String
 
   @@map("payments")
+}
+
+model SplitGroup {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+
+  createdBy User  @relation(fields: [createdById], references: [id])
+  createdById String
+
+  SplitGroupMembers SplitGroupMembers[]
+  SplitPayment      SplitPayment[]
+
+  @@map("split_groups")
+}
+
+model SplitGroupMembers{
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  splitGroup   SplitGroup   @relation(fields: [splitGroupId], references: [id])
+  splitGroupId String
+
+  @@map("split_group_members")
+}
+
+enum splitType {
+  EQUALLY
+  UNEQUALLY
+}
+
+enum splitpaymentType {
+  GROUP
+  FRIENDS
+}
+
+
+model SplitPayment{
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  total     Float
+  splitPaymentType     splitpaymentType
+  splitType      splitType
+
+  splitGroup   SplitGroup?   @relation(fields: [splitGroupId], references: [id])
+  splitGroupId String
+
+  createdBy   User   @relation(fields: [createdById], references: [id])
+  createdById String
+
+  SplitPaymentUsers SplitPaymentUsers[]
+
+  @@map("split_payments")
+}
+
+
+model SplitPaymentUsers{
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  amount Float
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  splitPayment   SplitPayment   @relation(fields: [splitPaymentId], references: [id])
+  splitPaymentId String
+
+  @@map("split_payment_users")
 }

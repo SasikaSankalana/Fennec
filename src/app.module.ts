@@ -21,6 +21,6 @@ import { StripeModule } from './stripe/stripe.module';
     FirebaseModule,
     StripeModule.forRootAsync(),
   ],
-  providers: [{ provide: APP_GUARD, useClass: FirebaseGuard }],
+  // providers: [{ provide: APP_GUARD, useClass: FirebaseGuard }],
 })
 export class AppModule {}

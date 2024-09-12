@@ -220,12 +220,6 @@ export class UserFriendsService {
       const friendList1 = await this.prisma.friend.findMany({
         where: {
           userId: userId,
-          // OR: [
-          //   {
-          //     userId: userId,
-          //   },
-          //   { friendId: userId },
-          // ],
         },
         select: {
           friend: {
@@ -250,12 +244,6 @@ export class UserFriendsService {
       const friendList2 = await this.prisma.friend.findMany({
         where: {
           friendId: userId,
-          // OR: [
-          //   {
-          //     userId: userId,
-          //   },
-          //   { friendId: userId },
-          // ],
         },
         select: {
           user: {

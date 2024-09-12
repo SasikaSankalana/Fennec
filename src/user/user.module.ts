@@ -18,6 +18,7 @@ import { UserTicketsService } from './user-tickets/user-tickets.service';
 import { UserFriendsModule } from './user-friends/user-friends.module';
 import { UserFriendsService } from './user-friends/user-friends.service';
 import { UserTicketTransfersModule } from './user-ticket-transfers/user-ticket-transfers.module';
+import { UserBillSplitModule } from './user-bill-split/user-bill-split.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { UserTicketTransfersModule } from './user-ticket-transfers/user-ticket-t
     UserReviewsModule,
     UserFriendsModule,
     UserTicketTransfersModule,
+    UserBillSplitModule,
   ],
   controllers: [UserController, UserClubController, UserReviewsController],
   providers: [
