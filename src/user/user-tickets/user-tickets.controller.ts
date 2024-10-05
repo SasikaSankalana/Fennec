@@ -1,10 +1,40 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { UserTicketsService } from './user-tickets.service';
 import { TicketSummaryDto } from './dto';
+import { UserTicketTransfersService } from '../user-ticket-transfers/user-ticket-transfers.service';
 
 @Controller('tickets')
 export class UserTicketsController {
-  constructor(private userTicketsService: UserTicketsService) {}
+  constructor(
+    private userTicketsService: UserTicketsService,
+    private userTicketTransfersService: UserTicketTransfersService,
+  ) {}
+
+  @Get('/:reservationId/event')
+  getEventReservationDetails(@Param('userId') userId: string) {
+    return this.userTicketsService.getReservationDetails(userId, true);
+  }
+
+  @Get('/:reservationId/club-night')
+  getClubNightReservationDetails(@Param('userId') userId: string) {
+    return this.userTicketsService.getReservationDetails(userId, true);
+  }
+
+  @Get('/:reservationId/event/quantity')
+  getNumberOfEventTickets(@Param('reservationId') reservationId: string) {
+    return this.userTicketTransfersService.getNumberOfTickets(
+      reservationId,
+      true,
+    );
+  }
+
+  @Get('/:reservationId/club-night/quantity')
+  getNumberOfClubNightTickets(@Param('reservationId') reservationId: string) {
+    return this.userTicketTransfersService.getNumberOfTickets(
+      reservationId,
+      false,
+    );
+  }
 
   // @Get('/:functionId/tiers')
   // async getTickets(@Param('functionId') functionId: string) {

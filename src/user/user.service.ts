@@ -5,12 +5,14 @@ import * as argon from 'argon2';
 import { userSettingsDto } from './dto/settings.dto';
 import { MulterField } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 import { ImageService } from 'src/image/image.service';
+import { QrCodeService } from 'src/qr-code/qr-code.service';
 
 @Injectable()
 export class UserService {
   constructor(
     private prisma: PrismaService,
     private imageService: ImageService,
+    private qrCodeService: QrCodeService,
   ) {}
 
   async getUsers(userId: string) {
@@ -372,6 +374,12 @@ export class UserService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async getUserQr(userId: string) {
+    const userQr = await this.qrCodeService.generateQRCode(userId);
+
+    return userQr;
   }
 
   async deleteUserPhoto(userId: string) {

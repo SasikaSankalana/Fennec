@@ -23,6 +23,9 @@ import { photoDto } from './user-club/dto/photo.dto';
 import { MulterField } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 import { UserTicketsService } from './user-tickets/user-tickets.service';
 import { UserFriendsService } from './user-friends/user-friends.service';
+import { UserTicketTransfersService } from './user-ticket-transfers/user-ticket-transfers.service';
+import { UserBillSplitService } from './user-bill-split/user-bill-split.service';
+import { SplitGroupDto, SplitPaymentDto } from './user-bill-split/dto';
 
 @Controller('users')
 @ApiTags('Users')
@@ -31,6 +34,8 @@ export class UserController {
     private userService: UserService,
     private userTicketsService: UserTicketsService,
     private userFriendsService: UserFriendsService,
+    private userBillSplitService: UserBillSplitService,
+    private userTicketTransferService: UserTicketTransfersService,
   ) {}
 
   @Post(':userId/club/:clubId/points')
@@ -152,5 +157,28 @@ export class UserController {
   @Get(':userId/friends')
   getUserFriends(@Param('userId') userId: string) {
     return this.userFriendsService.getFriends(userId);
+  }
+
+  @Post(':userId/bill-split/group')
+  createSplitGroup(
+    @Body() dto: SplitGroupDto,
+    @Param('userId') userId: string,
+  ) {
+    return this.userBillSplitService.createSplitGroup(dto, userId);
+  }
+
+  @Get(':userId/bill-split/groups')
+  getAllSplitGroups(@Param('userId') userId: string) {
+    return this.userBillSplitService.getAllSplitGroups(userId);
+  }
+
+  @Post('/:userId/bill-split/payment')
+  splitPayment(@Body() dto: SplitPaymentDto, @Param('userId') userId: string) {
+    return this.userBillSplitService.splitPayment(userId, dto);
+  }
+
+  @Get('/:userId/qr-code')
+  generateQRCode(@Param('userId') userId: string) {
+    return this.userService.getUserQr(userId);
   }
 }

@@ -8,6 +8,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { FirebaseGuard } from './auth/guard';
 import { FirebaseModule } from './firebase/firebase.module';
 import { StripeModule } from './stripe/stripe.module';
+import { QrCodeModule } from './qr-code/qr-code.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { StripeModule } from './stripe/stripe.module';
     AdminModule,
     FirebaseModule,
     StripeModule.forRootAsync(),
+    QrCodeModule,
   ],
   // providers: [{ provide: APP_GUARD, useClass: FirebaseGuard }],
 })

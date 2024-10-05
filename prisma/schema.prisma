@@ -274,11 +274,18 @@ model ClubNight {
   @@map("club_nights")
 }
 
+enum reservationType {
+  PAID
+  TRANSFERED_PAID
+  TRANSFERED_GUEST
+}
+
 model Reservation {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   total     Float
+  type      String
 
   ReservationAddOns ReservationAddOns[]
   Ticket            Ticket[]
@@ -293,6 +300,15 @@ model Reservation {
   userId String
 
   @@map("reservations")
+}
+
+model TicketTransfers{
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  total     Float
+  type      String
+
 }
 
 model ReservationAddOns {
@@ -508,3 +524,4 @@ model SplitPaymentUsers{
 
   @@map("split_payment_users")
 }
+

@@ -237,6 +237,8 @@ export class UserTicketsService {
     }
   }
 
+  //get the user's reservations and the details of the event or club night
+
   async getUserReservations(userId: string) {
     try {
       const reservations = await this.prisma.reservation.findMany({
@@ -326,6 +328,40 @@ export class UserTicketsService {
         }
       }
       return reservationsList;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getReservationDetails(reservationId: string, isEvent: boolean) {
+    try {
+      if (isEvent) {
+        const reservation = await this.prisma.reservation.findUnique({
+          where: {
+            id: reservationId,
+          },
+          include: {
+            event: true,
+            Ticket: true,
+            ReservationAddOns: true,
+          },
+        });
+
+        return reservation;
+      } else {
+        const reservation = await this.prisma.reservation.findUnique({
+          where: {
+            id: reservationId,
+          },
+          include: {
+            clubNight: true,
+            Ticket: true,
+            ReservationAddOns: true,
+          },
+        });
+
+        return reservation;
+      }
     } catch (error) {
       throw error;
     }

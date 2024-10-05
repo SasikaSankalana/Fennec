@@ -19,6 +19,10 @@ import { UserFriendsModule } from './user-friends/user-friends.module';
 import { UserFriendsService } from './user-friends/user-friends.service';
 import { UserTicketTransfersModule } from './user-ticket-transfers/user-ticket-transfers.module';
 import { UserBillSplitModule } from './user-bill-split/user-bill-split.module';
+import { UserBillSplitService } from './user-bill-split/user-bill-split.service';
+import { UserTicketTransfersService } from './user-ticket-transfers/user-ticket-transfers.service';
+import { QrCodeModule } from 'src/qr-code/qr-code.module';
+import { QrCodeService } from 'src/qr-code/qr-code.service';
 
 @Module({
   imports: [
@@ -34,6 +38,7 @@ import { UserBillSplitModule } from './user-bill-split/user-bill-split.module';
     UserFriendsModule,
     UserTicketTransfersModule,
     UserBillSplitModule,
+    QrCodeModule,
   ],
   controllers: [UserController, UserClubController, UserReviewsController],
   providers: [
@@ -42,6 +47,9 @@ import { UserBillSplitModule } from './user-bill-split/user-bill-split.module';
     ImageService,
     UserTicketsService,
     UserFriendsService,
+    UserBillSplitService,
+    UserTicketTransfersService,
+    QrCodeService,
   ],
 })
 export class UserModule {}
