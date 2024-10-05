@@ -287,7 +287,7 @@ export class UserService {
     }
   }
 
-  async updateUser(id: string, dto: User  Dto) {
+  async updateUser(id: string, dto: UserDto) {
     try {
       const dob = new Date(dto.dateOfBirth.setHours(0, 0, 0, 0));
       const user = await this.prisma.user.update({
