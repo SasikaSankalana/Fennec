@@ -6,6 +6,8 @@ import { UserModule } from './user/user.module';
 import { AdminModule } from './admin/admin.module';
 import { APP_GUARD } from '@nestjs/core';
 import { FirebaseGuard } from './auth/guard';
+import { FirebaseModule } from './firebase/firebase.module';
+import { StripeModule } from './stripe/stripe.module';
 
 @Module({
   imports: [
@@ -16,7 +18,9 @@ import { FirebaseGuard } from './auth/guard';
     PrismaModule,
     UserModule,
     AdminModule,
+    FirebaseModule,
+    StripeModule.forRootAsync(),
   ],
-  providers: [{ provide: APP_GUARD, useClass: FirebaseGuard }],
+  // providers: [{ provide: APP_GUARD, useClass: FirebaseGuard }],
 })
 export class AppModule {}

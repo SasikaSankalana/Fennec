@@ -8,16 +8,27 @@ export class AdminTermsConditionsService {
 
   async addTerm(clubId: string, dto: TermsAndConditionsDto) {
     try {
-      const term = await this.prisma.termsAndConditions.create({
-        data: {
-          termsAndConditions: dto.terms,
-          club: {
-            connect: {
-              id: clubId,
-            },
-          },
+      const terms = await this.prisma.termsAndConditions.findFirst({
+        where: {
+          clubId: clubId,
         },
       });
+
+      let term;
+      if (terms) {
+        term = this.updateTerm(clubId, dto);
+      } else {
+        term = await this.prisma.termsAndConditions.create({
+          data: {
+            termsAndConditions: dto.terms,
+            club: {
+              connect: {
+                id: clubId,
+              },
+            },
+          },
+        });
+      }
 
       return term;
     } catch (error) {

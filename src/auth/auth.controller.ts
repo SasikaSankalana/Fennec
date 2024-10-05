@@ -5,15 +5,15 @@ import {
   HttpStatus,
   Post,
   Req,
-  UseGuards,
 } from '@nestjs/common';
-import * as FirebaseAuth from 'firebase/auth';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { SignUpDto } from './dto';
+<<<<<<< HEAD
 // import { FirebaseGuard } from './guard';
+=======
+>>>>>>> 8320c058529c2fe3e12764f1d1680dd0f8f7feba
 
-// @UseGuards(FirebaseGuard)
 @Controller('auth')
 @ApiTags('Authentication')
 export class AuthController {

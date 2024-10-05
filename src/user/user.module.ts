@@ -8,6 +8,17 @@ import { UserPromotionModule } from './user-promotion/user-promotion.module';
 import { UserClubNightModule } from './user-club-night/user-club-night.module';
 import { UserEventModule } from './user-event/user-event.module';
 import { UserTermsConditionsModule } from './user-terms-conditions/user-terms-conditions.module';
+import { FirebaseModule } from '../firebase/firebase.module';
+import { ImageModule } from '../image/image.module';
+import { ImageService } from '../image/image.service';
+import { UserTicketsModule } from './user-tickets/user-tickets.module';
+import { UserReviewsController } from './user-reviews/user-reviews.controller';
+import { UserReviewsModule } from './user-reviews/user-reviews.module';
+import { UserTicketsService } from './user-tickets/user-tickets.service';
+import { UserFriendsModule } from './user-friends/user-friends.module';
+import { UserFriendsService } from './user-friends/user-friends.service';
+import { UserTicketTransfersModule } from './user-ticket-transfers/user-ticket-transfers.module';
+import { UserBillSplitModule } from './user-bill-split/user-bill-split.module';
 
 @Module({
   imports: [
@@ -16,8 +27,21 @@ import { UserTermsConditionsModule } from './user-terms-conditions/user-terms-co
     UserClubNightModule,
     UserEventModule,
     UserTermsConditionsModule,
+    ImageModule,
+    FirebaseModule,
+    UserTicketsModule,
+    UserReviewsModule,
+    UserFriendsModule,
+    UserTicketTransfersModule,
+    UserBillSplitModule,
   ],
-  controllers: [UserController, UserClubController],
-  providers: [UserService, PrismaService],
+  controllers: [UserController, UserClubController, UserReviewsController],
+  providers: [
+    UserService,
+    PrismaService,
+    ImageService,
+    UserTicketsService,
+    UserFriendsService,
+  ],
 })
 export class UserModule {}

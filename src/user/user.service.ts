@@ -2,13 +2,86 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { locationDto, OnboardDto, paymentDetailsDto, UserDto } from './dto';
 import * as argon from 'argon2';
-import { validate } from 'class-validator';
-import { settings } from 'pactum';
 import { userSettingsDto } from './dto/settings.dto';
+import { MulterField } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
+import { ImageService } from 'src/image/image.service';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private imageService: ImageService,
+  ) {}
+
+  async getUsers(userId: string) {
+    try {
+      const existingUsers = await this.prisma.user.findMany({
+        select: {
+          id: true,
+          name: true,
+          UserLocation: {
+            select: {
+              latitude: true,
+              longitude: true,
+            },
+          },
+        },
+      });
+
+      const users = [];
+      for (const user of existingUsers) {
+        const existingFriend = await this.prisma.friend.findFirst({
+          where: {
+            OR: [
+              {
+                userId: user.id,
+                friendId: userId,
+              },
+              {
+                userId: userId,
+                friendId: user.id,
+              },
+            ],
+          },
+        });
+
+        let status;
+        if (existingFriend) {
+          status = 'FRIENDS';
+        } else {
+          const existingFriendRequest =
+            await this.prisma.friendRequest.findFirst({
+              where: {
+                OR: [
+                  {
+                    userId: user.id,
+                    friendId: userId,
+                  },
+                  {
+                    userId: userId,
+                    friendId: user.id,
+                  },
+                ],
+              },
+            });
+
+          if (existingFriendRequest) {
+            status = 'PENDING';
+          } else {
+            status = 'NOT_FRIENDS';
+          }
+        }
+        users.push({
+          user: user,
+          status: status,
+        });
+      }
+
+      return users;
+    } catch (error) {
+      throw error;
+    }
+  }
 
   async Onboarding(userId: string, dto: OnboardDto) {
     try {
@@ -178,8 +251,6 @@ export class UserService {
         },
       });
 
-      console.log('existingLocation', existingLocation);
-
       const location = await this.prisma.userLocation.update({
         where: {
           id: existingLocation.id,
@@ -216,8 +287,9 @@ export class UserService {
     }
   }
 
-  async updateUser(id: string, dto: UserDto) {
+  async updateUser(id: string, dto: User  Dto) {
     try {
+      const dob = new Date(dto.dateOfBirth.setHours(0, 0, 0, 0));
       const user = await this.prisma.user.update({
         where: {
           id: id,
@@ -225,7 +297,7 @@ export class UserService {
         data: {
           name: dto.name,
           telephoneNumber: dto.telephoneNumber,
-          photoUrl: '',
+          dateOfBirth: dob,
         },
       });
       return user;
@@ -284,7 +356,19 @@ export class UserService {
           id: userId,
         },
       });
-      return user;
+
+      const userClubPoints = await this.prisma.userClubPoints.findMany({
+        where: {
+          userId: userId,
+        },
+      });
+
+      let totalPoints = 0;
+      for (const clubPoints of userClubPoints) {
+        totalPoints += clubPoints.points;
+      }
+
+      return { user, totalPoints };
     } catch (error) {
       throw error;
     }
@@ -292,6 +376,25 @@ export class UserService {
 
   async deleteUserPhoto(userId: string) {
     try {
+      const photoUser = await this.prisma.user.findFirst({
+        where: {
+          id: userId,
+        },
+        select: {
+          photoUrl: true,
+        },
+      });
+
+      if (!photoUser) {
+        throw new BadRequestException('User not found');
+      }
+
+      if (!photoUser.photoUrl || photoUser.photoUrl.trim() === '') {
+        throw new BadRequestException('No photo URL found for the user');
+      }
+
+      await this.imageService.deleteImage(photoUser.photoUrl);
+
       const user = await this.prisma.user.update({
         where: {
           id: userId,
@@ -306,14 +409,16 @@ export class UserService {
     }
   }
 
-  async updateUserPhoto(userId: string, photoUrl: string) {
+  async updateUserPhoto(userId: string, file: MulterField) {
     try {
+      const savedPhotoUrl = await this.imageService.uploadImage(file);
+
       const user = await this.prisma.user.update({
         where: {
           id: userId,
         },
         data: {
-          photoUrl: photoUrl,
+          photoUrl: savedPhotoUrl,
         },
       });
       return user;
@@ -358,6 +463,59 @@ export class UserService {
           },
         });
         return createdPoints;
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getPaymentDetails(userId: string) {
+    try {
+      const paymentDetails = await this.prisma.paymentDetails.findMany({
+        where: {
+          userId: userId,
+        },
+      });
+      return paymentDetails;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getParticipants(functionId: string, isEvent: boolean) {
+    try {
+      if (isEvent) {
+        const participants = await this.prisma.reservation.findMany({
+          where: {
+            eventId: functionId,
+          },
+          select: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                photoUrl: true,
+              },
+            },
+          },
+        });
+        return participants;
+      } else {
+        const participants = await this.prisma.reservation.findMany({
+          where: {
+            clubNightId: functionId,
+          },
+          select: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                photoUrl: true,
+              },
+            },
+          },
+        });
+        return participants;
       }
     } catch (error) {
       throw error;

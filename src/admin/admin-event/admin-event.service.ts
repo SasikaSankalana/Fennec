@@ -1,10 +1,14 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AdminEventDto } from './dto';
+import { ImageService } from 'src/image/image.service';
 
 @Injectable()
 export class AdminEventService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private imageService: ImageService,
+  ) {}
 
   async addEvent(dto: AdminEventDto) {
     try {
@@ -14,12 +18,14 @@ export class AdminEventService {
         throw eventValidate;
       }
 
+      const savedPhotoUrl = await this.imageService.uploadImage(dto.photoUrl);
+
       const event = await this.prisma.event.create({
         data: {
           name: dto.name,
           dateTime: dto.dateTime,
           description: dto.description,
-          photoUrl: dto.photoUrl,
+          photoUrl: savedPhotoUrl,
           club: {
             connect: {
               id: dto.clubId,
@@ -42,6 +48,17 @@ export class AdminEventService {
         throw eventValidate;
       }
 
+      const existingEvent = await this.prisma.event.findUnique({
+        where: {
+          id: eventId,
+        },
+      });
+
+      const savedPhotoUrl = await this.imageService.updateImage(
+        existingEvent.photoUrl,
+        dto.photoUrl,
+      );
+
       const updatedEvent = await this.prisma.event.update({
         where: {
           id: eventId,
@@ -50,6 +67,7 @@ export class AdminEventService {
           name: dto.name,
           dateTime: dto.dateTime,
           description: dto.description,
+          photoUrl: savedPhotoUrl,
         },
       });
 

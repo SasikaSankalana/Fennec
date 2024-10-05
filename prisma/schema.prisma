@@ -19,303 +19,492 @@ enum Role {
   SUPERADMIN
 }
 
-model User {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  name      String
-  telephoneNumber String
-  photoUrl  String?
-  email String @unique
-  role Role @default(USER)
 
-  Onboarding Onboarding[]
-  paymentDetails PaymentDetails[]
-  UserLocation UserLocation[]
-  UserTicket UserTicket[]
-  Club Club[]
+model User {
+  id               String    @id @default(cuid())
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  name             String
+  telephoneNumber  String
+  photoUrl         String?
+  email            String    @unique
+  dateOfBirth      DateTime?
+  gender           String?
+  stripeCustomerId String?
+  role             Role      @default(USER)
+
+  Onboarding         Onboarding[]
+  paymentDetails     PaymentDetails[]
+  UserLocation       UserLocation[]
+  Reservation        Reservation[]
+  Club               Club[]
   UserPromotionEvent UserPromotionEvent[]
-  UserSettings UserSettings[]
-  userClubPoints UserClubPoints[]
-  
+  UserSettings       UserSettings[]
+  userClubPoints     UserClubPoints[]
+  Payments           Payments[]
+  ClubReview         ClubReview[]
+  SplitGroup         SplitGroup[]
+  SplitGroupMembers  SplitGroupMembers[]
+  SplitPayment       SplitPayment[]
+  SplitPaymentUsers  SplitPaymentUsers[]
+
+  receivedFriendRequests FriendRequest[] @relation("FirendRequestReceiver")
+  sentFriendRequests     FriendRequest[] @relation("FriendRequestSender")
+
+  requestedFriends Friend[] @relation("RequestedUser")
+  acceptedFriends  Friend[] @relation("AcceptedUser")
+
   @@map("users")
 }
 
-model UserClubPoints{
-  id String @id @default(cuid())
+model UserClubPoints {
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  points Int
+  points    Int
 
-  user User @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
   userId String
 
-  club Club @relation(fields: [clubId], references: [id])
+  club   Club   @relation(fields: [clubId], references: [id])
   clubId String
 
   @@map("user_points")
 }
 
 model UserSettings {
-  id String @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  groupInvitations Boolean
-  accountActivity Boolean
+  id                     String   @id @default(cuid())
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  groupInvitations       Boolean
+  accountActivity        Boolean
   updatesAndEnhancements Boolean
-  enableNotifications Boolean
-  enableSounds Boolean
-  enableRewards Boolean
+  enableNotifications    Boolean
+  enableSounds           Boolean
+  enableRewards          Boolean
 
-  user User @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
   userId String
 
   @@map("user_settings")
-
 }
 
-model UserLocation{
-  id String @id @default(cuid())
+model UserLocation {
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  latitude Float
+  latitude  Float
   longitude Float
 
-  user User @relation(fields: [userId], references: [id])
-  userId String
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String?
 
+  @@map("user_locations")
 }
 
-model Onboarding{
-  id       String   @id @default(cuid())
+model FriendRequest {
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  residence String?
-  vancouverArea String?
-  nightlifeType String?
-  outingFrequency String?
-  favouriteInstrument String?
-  drinkOfChoice String?
-  groupOrAlone String?
-  arrivalTime String?
-  appealingPromotion String?
-  notificationPreference String?
-  nighlifeEnvironment String?
-  foodImportance String?
-  drinkPreference String?
-  reasonForNightlife String?
 
-  user User @relation(fields: [userId], references: [id])
+  user   User   @relation("FriendRequestSender", fields: [userId], references: [id])
   userId String
 
+  friend   User   @relation("FirendRequestReceiver", fields: [friendId], references: [id])
+  friendId String
+
+  @@map("friend_requests")
+}
+
+model Friend {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User   @relation("RequestedUser", fields: [userId], references: [id])
+  userId String
+
+  friend   User   @relation("AcceptedUser", fields: [friendId], references: [id])
+  friendId String
+
+  @@map("friends")
+}
+
+model Onboarding {
+  id                     String   @id @default(cuid())
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  residence              String?
+  vancouverArea          String?
+  nightlifeType          String?
+  outingFrequency        String?
+  favouriteInstrument    String?
+  drinkOfChoice          String?
+  groupOrAlone           String?
+  arrivalTime            String?
+  appealingPromotion     String?
+  notificationPreference String?
+  nighlifeEnvironment    String?
+  foodImportance         String?
+  drinkPreference        String?
+  reasonForNightlife     String?
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
 
   @@map("onboardings")
 }
 
-model PaymentDetails{
-  id       String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  paymentMethod String
-  cardNumber String
-  expiryDate String
+model PaymentDetails {
+  id             String   @id @default(cuid())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  paymentMethod  String
+  cardNumber     String
+  expiryDate     String
   cardHolderName String
-  cvc String
+  cvc            String
 
-  user User @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
   userId String
+
+  Payments Payments[]
 
   @@map("payment_details")
 }
 
-
-model Club{
-  id String @id @default(cuid())
+model Club {
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  name String
-  capacity Int
+  name      String
+  capacity  Int
+  photoUrl  String?
+  rating    Int?
 
-  clubOwner User @relation(fields: [clubOwnerId], references: [id])
+  clubOwner   User   @relation(fields: [clubOwnerId], references: [id])
   clubOwnerId String
 
-  clubLocation ClubLocation @relation(fields: [clubLocationId], references: [id])
+  clubLocation   ClubLocation @relation(fields: [clubLocationId], references: [id])
   clubLocationId String
 
-  Event Event[]
-  ClubNight ClubNight[]
-  Promotion Promotion[]
+  Event              Event[]
+  ClubNight          ClubNight[]
+  Promotion          Promotion[]
   TermsAndConditions TermsAndConditions[]
-  UserClubPoints UserClubPoints[]
+  UserClubPoints     UserClubPoints[]
+  Payments           Payments[]
+  ClubReview         ClubReview[]
 
   @@map("clubs")
 }
 
-model ClubLocation{
-  id String @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  name String
-  latitude Float
-  longitude Float
-  address String
+model ClubReview {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  name        String
+  email       String
+  totalPoints Int
+  comment     String?
+  rating      Int
+
+  club   Club   @relation(fields: [clubId], references: [id])
+  clubId String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+}
+
+model ClubLocation {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  name       String
+  latitude   Float
+  longitude  Float
+  address    String
   postalCode String
-  city String
-  country String
+  city       String
+  country    String
 
   Club Club[]
 
   @@map("club_locations")
 }
 
-model UserTicket{
-  id String @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id])
-  userId String
-
-  ticket Ticket @relation(fields: [ticketId], references: [id])
-  ticketId String
-
-  ticketAddOn TicketAddOn @relation(fields: [ticketAddOnId], references: [id])
-  ticketAddOnId String  
-
-  @@map("user_tickets")
-}
-
-model Event{
-  id String @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  name String
-  dateTime DateTime
+model Event {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  name        String
+  dateTime    DateTime
   description String
-  photoUrl String
+  photoUrl    String
 
-  club Club @relation(fields: [clubId], references: [id])
+  club   Club   @relation(fields: [clubId], references: [id])
   clubId String
 
-  ticket Ticket[]
+  TickerAddOn TicketAddOn[]
+  TicketTier  TicketTier[]
+  Reservation Reservation[]
+
   UserPromotionEvent UserPromotionEvent[]
 
   @@map("events")
+}
 
-} 
-
-model ClubNight{
-  id String @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  name String
-  dateTime DateTime
+model ClubNight {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  name        String
+  dateTime    DateTime
   description String
-  photoUrl String
+  photoUrl    String
 
-  club Club @relation(fields: [clubId], references: [id])
+  club   Club   @relation(fields: [clubId], references: [id])
   clubId String
 
-  Ticket Ticket[]
+  TicketTier         TicketTier[]
+  TicketAddOn        TicketAddOn[]
   UserPromotionEvent UserPromotionEvent[]
-
+  Reservation        Reservation[]
 
   @@map("club_nights")
 }
 
-model Ticket{
-  id String @id @default(cuid())
+model Reservation {
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  eventType String
+  total     Float
 
-  event Event @relation(fields: [eventId], references: [id])
-  eventId String
+  ReservationAddOns ReservationAddOns[]
+  Ticket            Ticket[]
 
-  clubNight ClubNight @relation(fields: [clubNightId], references: [id])
-  clubNightId String
+  event   Event?  @relation(fields: [eventId], references: [id])
+  eventId String?
 
-  ticketType TicketType @relation(fields: [ticketTypeId], references: [id])
-  ticketTypeId String
+  clubNight   ClubNight? @relation(fields: [clubNightId], references: [id])
+  clubNightId String?
 
-  UserTicket UserTicket[]
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  @@map("reservations")
+}
+
+model ReservationAddOns {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  quantity  Int
+
+  reservation   Reservation @relation(fields: [reservationId], references: [id])
+  reservationId String
+
+  ticketAddOn   TicketAddOn @relation(fields: [ticketAddOnId], references: [id])
+  ticketAddOnId String
+
+  @@map("reservation_add_ons")
+}
+
+model Ticket {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  price     Float
+
+  reservation   Reservation @relation(fields: [reservationId], references: [id])
+  reservationId String
+
+  ticketTier   TicketTier @relation(fields: [ticketTierId], references: [id])
+  ticketTierId String
 
   @@map("tickets")
 }
 
-model TicketAddOn{
-  id String @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  name String
-  price Float
+model TicketAddOn {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  name        String
+  price       Float
+  maxQuantity Int
 
-  UserTicket UserTicket[]
+  event   Event?  @relation(fields: [eventId], references: [id])
+  eventId String?
+
+  clubNight   ClubNight? @relation(fields: [clubNightId], references: [id])
+  clubNightId String?
+
+  ReservationAddOns ReservationAddOns[]
 
   @@map("ticket_add_ons")
 }
 
-model TicketType{
-  id String @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  name String
-  price Float
+model TicketTier {
+  id              String   @id @default(cuid())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  name            String
+  price           Float
   currentQuantity Int
-  totalQuantity Int
+  totalQuantity   Int
+  isPrivate       Boolean
+
+  event   Event?  @relation(fields: [eventId], references: [id])
+  eventId String?
+
+  clubNight   ClubNight? @relation(fields: [clubNightId], references: [id])
+  clubNightId String?
 
   ticket Ticket[]
 
-  @@map("ticket_types")
+  @@map("ticket_tiers")
 }
 
-model Promotion{
-  id String @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  name String
-  description String
-  startDate DateTime
-  endDate DateTime
+model Promotion {
+  id             String   @id @default(cuid())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  name           String
+  description    String
+  startDate      DateTime
+  endDate        DateTime
   pointsRequired Int
-  photoUrl String
 
-  club Club @relation(fields: [clubId], references: [id])
+  club   Club   @relation(fields: [clubId], references: [id])
   clubId String
-  
+
   UserPromotionEvent UserPromotionEvent[]
 
   @@map("promotions")
 }
 
-model UserPromotionEvent{
-  id String @id @default(cuid())
+model UserPromotionEvent {
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
   userId String
 
-  promotion Promotion @relation(fields: [promotionId], references: [id])
+  promotion   Promotion @relation(fields: [promotionId], references: [id])
   promotionId String
-  
-  event Event? @relation(fields: [eventId], references: [id])
+
+  event   Event?  @relation(fields: [eventId], references: [id])
   eventId String?
 
-  clubNight ClubNight? @relation(fields: [clubNightId], references: [id])
+  clubNight   ClubNight? @relation(fields: [clubNightId], references: [id])
   clubNightId String?
 
   @@map("user_promotion_events")
 }
 
-model TermsAndConditions{
-  id String @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model TermsAndConditions {
+  id                 String   @id @default(cuid())
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
   termsAndConditions String
 
-  club Club @relation(fields: [clubId], references: [id])
+  club   Club   @relation(fields: [clubId], references: [id])
   clubId String
 
   @@map("terms_and_conditions")
+}
+
+model Payments {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  paymentType String
+  total       Float
+
+  paymentDetails   PaymentDetails @relation(fields: [paymentDetailsId], references: [id])
+  paymentDetailsId String
+
+  club   Club   @relation(fields: [clubId], references: [id])
+  clubId String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  @@map("payments")
+}
+
+model SplitGroup {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+
+  createdBy User  @relation(fields: [createdById], references: [id])
+  createdById String
+
+  SplitGroupMembers SplitGroupMembers[]
+  SplitPayment      SplitPayment[]
+
+  @@map("split_groups")
+}
+
+model SplitGroupMembers{
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  splitGroup   SplitGroup   @relation(fields: [splitGroupId], references: [id])
+  splitGroupId String
+
+  @@map("split_group_members")
+}
+
+enum splitType {
+  EQUALLY
+  UNEQUALLY
+}
+
+enum splitpaymentType {
+  GROUP
+  FRIENDS
+}
+
+
+model SplitPayment{
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  total     Float
+  splitPaymentType     splitpaymentType
+  splitType      splitType
+
+  splitGroup   SplitGroup?   @relation(fields: [splitGroupId], references: [id])
+  splitGroupId String
+
+  createdBy   User   @relation(fields: [createdById], references: [id])
+  createdById String
+
+  SplitPaymentUsers SplitPaymentUsers[]
+
+  @@map("split_payments")
+}
+
+
+model SplitPaymentUsers{
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  amount Float
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  splitPayment   SplitPayment   @relation(fields: [splitPaymentId], references: [id])
+  splitPaymentId String
+
+  @@map("split_payment_users")
 }

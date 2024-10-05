@@ -1,7 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AdminPromotionDto } from './dto';
-import e from 'express';
 
 @Injectable()
 export class AdminPromotionService {
@@ -22,7 +21,6 @@ export class AdminPromotionService {
           startDate: dto.startDate,
           endDate: dto.endDate,
           pointsRequired: dto.pointsRequired,
-          photoUrl: dto.photoUrl,
           club: {
             connect: {
               id: dto.clubId,
