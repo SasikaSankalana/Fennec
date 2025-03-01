@@ -1,0 +1,23 @@
+import { Module } from '@nestjs/common';
+import { AdminService } from './admin.service';
+import { AdminController } from './admin.controller';
+import { AdminClubModule } from './admin-club/admin-club.module';
+import { AdminClubNightModule } from './admin-club-night/admin-club-night.module';
+import { AdminPromotionModule } from './admin-promotion/admin-promotion.module';
+import { AdminEventModule } from './admin-event/admin-event.module';
+import { AdminTermsConditionsModule } from './admin-terms/admin-terms-conditions.module';
+import { AdminTicketsModule } from './admin-tickets/admin-tickets.module';
+
+@Module({
+  imports: [
+    AdminClubModule,
+    AdminClubNightModule,
+    AdminPromotionModule,
+    AdminEventModule,
+    AdminTicketsModule,
+    AdminTermsConditionsModule,
+  ],
+  providers: [AdminService],
+  controllers: [AdminController],
+})
+export class AdminModule {}
